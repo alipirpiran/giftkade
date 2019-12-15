@@ -1,0 +1,8 @@
+routes:
+
+product:
+    get => all product
+    post => add new product[title, description, imageFile]
+
+uploads:
+    get/id => send product id, get product image
