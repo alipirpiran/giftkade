@@ -27,7 +27,7 @@ router.post('/', upload.single('image'), (req, res) => {
     const _product = {
         title: req.body.title,
         description: req.body.description,
-        image_url: req.file.path
+        image_path: req.file.path
     };
     validateProduct(_product)
         .then(async item => {
@@ -44,7 +44,7 @@ router.get('/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
-        const product = await Product.findById(id).select('title description image_url');
+        const product = await Product.findById(id).select('title description');
         res.send(product)
 
     } catch (error) {
@@ -70,7 +70,7 @@ function validateProduct(product) {
     return joi.validate(product, {
         title: joi.string().max(20).required(),
         description: joi.string().max(200),
-        image_url: joi.string()
+        image_path: joi.string()
     })
 }
 

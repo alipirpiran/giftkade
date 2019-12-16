@@ -10,7 +10,7 @@ module.exports = mongoose.model('Product', new mongoose.Schema({
         type: String,
         maxlength: 200,
     },
-    image_url: {
+    image_path: {
         type: String,
         required: false
     },
