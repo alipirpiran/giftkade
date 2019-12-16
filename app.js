@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const multer = require('multer')
+const cors = require('cors')
 
 var bodyParser = require('body-parser');
 
@@ -16,12 +17,13 @@ const productsRouter = require('./routes/product')
 const uploadsRoute = require('./routes/uploads')
 
 var app = express();
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 

@@ -52,6 +52,20 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const product = await Product.findByIdAndDelete(id);
+        if (!product)
+            res.status(404).send({ error: 'not found' })
+        else
+            res.status(200).send({ status: 'deleted' })
+    } catch (error) {
+        res.status(500).send('server error');
+    }
+})
+
 function validateProduct(product) {
     return joi.validate(product, {
         title: joi.string().max(20).required(),

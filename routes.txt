@@ -1,4 +1,4 @@
-routes:
+droutes:
 
 product:
     get => all product
