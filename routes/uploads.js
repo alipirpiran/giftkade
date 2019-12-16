@@ -6,7 +6,7 @@ router.get('/:id', async (req, res) => {
     const id = req.params.id;
     try {
         const product = await Product.findById(id)
-        const readStream = fs.createReadStream(product.image_url)
+        const readStream = fs.createReadStream(product.image_path)
         readStream.on('open', () => {
             readStream.pipe(res);
         })
@@ -16,7 +16,7 @@ router.get('/:id', async (req, res) => {
             console.log(err);
         })
     } catch (error) {
-        res.status(404).send({ error: 'product/imageu not found' })
+        res.status(404).send({ error: 'product/image not found' })
     }
 
 
