@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const joi = require('joi')
+const fs = require('fs')
 const multer = require('multer')
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -59,16 +60,55 @@ router.delete('/:id', async (req, res) => {
         const product = await Product.findByIdAndDelete(id);
         if (!product)
             res.status(404).send({ error: 'not found' })
-        else
+        else {
+            fs.unlink(product.image_path, err => { })
             res.status(200).send({ status: 'deleted' })
+        }
     } catch (error) {
         res.status(500).send('server error');
     }
 })
 
+router.post('/update/:id', upload.single('image'), async (req, res) => {
+    const id = req.params.id;
+
+    let _product = {
+        title: req.body.title,
+        description: req.body.description
+    };
+
+    if (req.file && req.file.path) {
+        _product.image_path = req.file.path
+
+        Product.findById(id).then(product => {
+            fs.unlink(product.image_path, (err) => {
+                if (err)
+                    console.log(err);
+            })
+        })
+    }
+
+    validateUpdateProduct(_product)
+        .then(async item => {
+            const product = await Product.findByIdAndUpdate(id, _product)
+            res.status(200).send(product);
+        }).catch(err => {
+            res.status(500).send({ error: 'error in adding new product' });
+            console.log(err);
+        })
+})
+
 function validateProduct(product) {
     return joi.validate(product, {
         title: joi.string().max(20).required(),
+        description: joi.string().max(200),
+        image_path: joi.string()
+    })
+}
+
+function validateUpdateProduct(product) {
+    return joi.validate(product, {
+        title: joi.string().max(20),
         description: joi.string().max(200),
         image_path: joi.string()
     })
