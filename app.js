@@ -15,6 +15,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const productsRouter = require('./routes/product')
 const uploadsRoute = require('./routes/uploads')
+const subProductTypeRoute = require('./routes/subProductTypes')
 
 var app = express();
 app.use(cors());
@@ -24,16 +25,17 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-app.use(logger('dev'));
-app.use(cookieParser());
+// app.use(logger('dev'));
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
+app.use('/subProducts', subProductTypeRoute)
 app.use('/uploads', uploadsRoute)
 
 // catch 404 and forward to error handler

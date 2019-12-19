@@ -16,7 +16,7 @@ module.exports = mongoose.model('Product', new mongoose.Schema({
     },
 
     types: {
-        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'productSubType' }],
+        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'ProductSubType' }],
 
     }
 }));
