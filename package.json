@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "PORT=4444 DEBUG=giftShop:* node ./bin/www",
+        "start": "node ./bin/www",
         "test": "PORT=4444 DEBUG=giftShop:* nodemon ./bin/www"
     },
     "dependencies": {

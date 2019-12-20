@@ -4,8 +4,10 @@
  * Module dependencies.
  */
 
+require('dotenv').config();
+
 var app = require('../app');
-var debug = require('debug')('giftcardshop:server');
+var debug = require('debug')('giftShop:server');
 var http = require('http');
 
 /**
