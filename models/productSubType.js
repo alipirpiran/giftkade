@@ -12,6 +12,12 @@ module.exports = mongoose.model('ProductSubType', new mongoose.Schema({
         required: true
     },
 
+    localPrice: {
+        type: mongoose.SchemaTypes.Number,
+        required: true,
+        default: 0
+    },
+
     title: {
         type: String,
         required: true

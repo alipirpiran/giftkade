@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     res.send({ route: '/subProducts' })
 })
 
-// get the product id
+// id : the product id
 router.get('/all/:id', async (req, res) => {
     const id = req.params.id;
     try {
