@@ -18,7 +18,14 @@ const uploadsRoute = require('./routes/uploads')
 const subProductTypeRoute = require('./routes/subProductTypes')
 
 var app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: true,
+  credentials: true
+}
+app.options('*', cors(corsOptions));
+
+// app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
