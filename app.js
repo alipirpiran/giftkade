@@ -1,11 +1,8 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const multer = require('multer')
 const cors = require('cors')
-
+const helmet = require('helmet');
 var bodyParser = require('body-parser');
 
 // db setup
@@ -16,28 +13,27 @@ var usersRouter = require('./routes/users');
 const productsRouter = require('./routes/product')
 const uploadsRoute = require('./routes/uploads')
 const subProductTypeRoute = require('./routes/subProductTypes')
+const userRoute = require('./routes/user')
+const phoneValidateRoute = require('./routes/phoneValidate')
 
 var app = express();
 
-const corsOptions = {
-  origin: true,
-  credentials: true
-}
-app.options('*', cors(corsOptions));
-app.use(cors())
+app.use(helmet());
 
-// app.use(cors());
+// const corsOptions = {
+//   origin: true,
+//   credentials: true
+// }
+// app.options('*', cors(corsOptions));
+app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// app.use(logger('dev'));
-// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
@@ -45,6 +41,8 @@ app.use('/users', usersRouter);
 app.use('/products', productsRouter);
 app.use('/subProducts', subProductTypeRoute)
 app.use('/uploads', uploadsRoute)
+app.use('/phoneValidate', phoneValidateRoute)
+app.use('/user', userRoute)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
