@@ -31,6 +31,7 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/:id', async (req, res) => {
+	console.log(req.body)
     const id = req.params.id;
 
     validateProductSubType(req.body)

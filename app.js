@@ -19,11 +19,6 @@ const subProductTypeRoute = require('./routes/subProductTypes')
 
 var app = express();
 
-const corsOptions = {
-  origin: true,
-  credentials: true
-}
-app.options('*', cors(corsOptions));
 app.use(cors())
 
 // app.use(cors());
