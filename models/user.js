@@ -15,6 +15,11 @@ const User = mongoose.model('User', new mongoose.Schema({
     },
     isPhoneNumberValidated: {
         type: Boolean
+    },
+
+    shopingHistory: {
+        type: [],
+        default: []
     }
 }));
 
