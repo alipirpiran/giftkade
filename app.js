@@ -8,13 +8,13 @@ var bodyParser = require('body-parser');
 // db setup
 require('./db')
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
 const productsRouter = require('./routes/product')
 const uploadsRoute = require('./routes/uploads')
 const subProductTypeRoute = require('./routes/subProductTypes')
 const userRoute = require('./routes/user')
-const phoneValidateRoute = require('./routes/phoneValidate')
+const phoneValidateRoute = require('./routes/phoneValidate');
+const authRoute = require('./routes/auth');
 
 var app = express();
 
@@ -31,12 +31,12 @@ app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/products', productsRouter);
 app.use('/subProducts', subProductTypeRoute)
 app.use('/uploads', uploadsRoute)
 app.use('/phoneValidate', phoneValidateRoute)
 app.use('/user', userRoute)
+app.use('/auth', authRoute)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
