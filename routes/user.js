@@ -1,29 +1,46 @@
 const router = require('express').Router();
 const joi = require('joi');
+const bcrypt = require('bcryptjs');
+
+const userAuth = require('../auth/user')
 
 const User = require('../models/user')
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', userAuth, async (req, res) => {
     const id = req.params.id;
+
+    if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
+
     const user = User.findById(id).select('-password');
     return res.status(200).send(user);
 })
 
 router.post('/', async (req, res) => {
-    try {
-        const _user = await validateUser(req.body);
+    const _user = req.body;
 
-        const found = await User.findOne({ $or: [{ email: _user.email }, { phoneNumber: _user.phoneNumber }] })
-        if (found) {
-            return res.status(422).send({ status: 0, error: { message: 'کاربری با مشخصات مشابه وجود دارد.' } });
-        }
+    // validate user data
+    const { error } = validateUser(req.body);
+    if (error) return res.status(400).send({ error: { message: error } })
 
-        let user = new User(_user);
-        user = await user.save();
-        return res.status(200).send(user);
-    } catch (err) {
-        return res.status(400).send({ hasError: 1, message: err, error: { message: 'لطفا ورودی هارا کنترل کنید.' } })
+    // check if user exists
+    const found = await User.findOne({ $or: [{ email: _user.email }, { phoneNumber: _user.phoneNumber }] })
+    if (found) {
+        return res.status(422).send({ status: 0, error: { message: 'کاربری با مشخصات مشابه وجود دارد.' } });
     }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(_user.password, salt);
+
+    let user = new User({
+        email: _user.email,
+        phoneNumber: _user.phoneNumber,
+        password: hashedPassword,
+    });
+
+    user = await user.save();
+    return res.status(200).send({ user: user._id });
+
 
 })
 
