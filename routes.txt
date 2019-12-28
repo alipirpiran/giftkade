@@ -6,3 +6,5 @@ product:
 
 uploads:
     get/id => send product id, get product image
+
+TODO: use passanger, use request limit,
