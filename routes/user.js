@@ -11,7 +11,8 @@ router.get('/:id', userAuth, async (req, res) => {
 
     if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
 
-    const user = User.findById(id).select('-password');
+    const user = await User.findById(id).select('-password');
+
     return res.status(200).send(user);
 })
 
