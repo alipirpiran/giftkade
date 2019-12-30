@@ -1,5 +1,6 @@
 const joi = require('joi')
 const router = require('express').Router();
+const debug = require('debug')('giftShop:Route:SubProduct')
 
 
 const ProductSubType = require('../models/productSubType')
@@ -31,7 +32,6 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/:id', async (req, res) => {
-	console.log(req.body)
     const id = req.params.id;
 
     validateProductSubType(req.body)
@@ -65,11 +65,11 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     const id = req.params.id;
-    
+
     try {
         const subProduct = await validateUpdateProductSubType(req.body);
         const updated = await ProductSubType.findByIdAndUpdate(id, subProduct);
-        
+
         return res.status(200).send(updated)
     } catch (error) {
         return res.status(404).send(error)

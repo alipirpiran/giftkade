@@ -2,6 +2,8 @@ const router = require('express').Router();
 const joi = require('joi')
 const fs = require('fs')
 const multer = require('multer')
+const debug = require('debug')('giftShop:Route:product')
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads')
@@ -37,7 +39,7 @@ router.post('/', upload.single('image'), (req, res) => {
             res.status(200).send(product);
         }).catch(err => {
             res.status(500).send({ error: 'error in adding new product' });
-            console.log(err);
+            debug(err);
         })
 })
 
@@ -83,7 +85,7 @@ router.post('/update/:id', upload.single('image'), async (req, res) => {
         Product.findById(id).then(product => {
             fs.unlink(product.image_path, (err) => {
                 if (err)
-                    console.log(err);
+                    debug(err);
             })
         })
     }
@@ -94,7 +96,7 @@ router.post('/update/:id', upload.single('image'), async (req, res) => {
             res.status(200).send(product);
         }).catch(err => {
             res.status(500).send({ error: 'error in adding new product' });
-            console.log(err);
+            debug(err);
         })
 })
 

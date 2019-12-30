@@ -1,6 +1,7 @@
 const fs = require('fs')
 const Product = require('../models/product');
 const router = require('express').Router()
+const debug = require('debug')('giftShop:Routes:Uploads')
 
 router.get('/:id', async (req, res) => {
     const id = req.params.id;
@@ -13,7 +14,7 @@ router.get('/:id', async (req, res) => {
 
         readStream.on('error', (err) => {
             res.status(404).send({ error: 'error in geting file' })
-            console.log(err);
+            debug(err);
         })
     } catch (error) {
         res.status(404).send({ error: 'product/image not found' })

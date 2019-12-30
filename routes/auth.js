@@ -14,7 +14,6 @@ router.post('/login', async (req, res) => {
 
     const user = await User.findOne({ email: info.email })
     if (!user) return res.status(400).send({ error: { message: 'ایمیل یا رمز عبور اشتباه است.' } })
-    console.log(user);
 
     const isValidPass = await bcrypt.compare(info.password, user.password);
     if (!isValidPass) return res.status(400).send({ error: { message: 'ایمیل یا رمز عبور اشتباه است.' } });
