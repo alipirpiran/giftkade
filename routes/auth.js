@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
-const joi = require('joi')
 const jwt = require('jsonwebtoken')
+const joi = require('joi')
 const _ = require('lodash');
 const router = require('express').Router();
 
@@ -12,11 +12,11 @@ router.post('/login', async (req, res) => {
     const { error } = validateLogin(info);
     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' } })
 
-    const user = await User.findOne({ email: info.email })
-    if (!user) return res.status(400).send({ error: { message: 'ایمیل یا رمز عبور اشتباه است.' } })
+    const user = await User.findOne({ phoneNumber: info.phoneNumber })
+    if (!user) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
 
     const isValidPass = await bcrypt.compare(info.password, user.password);
-    if (!isValidPass) return res.status(400).send({ error: { message: 'ایمیل یا رمز عبور اشتباه است.' } });
+    if (!isValidPass) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } });
 
 
     // create and assign a token
@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
 
 function validateLogin(data) {
     return joi.validate(data, {
-        email: joi.string().email().required(),
+        phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
         password: joi.string().min(8).required()
     })
 }
