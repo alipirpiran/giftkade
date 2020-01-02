@@ -21,12 +21,15 @@ router.post('/', async (req, res) => {
 
     // validate user data
     const { error } = validateUser(req.body);
-    if (error) return res.status(400).send({ error: { message: error } })
+    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' } })
 
-    // check if user exists
+    // check if user exists and phone number is validated
     const found = await User.findOne({ $or: [{ email: _user.email }, { phoneNumber: _user.phoneNumber }] })
-    if (found) {
+    if (found && found.isPhoneNumberValidated) {
         return res.status(422).send({ status: 0, error: { message: 'کاربری با مشخصات مشابه وجود دارد.' } });
+    }
+    if (found && !found.isPhoneNumberValidated) {
+        await found.remove();
     }
 
     // Hash password

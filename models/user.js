@@ -17,8 +17,8 @@ const User = mongoose.model('User', new mongoose.Schema({
         type: Boolean
     },
 
-    shopingHistory: {
-        type: [],
+    orders: {
+        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Orders' }],
         default: []
     }
 }));
