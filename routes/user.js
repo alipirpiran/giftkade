@@ -13,6 +13,8 @@ router.get('/:id', userAuth, async (req, res) => {
 
     const user = await User.findById(id).select('-password');
 
+    if (!user) return res.status(404).send({ error: { message: 'کاربر یافت نشد!' } });
+
     return res.status(200).send(user);
 })
 
