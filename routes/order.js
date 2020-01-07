@@ -76,6 +76,8 @@ router.post('/', userAuth, async (req, res) => {
         
         return res.status(200).send({ url: dargahURL, order_id: order._id });
     } catch (error) {
+        console.log(`errir : ${error}`);
+        
         return res.status(400).send(error);
     }
 })
