@@ -40,6 +40,8 @@ router.post('/', userAuth, async (req, res) => {
     const { count } = req.body;
 
     const subProduct = await SubProduct.findById(req.body.subProduct);
+    console.log(subProduct);
+    
     if (!subProduct) return res.status(400).send({ error: { message: 'محصول مورد نظر یافت نشد' } });
 
     const user = await User.findById(user_id)
