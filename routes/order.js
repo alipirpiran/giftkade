@@ -40,7 +40,6 @@ router.post('/', userAuth, async (req, res) => {
     const { count } = req.body;
 
     const subProduct = await SubProduct.findById(req.body.subProduct);
-    console.log(subProduct);
 
     if (!subProduct) return res.status(400).send({ error: { message: 'محصول مورد نظر یافت نشد' } });
 
@@ -72,12 +71,9 @@ router.post('/', userAuth, async (req, res) => {
             `${BASE_URL}/payment`,
             user.mobile,
         );
-        console.log(dargahURL);
 
         return res.status(200).send({ url: dargahURL, order_id: order._id });
     } catch (error) {
-        console.log(`errir : ${error}`);
-
         return res.status(400).send({ error: { message: 'خطا هنگام ایجاد درگاه بانکی' } });
     }
 })
