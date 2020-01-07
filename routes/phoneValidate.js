@@ -1,5 +1,5 @@
 const Kavenegar = require('kavenegar');
-const message_api_key = process.env.MESSAGE_API_KEY;
+const message_api_key = process.env.MESSAGE_SERVICE_API_KEY;
 const messageApi = Kavenegar.KavenegarApi({ apikey: message_api_key });
 
 const User = require('../models/user');
