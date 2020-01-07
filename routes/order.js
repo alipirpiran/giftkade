@@ -8,12 +8,12 @@ const User = require('../models/user')
 
 const userAuth = require('../auth/user')
 
-const payment = require('./payment')
+const { getDargahURLAfterCreatingOrder } = require('./payment')
 
 const BASE_URL = process.env.BASE_URL;
 
 // TODO: add function after verifing order, add codes to order
-module.exports.verifyOrder = async(userId, orderId, transaction) => {
+module.exports.verifyOrder = async (userId, orderId, transaction) => {
     const order = await Order.findById(orderId);
 
     order.payed = true;
@@ -41,7 +41,7 @@ router.post('/', userAuth, async (req, res) => {
 
     const subProduct = await SubProduct.findById(req.body.subProduct);
     console.log(subProduct);
-    
+
     if (!subProduct) return res.status(400).send({ error: { message: 'محصول مورد نظر یافت نشد' } });
 
     const user = await User.findById(user_id)
@@ -64,7 +64,7 @@ router.post('/', userAuth, async (req, res) => {
 
     // send user to Dargah Pardakht
     try {
-        const dargahURL = await payment.getDargahURLAfterCreatingOrder(
+        const dargahURL = await getDargahURLAfterCreatingOrder(
             user,
             order,
             'test',
@@ -73,12 +73,12 @@ router.post('/', userAuth, async (req, res) => {
             user.mobile,
         );
         console.log(dargahURL);
-        
+
         return res.status(200).send({ url: dargahURL, order_id: order._id });
     } catch (error) {
         console.log(`errir : ${error}`);
-        
-        return res.status(400).send(error);
+
+        return res.status(400).send({ error: { message: 'خطا هنگام ایجاد درگاه بانکی' } });
     }
 })
 
@@ -98,4 +98,4 @@ function validateOder(order) {
     })
 }
 
-module.exports.route = router;
+module.exports.router = router;

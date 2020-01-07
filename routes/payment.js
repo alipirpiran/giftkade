@@ -109,4 +109,4 @@ function verifyTrans(api, token) {
     }).json({ api, token })
 }
 
-module.exports = router;
+module.exports.router = router;

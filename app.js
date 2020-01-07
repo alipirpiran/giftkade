@@ -16,8 +16,8 @@ const subProductTypeRoute = require('./routes/subProductTypes')
 const userRoute = require('./routes/user')
 const phoneValidateRoute = require('./routes/phoneValidate');
 const authRoute = require('./routes/auth');
-const orderRoute = require('./routes/order').route
-const paymentRoute = require('./routes/payment')
+const orderRoute = require('./routes/order').router
+const paymentRoute = require('./routes/payment').router
 
 var app = express();
 
