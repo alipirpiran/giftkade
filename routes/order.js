@@ -10,7 +10,7 @@ const userAuth = require('../auth/user')
 
 const { getDargahURLAfterCreatingOrder } = require('./payment')
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 
 // TODO: add function after verifing order, add codes to order
 module.exports.verifyOrder = async (userId, orderId, transaction) => {
