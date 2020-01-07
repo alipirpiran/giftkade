@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 router.get('/all/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const subTypes = await Product.findById(id).populate('types', 'price title product').select('types')
+        const subTypes = await Product.findById(id).populate('types', 'price title product localPrice').select('types')
         return res.status(200).send(subTypes);
     } catch (error) {
         return res.status(404).send({ error: 'product not found' })
@@ -32,22 +32,23 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/:id', async (req, res) => {
-    const id = req.params.id;
+    const productId = req.params.id;
 
-    validateProductSubType(req.body)
-        .then(async _subType => {
-            _subType.product = id;
-            const productSubType = new ProductSubType(_subType);
-            const subType = await productSubType.save()
+    const { error } = validateProductSubType(req.body)
+    if (error) return res.status(400).send({ error })
 
-            const product = await Product.findById(id);
-            product.types.push(subType);
-            await product.save()
+    const _subType = req.body;
+    _subType.product = productId;
 
-            return res.status(200).send(subType);
-        }).catch(err => {
-            return res.status(400).send({ error: err })
-        })
+    const productSubType = new ProductSubType(_subType);
+    const subType = await productSubType.save()
+
+    const product = await Product.findById(productId);
+    product.types.push(subType);
+    await product.save()
+
+    return res.status(200).send(subType);
+
 })
 
 router.delete('/:id', async (req, res) => {
@@ -81,6 +82,7 @@ function validateProductSubType(subType) {
     return joi.validate(subType, {
         price: joi.number().required(),
         title: joi.string().required(),
+        localPrice: joi.number().required()
     })
 }
 

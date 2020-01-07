@@ -1,44 +1,95 @@
 const router = require('express').Router();
 const joi = require('joi');
 
+const SubProduct = require('../models/productSubType');
+
 const Order = require('../models/order')
 const User = require('../models/user')
 
-router.post('/', async (req, res) => {
-    const { error } = validateOrder(req.body);
-    if (error) return res.status(400).send({ error });
+const userAuth = require('../auth/user')
 
-    const order = new Order(req.body);
-    await order.save();
+const payment = require('./payment')
 
-    const user = await User.findById(order.user);
-    user.orders.push(order._id);
-    await user.save();
+const BASE_URL = process.env.BASE_URL;
 
-    return res.status(200).send({ _id: order._id });
-});
-
-router.post('/payed:id', async(req, res) => {
-    const id = req.params.id;
-    const order = await Order.findById(id);
-
-    if(!order) return res.status(404).send({error: {message: 'order not found'}});
+// TODO: add function after verifing order, add codes to order
+module.exports.verifyOrder = async(userId, orderId, transaction) => {
+    const order = await Order.findById(orderId);
 
     order.payed = true;
-    await order.save()
-    return res.status(200).send({_id: id});
+    order.transaction = transaction._id;
+    await order.save();
+
+    const user = await User.findById(userId)
+    if (!user.orders) user.orders = []
+    user.orders.push(order._id)
+    await user.save()
+}
+
+// TODO add function for rejected orders, delete order, delete order from user
+
+// call when user want to buy product, return Dargah url
+router.post('/', userAuth, async (req, res) => {
+    const user_id = req.user;
+    // router.post('/', async (req, res) => {
+    // const user_id = req.body.user;
+
+    const { error } = validateOder(req.body);
+    if (error) return res.status(400).send({ error: { message: 'سفارش ثبت شده دارای فرمت اشتباه است' } });
+
+    const { count } = req.body;
+
+    const subProduct = await SubProduct.findById(req.body.subProduct);
+    if (!subProduct) return res.status(400).send({ error: { message: 'محصول مورد نظر یافت نشد' } });
+
+    const user = await User.findById(user_id)
+    if (!user) return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
+
+    const totalPrice = subProduct.localPrice * count
+
+    const _order = new Order({
+        user: user_id,
+
+        price: subProduct.price,
+        localPrice: subProduct.localPrice,
+        title: subProduct.title,
+        description: subProduct.description,
+        totalPrice,
+
+        count,
+    });
+    const order = await _order.save();
+
+    // send user to Dargah Pardakht
+    try {
+        const dargahURL = await payment.getDargahURLAfterCreatingOrder(
+            user,
+            order,
+            'test',
+            totalPrice,
+            `${BASE_URL}/payment`,
+            user.mobile,
+        );
+        return res.status(200).send({ url: dargahURL, order_id: order._id });
+    } catch (error) {
+        return res.status(400).send(error);
+    }
 })
 
-function validateOrder(order) {
+router.get('/:order_id', userAuth, async (req, res) => {
+    const order_id = req.params.order_id;
+
+    const order = await Order.findById(order_id);
+    if (!order) return res.status(404).send({ error: { message: 'گزارش خرید مورد نظر یافت نشد!' } });
+
+    return res.status(200).send(order);
+})
+
+function validateOder(order) {
     return joi.validate(order, {
-        user: joi.string().max(120).required(),
-        title: joi.string().max(250).required(),
-        price: joi.number().max(99999).required(),
-        localPrice: joi.number().max(9999999999).required(),
-        totalPrice: joi.number().max(9999999999).required(),
+        subProduct: joi.string().length(24).required(),
         count: joi.number().max(100).required(),
-        code: joi.array().min(1).max(100).items(joi.string().max(255)),
     })
 }
 
-module.exports = router;
+module.exports.route = router;

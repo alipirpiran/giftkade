@@ -5,6 +5,7 @@ const cors = require('cors')
 const helmet = require('helmet');
 var bodyParser = require('body-parser');
 
+
 // db setup
 require('./db')
 
@@ -15,6 +16,8 @@ const subProductTypeRoute = require('./routes/subProductTypes')
 const userRoute = require('./routes/user')
 const phoneValidateRoute = require('./routes/phoneValidate');
 const authRoute = require('./routes/auth');
+const orderRoute = require('./routes/order').route
+const paymentRoute = require('./routes/payment')
 
 var app = express();
 
@@ -37,10 +40,13 @@ app.use('/uploads', uploadsRoute)
 app.use('/phoneValidate', phoneValidateRoute)
 app.use('/user', userRoute)
 app.use('/auth', authRoute)
+app.use('/order', orderRoute)
+app.use('/payment', paymentRoute)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+  // next(createError(404));
+  res.send(req.url);
 });
 
 // error handler
