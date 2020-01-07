@@ -26,12 +26,15 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         required: true
     },
     code: {
-        type: [String],
-        required: true
+        type: [String]
     },
-    payed: {
+    isPayed: {
         type: Boolean,
         default: false
+    },
+    transaction: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'transactions'
     }
 
 }));
