@@ -1,6 +1,10 @@
 const request = require('request')
 const router = require('express').Router();
 
+const ZarinpalCheckout = require('zarinpal-checkout');
+const zarinpal = ZarinpalCheckout.create('0a8d6c6e-31a2-11ea-850e-000c295eb8fc', true);
+
+
 const Payment = require('../models/payment')
 const User = require('../models/user')
 const Transaction = require('../models/transaction')

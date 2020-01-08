@@ -8,7 +8,8 @@ const User = require('../models/user')
 
 const userAuth = require('../auth/user')
 
-const { getDargahURLAfterCreatingOrder } = require('./payment')
+// const { getDargahURLAfterCreatingOrder } = require('./payment')
+const { getDargahURLAfterCreatingOrder } = require('./zarinPayment')
 
 const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 
@@ -30,6 +31,8 @@ module.exports.verifyOrder = async (userId, orderId, transaction) => {
 
 // call when user want to buy product, return Dargah url
 router.post('/', userAuth, async (req, res) => {
+    console.log('here');
+    
     const user_id = req.user;
     // router.post('/', async (req, res) => {
     // const user_id = req.body.user;
@@ -48,6 +51,8 @@ router.post('/', userAuth, async (req, res) => {
 
     const totalPrice = subProduct.localPrice * count
 
+    console.log(totalPrice);
+    
     const _order = new Order({
         user: user_id,
 
@@ -66,10 +71,11 @@ router.post('/', userAuth, async (req, res) => {
         const dargahURL = await getDargahURLAfterCreatingOrder(
             user,
             order,
-            'test',
             totalPrice,
             `${BASE_URL}/payment`,
             user.mobile,
+            'خرید گیفت کارت'
+        
         );
 
         return res.status(200).send({ url: dargahURL, order_id: order._id });

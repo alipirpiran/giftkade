@@ -17,7 +17,8 @@ const userRoute = require('./routes/user')
 const phoneValidateRoute = require('./routes/phoneValidate');
 const authRoute = require('./routes/auth');
 const orderRoute = require('./routes/order').router
-const paymentRoute = require('./routes/payment').router
+// const paymentRoute = require('./routes/payment').router
+const zarinRoute = require('./routes/zarinPayment').router
 
 var app = express();
 
@@ -41,7 +42,8 @@ app.use('/phoneValidate', phoneValidateRoute)
 app.use('/user', userRoute)
 app.use('/auth', authRoute)
 app.use('/order', orderRoute)
-app.use('/payment', paymentRoute)
+// app.use('/payment', paymentRoute)
+app.use('/payment', zarinRoute)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
