@@ -90,6 +90,8 @@ router.get('/', async (req, res) => {
             console.error(err);
             res.send(err)
         });
+    } else {
+        res.send('پرداخت با خطا مواجه شد')
     }
 
 
