@@ -69,7 +69,7 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 
 
 // handle callbacks
-router.get('/:Authority:Status', (req, res) => {
+router.get('/:Authority:Status', async(req, res) => {
     const { Status, Authority } = req.params;
 
     if (Status == 'OK') {
