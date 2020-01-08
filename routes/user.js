@@ -6,7 +6,7 @@ const userAuth = require('../auth/user')
 
 const User = require('../models/user')
 
-router.get('/:id', userAuth, async (req, res) => {
+router.get('/user/:id', userAuth, async (req, res) => {
     const id = req.params.id;
 
     if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
     return res.status(200).send({ user: user._id });
 })
 
-router.get('/getAll', async (req, res) => {
+router.get('/all', async (req, res) => {
     const users = await User.find().select('-password');
     return res.status(200).send(users);
 })

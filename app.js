@@ -39,7 +39,7 @@ app.use('/products', productsRouter);
 app.use('/subProducts', subProductTypeRoute)
 app.use('/uploads', uploadsRoute)
 app.use('/phoneValidate', phoneValidateRoute)
-app.use('/user', userRoute)
+app.use('/users', userRoute)
 app.use('/auth', authRoute)
 app.use('/order', orderRoute)
 // app.use('/payment', paymentRoute)
