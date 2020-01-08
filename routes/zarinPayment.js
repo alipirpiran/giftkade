@@ -38,7 +38,7 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
                 await user.save();
 
 
-                return response.url;
+                return response.url + '/ZarinGate';
             }
 
         } catch (error) {
