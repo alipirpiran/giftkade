@@ -51,6 +51,8 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
 
         }
     } catch (error) {
+        console.log(error);
+        
         throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت' , dev: error} }
     }
 
