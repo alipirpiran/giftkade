@@ -69,7 +69,7 @@ router.post('/', userAuth, async (req, res) => {
             order,
             totalPrice,
             `${BASE_URL}/payment`,
-            user.mobile,
+            user.phoneNumber,
             'خرید گیفت کارت'
         
         );

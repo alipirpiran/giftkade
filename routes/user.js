@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' } })
 
     // check if user exists and phone number is validated
-    const found = await User.findOne({ $or: [{ email: _user.email }, { phoneNumber: _user.phoneNumber }] })
+    const found = await User.findOne({ phoneNumber: _user.phoneNumber })
     if (found && found.isPhoneNumberValidated) {
         return res.status(422).send({ status: 0, error: { message: 'کاربری با مشخصات مشابه وجود دارد.' } });
     }

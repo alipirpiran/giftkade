@@ -12,54 +12,50 @@ const verifyList = [];
 
 router.post('/', async (req, res) => {
     // todo call api to send verification code to the phone number
-    try {
-        const _number = await validatePhoneNumber(req.body);
-        const number = _number.phoneNumber;
+    const { error } = await validatePhoneNumber(req.body);
+    if (error) return res.status(400).send({ error: { message: 'موبایل ارسالی دارای فرمت اشتباه است' } })
 
-        // send phone to api
-        // return token for the requested user
+    const mobile = _number.phoneNumber;
 
-        // messageApi.Send({ message: messageText(44675), sender: "1000596446", receptor: number },
-        //     (response, status) => {
-        //         res.status(200).send(response);
-        //     });
+    // rand num : 5 numbers
+    const randNum = Math.floor(Math.random() * 100000);
 
-        let index;
-        const found = verifyList.find((value, i) => { value.phoneNumber == number; index = i; })
-        if (found)
-            verifyList.splice(index, 1);
-        verifyList.push(new UserVerify(number, '12345'));
+    let index;
+    const found = verifyList.find((value, i) => { value.phoneNumber == mobile; index = i; })
+    if (found)
+        verifyList.splice(index, 1);
 
-        // return res.status(200).send([{ "messageid": 1672065109, "message": "گیفت کده\nکد تایید عضویت شما :\n44675", "status": 1, "statustext": "در صف ارسال", "sender": "1000596446", "receptor": "09010417052", "date": 1577384269, "cost": 168 }])
-        return res.status(200).send({})
+    // send phone to api
+    messageApi.Send({ message: messageText(randNum), sender: "1000596446", receptor: mobile },
+        (response, status) => {
+            // res.status(200).send(response);
+        }
+    );
+    verifyList.push(new UserVerify(mobile, randNum));
 
-    } catch (error) {
-        return res.status(400).send(error)
-    }
-
+    // return res.status(200).send([{ "messageid": 1672065109, "message": "گیفت کده\nکد تایید عضویت شما :\n44675", "status": 1, "statustext": "در صف ارسال", "sender": "1000596446", "receptor": "09010417052", "date": 1577384269, "cost": 168 }])
+    return res.status(200).send({})
 
 })
 
 router.post('/validate', async (req, res) => {
-    try {
-        const response = await validateResponse(req.body);
-        for (const index in verifyList) {
-            const item = verifyList[index];
-            if (item.phoneNumber == response.phoneNumber)
-                if (item.code == response.code) {
-                    // verified
-                    verifyList.splice(index, 1);
 
-                    await User.findOneAndUpdate({ phoneNumber: item.phoneNumber }, { isPhoneNumberValidated: true })
-                    return res.status(200).send({ status: 1, message: 'verified' })
-                }
-        }
+    const { error } = await validateResponse(req.body);
+    if (error) return res.status(400).send({ error: { message: 'کد ارسالی دارای فرمت اشتباه است' } })
 
-        return res.status(400).send({ error: { message: 'کد ارسالی اشتباه است' } })
-    } catch (error) {
-        return res.status(400).send({ error: { message: 'کد ارسالی دارای فرمت اشتباه است' } })
+    for (const index in verifyList) {
+        const item = verifyList[index];
+        if (item.phoneNumber == req.body.phoneNumber)
+            if (item.code == req.body.code) {
+                // verified
+                verifyList.splice(index, 1);
+
+                await User.findOneAndUpdate({ phoneNumber: item.phoneNumber }, { isPhoneNumberValidated: true })
+                return res.status(200).send({ status: 1, message: 'verified' })
+            } else break;
     }
 
+    return res.status(400).send({ error: { message: 'کد ارسالی اشتباه است' } })
 })
 
 function validatePhoneNumber(phone) {

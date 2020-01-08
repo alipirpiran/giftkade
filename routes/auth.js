@@ -14,13 +14,14 @@ router.post('/login', async (req, res) => {
 
     const user = await User.findOne({ phoneNumber: info.phoneNumber })
     if (!user) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
-    
+    if (!user.isPhoneNumberValidated) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
+
     const isValidPass = await bcrypt.compare(info.password, user.password);
     if (!isValidPass) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } });
 
     // create and assign a token
     const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-    res.header('auth-token', token).send(_.omit(user.toObject(), ['password']));    
+    res.header('auth-token', token).send(_.omit(user.toObject(), ['password']));
 });
 
 function validateLogin(data) {
