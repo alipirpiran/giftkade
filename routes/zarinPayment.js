@@ -72,10 +72,10 @@ router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
 
     if (Status == 'OK') {
-        const payment = await Payment.findOne({ authority: Authority });
+        const payment = await Payment.findOne({ token: Authority });
 
         if (!payment) return res.send('متاسفانه خطایی پیش آمد')
-        
+
         zarinpal.PaymentVerification({
             Amount: payment.amount, // In Tomans
             Authority,
