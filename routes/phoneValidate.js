@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
     const { error } = await validatePhoneNumber(req.body);
     if (error) return res.status(400).send({ error: { message: 'موبایل ارسالی دارای فرمت اشتباه است' } })
 
-    const mobile = _number.phoneNumber;
+    const mobile = req.body.phoneNumber;
 
     // rand num : 5 numbers
     const randNum = Math.floor(Math.random() * 100000);
