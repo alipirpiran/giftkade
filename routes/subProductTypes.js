@@ -2,6 +2,9 @@ const joi = require('joi')
 const router = require('express').Router();
 const debug = require('debug')('giftShop:Route:SubProduct')
 
+const adminAuth = require('../auth/admin')
+const userAuth = require('../auth/user')
+
 
 const ProductSubType = require('../models/productSubType')
 const Product = require('../models/product')
@@ -31,7 +34,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.post('/:id', async (req, res) => {
+router.post('/:id', adminAuth, async (req, res) => {
     const productId = req.params.id;
 
     const { error } = validateProductSubType(req.body)
@@ -51,7 +54,7 @@ router.post('/:id', async (req, res) => {
 
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
     try {
         const subProduct = await ProductSubType.findByIdAndDelete(id);
@@ -64,7 +67,7 @@ router.delete('/:id', async (req, res) => {
     }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
 
     try {
