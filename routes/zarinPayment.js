@@ -70,11 +70,14 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 // handle callbacks
 router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
-    
+
     if (Status == 'OK') {
         const payment = await Payment.findOne({ authority: Authority });
+
+        if (!payment) return res.send('متاسفانه خطایی پیش آمد')
+        
         zarinpal.PaymentVerification({
-            Amount: payment.amout, // In Tomans
+            Amount: payment.amount, // In Tomans
             Authority,
         }).then(response => {
             if (response.status !== 100) {
