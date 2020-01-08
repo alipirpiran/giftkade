@@ -69,8 +69,7 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 
 // handle callbacks
 router.get('/', async (req, res) => {
-    const { Status, Authority } = req.params;
-    console.log(Status);
+    const { Status, Authority } = req.query;
     
     if (Status == 'OK') {
         const payment = await Payment.findOne({ authority: Authority });
