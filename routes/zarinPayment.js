@@ -78,6 +78,8 @@ router.get('/', async (req, res) => {
             Authority,
         }).then(response => {
             if (response.status !== 100) {
+                console.log(response);
+
                 res.send('متاسفانه خطایی پیش آمد')
             } else {
                 console.log(`Verified! Ref ID: ${response.RefID}`);
