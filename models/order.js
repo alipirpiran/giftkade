@@ -32,9 +32,9 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    transaction: {
+    payment: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'transactions'
+        ref: 'payments'
     }
 
 }));

@@ -24,8 +24,6 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
         try {
             const response = await paymentReq(amount, callback, description, mobile, email);
             if (response.status === 100) {
-                console.log(response);
-
                 const payment = new Payment({
                     user: user._id,
                     order: order._id,
@@ -40,7 +38,7 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
                 await user.save();
 
 
-                // return response.url;
+                return response.url;
             }
 
         } catch (error) {
@@ -73,7 +71,6 @@ router.get('/', async (req, res) => {
 
     if (Status == 'OK') {
         const payment = await Payment.findOne({ token: Authority });
-
         if (!payment) return res.send('متاسفانه خطایی پیش آمد')
 
         zarinpal.PaymentVerification({
@@ -83,58 +80,22 @@ router.get('/', async (req, res) => {
             if (response.status !== 100) {
                 console.log(response);
 
-                res.send('متاسفانه خطایی پیش آمد')
+                return res.send('متاسفانه خطایی پیش آمد')
             } else {
-                console.log(`Verified! Ref ID: ${response.RefID}`);
-                console.log(response);
-                res.send('درست بود')
-                verifyTrans(response.RefID);
+                // res.send('درست بود')
+                payment.refId = response.RefID;
+                await payment.save()
 
+                verifyOrder(payment.user, payment.order, payment);
             }
         }).catch(err => {
             console.error(err);
             res.send(err)
         });
     } else {
-        res.send('پرداخت با خطا مواجه شد')
+        return res.send('پرداخت با خطا مواجه شد')
     }
-
-
-    // // confirm payment
-    // if (status == 'OK') {
-    //     verifyTrans(api, token);
-    // }
 })
 
-
-// calls from callback
-function verifyTrans(refId) {
-
-    request.post(`${PAYMENT_URL}/verify`, async (err, res) => {
-        if (err) return;
-        if (res.statusCode == 200) {
-            if (res.body.status == 1) {
-                // check for fuplicate transid
-                const foundTrans = await Transaction.findOne({ transId: req.body.transId })
-                if (foundTrans) return;
-
-                const transaction = new Transaction(req.body);
-                await transaction.save()
-
-                const payment = await Payment.findOne({ token });
-                const { order, user } = payment.order;
-
-                verifyOrder(user, order, transaction);
-
-                await payment.remove()
-            }
-        } else {
-            if (res.statusCode == 422) {
-                return;
-            }
-        }
-
-    }).json({ api, token })
-}
 
 module.exports.router = router;

@@ -14,11 +14,11 @@ const { getDargahURLAfterCreatingOrder } = require('./zarinPayment')
 const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 
 // TODO: add function after verifing order, add codes to order
-module.exports.verifyOrder = async (userId, orderId, transaction) => {
+module.exports.verifyOrder = async (userId, orderId, payment) => {
     const order = await Order.findById(orderId);
 
     order.payed = true;
-    order.transaction = transaction._id;
+    order.payment = payment._id;
     await order.save();
 
     const user = await User.findById(userId)
@@ -31,8 +31,6 @@ module.exports.verifyOrder = async (userId, orderId, transaction) => {
 
 // call when user want to buy product, return Dargah url
 router.post('/', userAuth, async (req, res) => {
-    console.log('here');
-    
     const user_id = req.user;
     // router.post('/', async (req, res) => {
     // const user_id = req.body.user;
@@ -50,8 +48,6 @@ router.post('/', userAuth, async (req, res) => {
     if (!user) return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
 
     const totalPrice = subProduct.localPrice * count
-
-    console.log(totalPrice);
     
     const _order = new Order({
         user: user_id,
