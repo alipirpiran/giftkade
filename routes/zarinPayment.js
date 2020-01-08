@@ -23,10 +23,7 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
         // creating payment, its temp, just to keep authority and order, in calback get order with its details and remove it
 
 
-        // add payment to user payments
-        if (!user.payments) user.payments = []
-        user.payments.push(payment._id);
-        await user.save();
+
 
         try {
             const response = await paymentReq(amount, callback, description, mobile, email);
@@ -42,6 +39,11 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
                 })
                 await payment.save();
 
+                // add payment to user payments
+                if (!user.payments) user.payments = []
+                user.payments.push(payment._id);
+                await user.save();
+
 
                 // return response.url;
             }
@@ -52,8 +54,8 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
         }
     } catch (error) {
         console.log(error);
-        
-        throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت' , dev: error} }
+
+        throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: error } }
     }
 
 }
@@ -71,7 +73,7 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 
 
 // handle callbacks
-router.get('/:Authority:Status', async(req, res) => {
+router.get('/:Authority:Status', async (req, res) => {
     const { Status, Authority } = req.params;
 
     if (Status == 'OK') {
