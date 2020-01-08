@@ -70,7 +70,8 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 // handle callbacks
 router.get('/', async (req, res) => {
     const { Status, Authority } = req.params;
-
+    console.log(Status);
+    
     if (Status == 'OK') {
         const payment = await Payment.findOne({ authority: Authority });
         zarinpal.PaymentVerification({
