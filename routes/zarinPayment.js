@@ -76,7 +76,7 @@ router.get('/', async (req, res) => {
         zarinpal.PaymentVerification({
             Amount: payment.amount, // In Tomans
             Authority,
-        }).then(response => {
+        }).then(async response => {
             if (response.status !== 100) {
                 console.log(response);
 
