@@ -48,6 +48,17 @@ router.post('/', async (req, res) => {
     return res.status(200).send({ user: user._id });
 })
 
+router.get('/getAll', async (req, res) => {
+    const users = await User.find().select('-password');
+    return res.status(200).send(users);
+})
+
+router.delete('/:id', async (req, res) => {
+    const deleted = await User.findByIdAndDelete(req.params.id);
+    if (deleted) return res.status(200).send(deleted)
+    return res.status(400).send({ error: { message: 'کاربر یافت نشد' } })
+})
+
 function validateUser(user) {
     return joi.validate(user, {
         email: joi.string().email().required(),
