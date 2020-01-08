@@ -13,6 +13,10 @@ const User = mongoose.model('User', new mongoose.Schema({
         type: String,
         required: true
     },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
     isPhoneNumberValidated: {
         type: Boolean
     },
