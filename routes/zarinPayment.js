@@ -21,20 +21,15 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
         if (!user) throw { error: { message: 'کاربر یافت نشد' } };
 
         // creating payment, its temp, just to keep authority and order, in calback get order with its details and remove it
-
-
-
-
         try {
             const response = await paymentReq(amount, callback, description, mobile, email);
             if (response.status === 100) {
                 console.log(response);
 
-                const authority = BigInt(response.authority);
                 const payment = new Payment({
                     user: user._id,
                     order: order._id,
-                    token: authority,
+                    token: response.authority,
                     amount
                 })
                 await payment.save();
@@ -63,7 +58,7 @@ module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, am
 // cal this function after creating order
 function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
     return zarinpal.PaymentRequest({
-        Amount, // In Tomans
+        Amount,
         CallbackURL,
         Description,
         Email,
@@ -73,7 +68,7 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 
 
 // handle callbacks
-router.get('/:Authority:Status', async (req, res) => {
+router.get('/', async (req, res) => {
     const { Status, Authority } = req.params;
 
     if (Status == 'OK') {
@@ -87,12 +82,13 @@ router.get('/:Authority:Status', async (req, res) => {
             } else {
                 console.log(`Verified! Ref ID: ${response.RefID}`);
                 console.log(response);
-
+                res.send('درست بود')
                 verifyTrans(response.RefID);
 
             }
         }).catch(err => {
             console.error(err);
+            res.send(err)
         });
     }
 
