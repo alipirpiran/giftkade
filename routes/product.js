@@ -12,8 +12,9 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + Date.now())
     }
 })
-
 const upload = multer({ storage })
+
+const adminAuth = require('../auth/admin')
 
 const Product = require('../models/product')
 // router.use(upload.array())
@@ -26,7 +27,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', upload.single('image'), (req, res) => {
+router.post('/', adminAuth, upload.single('image'), (req, res) => {
     const _product = {
         title: req.body.title,
         description: req.body.description,
@@ -55,7 +56,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -71,7 +72,7 @@ router.delete('/:id', async (req, res) => {
     }
 })
 
-router.post('/update/:id', upload.single('image'), async (req, res) => {
+router.post('/update/:id', adminAuth, upload.single('image'), async (req, res) => {
     const id = req.params.id;
 
     let _product = {

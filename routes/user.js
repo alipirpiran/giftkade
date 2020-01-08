@@ -46,8 +46,6 @@ router.post('/', async (req, res) => {
 
     user = await user.save();
     return res.status(200).send({ user: user._id });
-
-
 })
 
 function validateUser(user) {
