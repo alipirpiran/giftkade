@@ -10,7 +10,7 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         required: true
     },
     price: {
-        type: Number,
+        type: String,
         required: true,
     },
     localPrice: {

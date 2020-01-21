@@ -8,7 +8,7 @@ module.exports = mongoose.model('ProductSubType', new mongoose.Schema({
     },
 
     price: {
-        type: mongoose.SchemaTypes.Number,
+        type: mongoose.SchemaTypes.String,
         required: true
     },
 
