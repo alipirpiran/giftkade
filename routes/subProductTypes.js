@@ -83,7 +83,7 @@ router.put('/:id', adminAuth, async (req, res) => {
 
 function validateProductSubType(subType) {
     return joi.validate(subType, {
-        price: joi.number().required(),
+        price: joi.string().required(),
         title: joi.string().required(),
         localPrice: joi.number().required()
     })
@@ -91,8 +91,9 @@ function validateProductSubType(subType) {
 
 function validateUpdateProductSubType(subType) {
     return joi.validate(subType, {
-        price: joi.number(),
+        price: joi.string(),
         title: joi.string(),
+        localPrice: joi.number(),
     })
 }
 
