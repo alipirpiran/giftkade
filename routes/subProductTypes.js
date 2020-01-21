@@ -67,7 +67,8 @@ router.delete('/:id', adminAuth, async (req, res) => {
     }
 })
 
-router.put('/:id', adminAuth, async (req, res) => {
+// TODO add adminAuth
+router.put('/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
