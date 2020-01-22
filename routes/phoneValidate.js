@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
     const mobile = req.body.phoneNumber;
 
     // rand num : 5 numbers
-    const randNum = Math.floor(Math.random() * 100000);
+    const randNum = Math.floor(Math.random()*90000) + 10000;
 
     let index;
     const found = verifyList.find((value, i) => { value.phoneNumber == mobile; index = i; })
