@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
         verifyList.splice(index, 1);
 
     // send phone to api
-    messageApi.Send({ message: messageText(randNum), sender: "1000596446", receptor: mobile },
+    messageApi.Send({ message: messageText(randNum), receptor: mobile },
         (response, status) => {
             // res.status(200).send(response);
         }
