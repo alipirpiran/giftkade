@@ -10,6 +10,7 @@ const joi = require('joi');
 
 const verifyList = [];
 
+// todo limit this function for one every one minute for each user: Redis
 router.post('/', async (req, res) => {
     // todo call api to send verification code to the phone number
     const { error } = await validatePhoneNumber(req.body);
@@ -17,8 +18,8 @@ router.post('/', async (req, res) => {
 
     const mobile = req.body.phoneNumber;
 
-    // rand num : 5 numbers
-    const randNum = Math.floor(Math.random()*90000) + 10000;
+    // rand num : 5 digit
+    const randNum = Math.floor(Math.random() * 90000) + 10000;
 
     let index;
     const found = verifyList.find((value, i) => { value.phoneNumber == mobile; index = i; })
@@ -26,11 +27,16 @@ router.post('/', async (req, res) => {
         verifyList.splice(index, 1);
 
     // send phone to api
-    messageApi.Send({ message: messageText(randNum), receptor: mobile },
-        (response, status) => {
-            // res.status(200).send(response);
-        }
-    );
+    // messageApi.Send({ message: messageText(randNum), receptor: mobile },
+    //     (response, status) => {
+    //         // res.status(200).send(response);
+    //     }
+    // );
+    messageApi.VerifyLookup({
+        receptor: mobile,
+        token: randNum,
+        type: 'sms'
+    })
     verifyList.push(new UserVerify(mobile, randNum));
 
     // return res.status(200).send([{ "messageid": 1672065109, "message": "گیفت کده\nکد تایید عضویت شما :\n44675", "status": 1, "statustext": "در صف ارسال", "sender": "1000596446", "receptor": "09010417052", "date": 1577384269, "cost": 168 }])
@@ -64,8 +70,8 @@ function validatePhoneNumber(phone) {
     })
 }
 
-function validateResponse(code) {
-    return joi.validate(code, {
+function validateResponse(response) {
+    return joi.validate(response, {
         code: joi.string().length(5).required(),
         phoneNumber: joi.string().length(11).alphanum().regex(/^[0-9]+$/).required()
     })
