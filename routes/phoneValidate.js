@@ -33,6 +33,7 @@ router.post('/', async (req, res) => {
     //     }
     // );
     messageApi.VerifyLookup({
+        template: 'verify',
         receptor: mobile,
         token: randNum,
         type: 'sms'
