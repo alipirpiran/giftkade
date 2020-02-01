@@ -19,20 +19,21 @@ const adminAuth = require('../auth/admin')
 
 const Product = require('../models/product')
 // router.use(upload.array())
-router.get('/',  async (req, res) => {
+router.get('/', cacheProducts, async (req, res) => {
     try {
         const products = await Product.find();
+        
+        console.log('seted products');
+        redisClient.del('products', (err, data) => {
+            if (err) return;
+            const multi = redisClient.multi()
+            for (const item of products) {
+                multi.rpush('products', JSON.stringify(item));
+            }
+            multi.exec(function (errors, results) {
 
-        // redisClient.del('products', (err, data) => {
-        //     if (err) return;
-        //     const multi = redisClient.multi()
-        //     for (const item of products) {
-        //         multi.rpush('products', JSON.stringify(item));
-        //     }
-        //     multi.exec(function (errors, results) {
-
-        //     })
-        // })
+            })
+        })
 
         res.status(200).send(products);
     } catch (error) {
