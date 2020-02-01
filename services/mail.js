@@ -4,6 +4,7 @@ const service = process.env.MAIL_SERVICE || 'gmail'
 const username = process.env.MAIL_USERNAME;
 const password = process.env.MAIL_PASSWORD;
 
+// todo: complete send mail: sourceMail: info@giftkade.com
 const transporter = nodemailder.createTransport({
     service,
     auth: {
