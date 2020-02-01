@@ -8,6 +8,9 @@ const redis = require('redis')
 const redisClient = redis.createClient();
 module.exports.redisClient = redisClient;
 
+redisClient.flushall()
+
+// redisClient.hgetall('asdf', (err, ))
 
 // db setup
 require('./db')

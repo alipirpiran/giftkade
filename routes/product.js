@@ -3,6 +3,7 @@ const router = require('express').Router();
 const joi = require('joi')
 const fs = require('fs')
 const multer = require('multer')
+const _ = require('lodash')
 const { redisClient } = require('../app')
 
 const storage = multer.diskStorage({
@@ -22,20 +23,13 @@ const Product = require('../models/product')
 router.get('/', cacheProducts, async (req, res) => {
     try {
         const products = await Product.find();
-        
-        redisClient.del('products', (err, data) => {
-            if (err) return;
-            const multi = redisClient.multi()
-            for (const item of products) {
-                multi.rpush('products', JSON.stringify(item));
-            }
-            multi.exec(function (errors, results) {
 
-            })
-        })
+        setProductsInRedis(products)
 
         res.status(200).send(products);
     } catch (error) {
+        console.log(error);
+        
         res.status(500).send({ error: 'server error' })
     }
 });
@@ -131,19 +125,52 @@ function validateUpdateProduct(product) {
 }
 
 function cacheProducts(req, res, next) {
-    redisClient.lrange('products', 0, -1, (err, data) => {
-        if (err) return next();
+    // redisClient.lrange('products', 0, -1, (err, data) => {
+    //     if (err) return next();
 
-        if (data != null && data.length != 0) {
+    //     if (data != null && data.length != 0) {
+    //         var items = [];
+    //         for (const item of data) {
+    //             items.push(JSON.parse(item))
+    //         }
+    //         return res.status(200).send(items);
+    //     } else
+    //         next()
+    // })
+    redisClient.lrange('products', 0, -1, (err, productList) => {
+        if (err) return next();
+        if (productList != null && productList.length != 0) {
             var items = [];
-            for (const item of data) {
-                items.push(JSON.parse(item))
+            for (const id of productList) {
+                redisClient.hgetall(id, (err, data) => {
+                    if(err) console.log(err);
+                    
+                    items.push(data)
+                    if (items.length == productList.length) return res.status(200).send(items);
+                })
             }
-            return res.status(200).send(items);
+
         } else
             next()
+
     })
 
+
+}
+
+function setProductsInRedis(products) {
+    console.log('setting products');
+
+    const multi = redisClient.multi()
+    for (const item of products) {
+        console.log(item._id);
+
+        multi.lpush('products', String(item._id));
+        multi.hmset(String(item._id), _.omit(JSON.parse(JSON.stringify(item)), 'types'))
+    }
+    multi.exec(function (errors, results) {
+
+    })
 }
 
 module.exports = router;
