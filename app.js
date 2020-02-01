@@ -4,6 +4,9 @@ var path = require('path');
 const cors = require('cors')
 const helmet = require('helmet');
 var bodyParser = require('body-parser');
+const redis = require('redis')
+const redisClient = redis.createClient();
+module.exports.redisClient = redisClient;
 
 
 // db setup
@@ -17,6 +20,7 @@ const userRoute = require('./routes/user')
 const phoneValidateRoute = require('./routes/phoneValidate');
 const authRoute = require('./routes/auth');
 const orderRoute = require('./routes/order').router
+const tokenRoute = require('./routes/token')
 // const paymentRoute = require('./routes/payment').router
 const zarinRoute = require('./routes/zarinPayment').router
 
@@ -44,6 +48,7 @@ app.use('/auth', authRoute)
 app.use('/order', orderRoute)
 // app.use('/payment', paymentRoute)
 app.use('/payment', zarinRoute)
+app.use('/tokens', tokenRoute)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
