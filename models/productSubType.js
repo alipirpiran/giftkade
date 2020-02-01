@@ -24,10 +24,12 @@ module.exports = mongoose.model('ProductSubType', new mongoose.Schema({
     },
 
     tokens: {
-        type: [{
-            selled: '',
-            key: ''
-        }],
+        type: [{ type: mongoose.Types.ObjectId, ref: 'Token' }],
+        default: []
+    },
+
+    selledTokens: {
+        type: [{ type: mongoose.Types.ObjectId, ref: 'Token' }],
         default: []
     }
 }))

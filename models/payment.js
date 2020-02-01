@@ -6,12 +6,12 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
             type: mongoose.SchemaTypes.ObjectId, ref: 'Users'
         },
     },
+    order: {
+        type: mongoose.SchemaTypes.ObjectId, ref: 'Orders'
+    },
     token: {
         type: String,
         require: true,
-    },
-    order: {
-        type: mongoose.SchemaTypes.ObjectId, ref: 'Orders'
     },
     transId: {
         type: String,

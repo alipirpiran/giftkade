@@ -18,7 +18,8 @@ const User = mongoose.model('User', new mongoose.Schema({
         default: false
     },
     isPhoneNumberValidated: {
-        type: Boolean
+        type: Boolean,
+        default: false
     },
 
     orders: {
