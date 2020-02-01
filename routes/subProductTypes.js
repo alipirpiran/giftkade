@@ -21,7 +21,7 @@ router.get('/all/:productId', async (req, res) => {
         const subProducts = await SubProducts.find({
             product: id,
         }).select('price title product localPrice')
-        return res.status(200).send(subProducts);
+        return res.status(200).send({ types: subProducts });
     } catch (error) {
         return res.status(404).send({ error: 'product not found' })
     }

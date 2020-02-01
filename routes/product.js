@@ -23,7 +23,6 @@ router.get('/', cacheProducts, async (req, res) => {
     try {
         const products = await Product.find();
         
-        console.log('seted products');
         redisClient.del('products', (err, data) => {
             if (err) return;
             const multi = redisClient.multi()
