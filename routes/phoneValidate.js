@@ -62,7 +62,7 @@ router.post('/validate', async (req, res) => {
             } else break;
     }
 
-    return res.status(400).send({ error: { message: 'کد ارسالی اشتباه است' } })
+    return res.status(400).send({ status : 0, error: { message: 'کد ارسالی اشتباه است' } })
 })
 
 function validatePhoneNumber(phone) {

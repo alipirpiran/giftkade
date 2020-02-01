@@ -6,6 +6,8 @@ const userAuth = require('../auth/user')
 
 const User = require('../models/user')
 
+// todo: add admin auth for delete, put, get all
+
 router.get('/user/:id', userAuth, async (req, res) => {
     const id = req.params.id;
 

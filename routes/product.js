@@ -1,8 +1,9 @@
+const debug = require('debug')('giftShop:Route:product')
 const router = require('express').Router();
 const joi = require('joi')
 const fs = require('fs')
 const multer = require('multer')
-const debug = require('debug')('giftShop:Route:product')
+const { redisClient } = require('../app')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -18,9 +19,21 @@ const adminAuth = require('../auth/admin')
 
 const Product = require('../models/product')
 // router.use(upload.array())
-router.get('/', async (req, res) => {
+router.get('/', cacheProducts, async (req, res) => {
     try {
         const products = await Product.find();
+
+        redisClient.del('products', (err, data) => {
+            if (err) return;
+            const multi = redisClient.multi()
+            for (const item of products) {
+                multi.rpush('products', JSON.stringify(item));
+            }
+            multi.exec(function (errors, results) {
+
+            })
+        })
+
         res.status(200).send(products);
     } catch (error) {
         res.status(500).send({ error: 'server error' })
@@ -115,6 +128,22 @@ function validateUpdateProduct(product) {
         description: joi.string().max(200),
         image_path: joi.string()
     })
+}
+
+function cacheProducts(req, res, next) {
+    redisClient.lrange('products', 0, -1, (err, data) => {
+        if (err) return next();
+
+        if (data != null && data.length != 0) {
+            var items = [];
+            for (const item of data) {
+                items.push(JSON.parse(item))
+            }
+            return res.status(200).send(items);
+        } else
+            next()
+    })
+
 }
 
 module.exports = router;
