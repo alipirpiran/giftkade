@@ -80,15 +80,16 @@ exports.setPendingGiftcardsToSelled = async (subProduct_id, giftcards) => {
     if (!subProduct) return null;
 
     for (const item of giftcards) {
+        const token = await Token.findById(item);
         var index = subProduct.tokens.indexOf(item);
+        
         subProduct.tokens.splice(index, 1)
         subProduct.selledTokens.push(token);
 
-        const token = await Token.findById(item);
         token.isSelled = true;
         await token.save()
     }
-    
+
     await subProduct.save()
 }
 
