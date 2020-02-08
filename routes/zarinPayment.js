@@ -5,14 +5,13 @@ const zarinPalApiKey = process.env.ZARIN_KEY;
 const ZarinpalCheckout = require('zarinpal-checkout');
 const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, true);
 
-const giftcardService = require('../services/token')
-
-
 const Payment = require('../models/payment')
-const User = require('../models/user')
-const Order = require('../models/order')
 
-const { verifyOrder, rejectOrder } = require('./order')
+var rejectOrder, verifyOrder;
+exports.set = (_verifyOrder,_rejectOrder ) => {
+    rejectOrder = _rejectOrder;
+    verifyOrder = _verifyOrder;
+}
 
 
 module.exports.getDargahURLAfterCreatingOrder = async function (user_id, order, amount, callback, mobile, description, email) {

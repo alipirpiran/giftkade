@@ -15,6 +15,12 @@ redisClient.flushall()
 // db setup
 require('./db')
 
+// set exports
+const { verifyOrder, rejectOrder } = require('./routes/order');
+require('./routes/zarinPayment').set(verifyOrder, rejectOrder)
+
+
+
 const indexRouter = require('./routes/index');
 const productsRouter = require('./routes/product')
 const uploadsRoute = require('./routes/uploads')
