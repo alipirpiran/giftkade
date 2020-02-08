@@ -35,12 +35,12 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         required: true
     },
     finalGiftcards: {
-        type: [{ type: mongoose.Types.ObjectId, ref: 'tokens' }],
+        type: [{ type: mongoose.Types.ObjectId, ref: 'Tokens' }],
         default: []
     },
     // never send to client
     pendingGiftcards: {
-        type: [{ type: mongoose.Types.ObjectId, ref: 'tokens' }],
+        type: [{ type: mongoose.Types.ObjectId, ref: 'Tokens' }],
         default: []
     },
     isPayed: {
