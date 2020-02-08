@@ -39,8 +39,13 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
 
 // TODO add function for rejected orders, delete order, delete order from user
 module.exports.rejectOrder = async (orderId) => {
+    console.log("Order rejected: " + orderId);
+
     const order = await Order.findById(orderId);
     giftcardService.setGiftcardsFree(order.subProduct, order.pendingGiftcards);
+
+    order.isRejected = true;
+    await order.save()
 }
 
 //* call when user want to buy product, return Dargah url
