@@ -19,6 +19,13 @@ router.get('/user/:id', userAuth, async (req, res) => {
 
     return res.status(200).send(user);
 })
+router.get('/user/', userAuth, async (req, res) => {
+    const user = await User.findById(id).select('-password');
+
+    if (!user) return res.status(404).send({ error: { message: 'کاربر یافت نشد!' } });
+
+    return res.status(200).send(user);
+})
 
 router.post('/', async (req, res) => {
     const _user = req.body;
