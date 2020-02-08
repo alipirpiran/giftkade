@@ -79,25 +79,16 @@ exports.setPendingGiftcardsToSelled = async (subProduct_id, giftcards) => {
     const subProduct = await SubProduct.findById(subProduct_id)
     if (!subProduct) return null;
 
-    var deleted = 0;
-    for (var i = 0; i < subProduct.tokens.length; i++) {
-        const item = subProduct.tokens[i]
-        if (giftcards.includes(item)) {
-            const token = await Token.findById(item);
-            token.isSelled = true;
-            await token.save()
-
-            subProduct.selledTokens.push(token);
-
-            subProduct.tokens.splice(i, 1);
-            deleted++;
-        }
-        if (deleted == giftcards.length) break;
-    }
-
     for (const item of giftcards) {
-        subProduct.selledTokens.push(item)
+        var index = subProduct.tokens.indexOf(item);
+        subProduct.tokens.splice(index, 1)
+        subProduct.selledTokens.push(token);
+
+        const token = await Token.findById(item);
+        token.isSelled = true;
+        await token.save()
     }
+    
     await subProduct.save()
 }
 
