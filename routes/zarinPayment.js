@@ -77,13 +77,13 @@ router.get('/', async (req, res) => {
                 // console.log(response);
                 rejectOrder(payment.order);
                 return res.send('متاسفانه خطایی پیش آمد')
-                
+
             } else {
                 // res.send('درست بود')
                 payment.refId = response.RefID;
                 await payment.save()
-
-                verifyOrder(payment.user, payment.order, payment);
+                res.status(200).send(payment);
+                return await verifyOrder(payment.user, payment.order, payment);
             }
         }).catch(err => {
             console.error(err);
