@@ -2,16 +2,17 @@ const mongoose = require('mongoose')
 
 const Payment = mongoose.model('Payment', new mongoose.Schema({
     user: {
-        type: {
-            type: mongoose.SchemaTypes.ObjectId, ref: 'Users'
-        },
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Users',
+        required: true
     },
     order: {
         type: mongoose.SchemaTypes.ObjectId, ref: 'Orders'
+
     },
     token: {
         type: String,
-        require: true,
+        required: true,
     },
     transId: {
         type: String,

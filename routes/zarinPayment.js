@@ -24,18 +24,18 @@ module.exports.getDargahURLAfterCreatingOrder = async function (user_id, order, 
                     user: user_id,
                     order: order._id,
                     token: response.authority,
-                    amount
+                    amount: String(amount)
                 })
+                console.log(user_id);
+                
                 await payment.save();
 
                 return {
                     url: response.url + '/ZarinGate',
                     payment_id: payment._id
-
                 }
                 return response.url + '/ZarinGate';
             }
-
         } catch (error) {
             throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: error } }
 
