@@ -19,20 +19,22 @@ const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 module.exports.verifyOrder = async (userId, orderId, payment) => {
     const order = await Order.findById(orderId);
 
-    order.payed = true;
+    // complete order details, ispayed: true, add giftcards to final, add paymentid
+    order.isPayed = true;
     order.payment = payment._id;
     // add pending gift card token to order final giftcards
     for (const item of order.pendingGiftcards)
         order.finalGiftcards.push(item);
-
     await order.save();
 
+    // add order to user orders
     const user = await User.findById(userId)
     if (!user.orders) user.orders = []
     user.orders.push(order._id)
     await user.save()
 
-
+    // call giftcard service selled func: set tokens to selled, remove tokens from availible token for subproducts
+    await giftcardService.setPendingGiftcardsToSelled(order.subProduct, order.finalGiftcards)
 }
 
 // TODO add function for rejected orders, delete order, delete order from user

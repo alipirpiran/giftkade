@@ -149,10 +149,8 @@ function cacheProducts(req, res, next) {
                     if (items.length == productList.length) return res.status(200).send(items);
                 })
             }
-
         } else
             next()
-
     })
 
 
