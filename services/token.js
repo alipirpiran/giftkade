@@ -22,6 +22,11 @@ exports.add_token = async (token_string, subProduct_id) => {
     return token;
 
 }
+
+exports.deCryptToken = (token_string) => {
+    return cryptr.decrypt(token_string);
+}
+
 // * get token and add token to selled tokens
 exports.get_token = async (subProduct_id) => {
     const subProduct = await SubProduct.findById(subProduct_id)
@@ -82,7 +87,7 @@ exports.setPendingGiftcardsToSelled = async (subProduct_id, giftcards) => {
     for (const item of giftcards) {
         const token = await Token.findById(item);
         var index = subProduct.tokens.indexOf(item);
-        
+
         subProduct.tokens.splice(index, 1)
         subProduct.selledTokens.push(token);
 

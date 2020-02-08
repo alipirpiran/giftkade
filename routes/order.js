@@ -131,8 +131,13 @@ router.get('/all', userAuth, async (req, res) => {
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip)
     }).select('title price localprice count totalPrice finalGiftcards subproduct')
-        .populate('finalGiftcards')
+        .populate('finalGiftcards', '-isSelled -isPending')
 
+    for (const order of result) {
+        for (const giftcard of order.finalGiftcards) {
+            giftcard.code = giftcardService.deCryptToken(giftcard.code)
+        }
+    }
     res.send(result)
 })
 

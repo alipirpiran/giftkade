@@ -23,12 +23,12 @@ const User = mongoose.model('User', new mongoose.Schema({
     },
 
     orders: {
-        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Orders' }],
+        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Order' }],
         default: []
     },
 
     payments: {
-        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payments' }],
+        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payment' }],
         default: []
     }
 }));

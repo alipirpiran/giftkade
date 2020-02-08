@@ -57,7 +57,6 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
     })
 }
 
-
 // handle callbacks
 router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
