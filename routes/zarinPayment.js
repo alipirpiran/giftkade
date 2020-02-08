@@ -26,8 +26,6 @@ module.exports.getDargahURLAfterCreatingOrder = async function (user_id, order, 
                     token: response.authority,
                     amount: String(amount)
                 })
-                console.log(user_id);
-                
                 await payment.save();
 
                 return {
@@ -63,9 +61,9 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 // handle callbacks
 router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
+    const payment = await Payment.findOne({ token: Authority });
 
     if (Status == 'OK') {
-        const payment = await Payment.findOne({ token: Authority });
         if (!payment) return res.send('متاسفانه خطایی پیش آمد')
 
         zarinpal.PaymentVerification({
@@ -88,6 +86,8 @@ router.get('/', async (req, res) => {
             res.send(err)
         });
     } else {
+        rejectOrder(payment.order);
+
         return res.send('پرداخت با خطا مواجه شد')
     }
 })

@@ -43,7 +43,7 @@ module.exports.rejectOrder = async (orderId) => {
     giftcardService.setGiftcardsFree(order.subProduct, order.pendingGiftcards);
 }
 
-// call when user want to buy product, return Dargah url
+//* call when user want to buy product, return Dargah url
 router.post('/', userAuth, async (req, res) => {
     const user_id = req.user;
     // router.post('/', async (req, res) => {
@@ -66,6 +66,7 @@ router.post('/', userAuth, async (req, res) => {
 
     const _order = new Order({
         user: user_id,
+        subProduct: subProduct._id,
 
         price: subProduct.price,
         localPrice: subProduct.localPrice,
