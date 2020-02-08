@@ -8,6 +8,8 @@ const User = require('../models/user')
 
 const userAuth = require('../auth/user')
 
+const giftcardService = require('../services/token')
+
 // const { getDargahURLAfterCreatingOrder } = require('./payment')
 const { getDargahURLAfterCreatingOrder } = require('./zarinPayment')
 
@@ -19,15 +21,25 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
 
     order.payed = true;
     order.payment = payment._id;
+    // add pending gift card token to order final giftcards
+    for (const item of order.pendingGiftcards)
+        order.finalGiftcards.push(item);
+
     await order.save();
 
     const user = await User.findById(userId)
     if (!user.orders) user.orders = []
     user.orders.push(order._id)
     await user.save()
+
+
 }
 
 // TODO add function for rejected orders, delete order, delete order from user
+module.exports.rejectOrder = async (orderId) => {
+    const order = await Order.findById(orderId);
+    giftcardService.setGiftcardsFree(order.subProduct, order.pendingGiftcards);
+}
 
 // call when user want to buy product, return Dargah url
 router.post('/', userAuth, async (req, res) => {
@@ -39,16 +51,17 @@ router.post('/', userAuth, async (req, res) => {
     if (error) return res.status(400).send({ error: { message: 'سفارش ثبت شده دارای فرمت اشتباه است' } });
 
     const { count } = req.body;
-
     const subProduct = await SubProduct.findById(req.body.subProduct);
-
     if (!subProduct) return res.status(400).send({ error: { message: 'محصول مورد نظر یافت نشد' } });
+
+    const availibleGiftcards = await giftcardService.getFreeTokensCount(subProduct)
+    if (count > availibleGiftcards) return res.status(400).send({ error: { message: 'تعداد گیفت کارت درخواستی بیشتر از موجودی است.', giftCardCount: availibleGiftcards } })
 
     const user = await User.findById(user_id)
     if (!user) return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
 
     const totalPrice = subProduct.localPrice * count
-    
+
     const _order = new Order({
         user: user_id,
 
@@ -56,27 +69,39 @@ router.post('/', userAuth, async (req, res) => {
         localPrice: subProduct.localPrice,
         title: subProduct.title,
         description: subProduct.description,
-        totalPrice,
 
+        totalPrice,
         count,
     });
     const order = await _order.save();
 
     // send user to Dargah Pardakht
     try {
-        const dargahURL = await getDargahURLAfterCreatingOrder(
-            user,
+        const { url, payment_id } = await getDargahURLAfterCreatingOrder(
+            user_id,
             order,
             totalPrice,
             `${BASE_URL}/payment`,
             user.phoneNumber,
             'خرید گیفت کارت'
-        
         );
 
-        return res.status(200).send({ url: dargahURL, order_id: order._id });
+        // add payment to user payments
+        if (!user.payments) user.payments = []
+        user.payments.push(payment_id);
+        await user.save();
+
+        // add pending giftcard tokens to order Pending tokens
+        const tokens = await giftcardService.getGiftcardAndSetToPending(subProduct, count)
+        for (const token of tokens)
+            order.pendingGiftcards.push(token._id);
+        await order.save()
+
+        return res.status(200).send({ url: url, order_id: order._id });
     } catch (error) {
-        return res.status(400).send({ error: { message: 'خطا هنگام ایجاد درگاه بانکی', dev: error} });
+        console.log(error);
+
+        return res.status(400).send({ error: { message: 'خطا هنگام ایجاد درگاه بانکی', dev: error } });
     }
 })
 
@@ -87,6 +112,19 @@ router.get('/:order_id', userAuth, async (req, res) => {
     if (!order) return res.status(404).send({ error: { message: 'گزارش خرید مورد نظر یافت نشد!' } });
 
     return res.status(200).send(order);
+})
+
+router.get('/all', userAuth, async (req, res) => {
+    const result = await Order.find({
+        user: req.user,
+        isPayed: true
+    }).setOptions({
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip)
+    }).select('title price localprice count totalPrice finalGiftcards')
+        .populate('finalGiftcards')
+
+    res.send(result)
 })
 
 function validateOder(order) {

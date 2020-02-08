@@ -23,7 +23,7 @@ const userRoute = require('./routes/user')
 const phoneValidateRoute = require('./routes/phoneValidate');
 const authRoute = require('./routes/auth');
 const orderRoute = require('./routes/order').router
-const tokenRoute = require('./routes/token')
+const tokenRoute = require('./routes/giftCardToken')
 // const paymentRoute = require('./routes/payment').router
 const zarinRoute = require('./routes/zarinPayment').router
 

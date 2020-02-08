@@ -5,39 +5,35 @@ const zarinPalApiKey = process.env.ZARIN_KEY;
 const ZarinpalCheckout = require('zarinpal-checkout');
 const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, true);
 
+const giftcardService = require('../services/token')
+
 
 const Payment = require('../models/payment')
 const User = require('../models/user')
-const Transaction = require('../models/transaction')
 const Order = require('../models/order')
 
-const { verifyOrder } = require('./order')
+const { verifyOrder, rejectOrder } = require('./order')
 
 
-module.exports.getDargahURLAfterCreatingOrder = async function (_user, order, amount, callback, mobile, description, email) {
+module.exports.getDargahURLAfterCreatingOrder = async function (user_id, order, amount, callback, mobile, description, email) {
     try {
-        // get user
-        const user = await User.findById(_user._id);
-        if (!user) throw { error: { message: 'کاربر یافت نشد' } };
-
-        // creating payment, its temp, just to keep authority and order, in calback get order with its details and remove it
+        // creating payment: save: user, order, payToken, totalAmount
         try {
             const response = await paymentReq(amount, callback, description, mobile, email);
             if (response.status === 100) {
                 const payment = new Payment({
-                    user: user._id,
+                    user: user_id,
                     order: order._id,
                     token: response.authority,
                     amount
                 })
                 await payment.save();
 
-                // add payment to user payments
-                if (!user.payments) user.payments = []
-                user.payments.push(payment._id);
-                await user.save();
+                return {
+                    url: response.url + '/ZarinGate',
+                    payment_id: payment._id
 
-
+                }
                 return response.url + '/ZarinGate';
             }
 
@@ -78,9 +74,10 @@ router.get('/', async (req, res) => {
             Authority,
         }).then(async response => {
             if (response.status !== 100) {
-                console.log(response);
-
+                // console.log(response);
+                rejectOrder(payment.order);
                 return res.send('متاسفانه خطایی پیش آمد')
+                
             } else {
                 // res.send('درست بود')
                 payment.refId = response.RefID;

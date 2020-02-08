@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-
+// used only in pay.ir payments!!!
 const Transaction = mongoose.model('transaction', new mongoose.Schema({
     status: {
         type: Number,

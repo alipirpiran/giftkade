@@ -10,6 +10,10 @@ module.exports = mongoose.model('Token', new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isPending: {
+        type: Boolean,
+        default: false,
+    },
 
     subProduct: {
         type: mongoose.Types.ObjectId,
