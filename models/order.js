@@ -9,7 +9,7 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'payments'
     },
-    subProduct:{
+    subProduct: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'productSubTypes'
     },
@@ -51,6 +51,10 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    time: {
+        type: mongoose.Schema.Types.Date,
+        default: Date.now
+    }
 
 }));
 

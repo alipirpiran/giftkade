@@ -113,7 +113,7 @@ router.post('/', userAuth, async (req, res) => {
     }
 })
 
-router.get('/:order_id', userAuth, async (req, res) => {
+router.get('/one/:order_id', userAuth, async (req, res) => {
     const order_id = req.params.order_id;
 
     const order = await Order.findById(order_id);
@@ -122,6 +122,7 @@ router.get('/:order_id', userAuth, async (req, res) => {
     return res.status(200).send(order);
 })
 
+// if user: user orders, admin: all orders
 router.get('/all', userAuth, async (req, res) => {
     const result = await Order.find({
         user: req.user,
@@ -129,7 +130,7 @@ router.get('/all', userAuth, async (req, res) => {
     }).setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip)
-    }).select('title price localprice count totalPrice finalGiftcards')
+    }).select('title price localprice count totalPrice finalGiftcards subproduct')
         .populate('finalGiftcards')
 
     res.send(result)
