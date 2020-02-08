@@ -159,12 +159,8 @@ function cacheProducts(req, res, next) {
 }
 
 function setProductsInRedis(products) {
-    console.log('setting products');
-
     const multi = redisClient.multi()
     for (const item of products) {
-        console.log(item._id);
-
         multi.lpush('products', String(item._id));
         multi.hmset(String(item._id), _.omit(JSON.parse(JSON.stringify(item)), 'types'))
     }
