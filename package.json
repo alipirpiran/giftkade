@@ -7,6 +7,7 @@
         "test": "PORT=4444 DEBUG=giftShop:* nodemon ./bin/www"
     },
     "dependencies": {
+        "@sentry/node": "^5.12.2",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.19.0",
         "connect-datadog": "0.0.9",

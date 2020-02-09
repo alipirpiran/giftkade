@@ -6,6 +6,13 @@ const helmet = require('helmet');
 var bodyParser = require('body-parser');
 const redis = require('redis')
 const redisClient = redis.createClient();
+
+// Sentry log errors
+const Sentry = require('@sentry/node');
+Sentry.init({ dsn: 'https://d8ac305ae9ac4da9b9d4a48e8b55e4bb@sentry.io/2381170' });
+app.use(Sentry.Handlers.requestHandler());
+
+
 module.exports.redisClient = redisClient;
 
 redisClient.flushall()
@@ -19,7 +26,7 @@ require('./routes/zarinPayment').set(verifyOrder, rejectOrder)
 
 // ----------------- DATADOG ----------------------------
 var dd_options = {
-  'response_code':true,
+  'response_code': true,
   'tags': ['app:my_app']
 }
 
@@ -75,6 +82,9 @@ app.use(function (req, res, next) {
   next(createError(404));
   // res.send(req.url);
 });
+
+// Sentry Error handler
+app.use(Sentry.Handlers.errorHandler());
 
 // error handler
 app.use(function (err, req, res, next) {
