@@ -58,6 +58,8 @@ router.post('/', userAuth, async (req, res) => {
     if (error) return res.status(400).send({ error: { message: 'سفارش ثبت شده دارای فرمت اشتباه است' } });
 
     const { count } = req.body;
+    if (count <= 0) return res.status(400).send({ error: { message: 'حداقل تعداد خرید یک عدد میباشد.' } })
+
     const subProduct = await SubProduct.findById(req.body.subProduct);
     if (!subProduct) return res.status(400).send({ error: { message: 'محصول مورد نظر یافت نشد' } });
 
@@ -69,9 +71,13 @@ router.post('/', userAuth, async (req, res) => {
 
     const totalPrice = subProduct.localPrice * count
 
+    if (totalPrice <= 0) return res.status(400).send({ error: { message: 'خطایی پیش آمد. مجموع قیمت ها باید بیشتر از صفر باشد.' } })
+
+
     const _order = new Order({
         user: user_id,
         subProduct: subProduct._id,
+        product: subProduct.product,
 
         price: subProduct.price,
         localPrice: subProduct.localPrice,

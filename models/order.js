@@ -14,6 +14,10 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'ProductSubType'
     },
+    product: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Product'
+    },
 
     title: {
         type: String,
