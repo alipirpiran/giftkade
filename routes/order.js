@@ -132,6 +132,7 @@ router.get('/all', userAuth, async (req, res) => {
         skip: parseInt(req.query.skip)
     }).select('title price localPrice count totalPrice finalGiftcards subProduct')
         .populate('finalGiftcards', '-isSelled -isPending')
+        .populate('subProduct', '-tokens -selledTokens')
 
     for (const order of result) {
         for (const giftcard of order.finalGiftcards) {
