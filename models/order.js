@@ -3,15 +3,16 @@ const mongoose = require('mongoose')
 const Order = mongoose.model('Order', new mongoose.Schema({
     user: {
         type: mongoose.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     payment: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'payments'
+        ref: 'Payment'
     },
     subProduct: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'productSubTypes'
+        ref: 'ProductSubType'
     },
 
     title: {
