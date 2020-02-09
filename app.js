@@ -10,14 +10,21 @@ module.exports.redisClient = redisClient;
 
 redisClient.flushall()
 
-// redisClient.hgetall('asdf', (err, ))
-
 // db setup
 require('./db')
 
 // set exports
 const { verifyOrder, rejectOrder } = require('./routes/order');
 require('./routes/zarinPayment').set(verifyOrder, rejectOrder)
+
+// ----------------- DATADOG ----------------------------
+var dd_options = {
+  'response_code':true,
+  'tags': ['app:my_app']
+}
+
+var connect_datadog = require('connect-datadog')(dd_options);
+// ----------------- DATADOG ----------------------------
 
 
 
@@ -46,6 +53,10 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// --------- DATADOG-------------
+app.use(connect_datadog);
+// --------- DATADOG-------------
 
 app.use('/', indexRouter);
 app.use('/products', productsRouter);
