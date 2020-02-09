@@ -126,7 +126,7 @@ exports.getFreeTokensCount = async (subProduct) => {
     let count = 0;
 
     for (const item of subProduct.tokens) {
-        const token = Token.findById(item);
+        const token = await Token.findById(item);
         if (!token.isSelled && !token.isPending) count++;
     }
 
