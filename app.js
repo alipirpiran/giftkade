@@ -10,7 +10,6 @@ const redisClient = redis.createClient();
 // Sentry log errors
 const Sentry = require('@sentry/node');
 Sentry.init({ dsn: 'https://d8ac305ae9ac4da9b9d4a48e8b55e4bb@sentry.io/2381170' });
-app.use(Sentry.Handlers.requestHandler());
 
 
 module.exports.redisClient = redisClient;
@@ -48,6 +47,9 @@ const tokenRoute = require('./routes/giftCardToken')
 const zarinRoute = require('./routes/zarinPayment').router
 
 var app = express();
+
+// Sentry log errors
+app.use(Sentry.Handlers.requestHandler());
 
 app.use(helmet());
 app.use(cors())
