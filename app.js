@@ -14,7 +14,7 @@ Sentry.init({ dsn: 'https://d8ac305ae9ac4da9b9d4a48e8b55e4bb@sentry.io/2381170' 
 
 module.exports.redisClient = redisClient;
 
-redisClient.flushall()
+redisClient.flushall();
 
 // db setup
 require('./db')

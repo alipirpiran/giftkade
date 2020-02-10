@@ -8,41 +8,36 @@ const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, true);
 const Payment = require('../models/payment')
 
 var rejectOrder, verifyOrder;
-exports.set = (_verifyOrder,_rejectOrder ) => {
+exports.set = (_verifyOrder, _rejectOrder) => {
     rejectOrder = _rejectOrder;
     verifyOrder = _verifyOrder;
 }
 
 
 module.exports.getDargahURLAfterCreatingOrder = async function (user_id, order, amount, callback, mobile, description, email) {
+
+    // creating payment: save: user, order, payToken, totalAmount
     try {
-        // creating payment: save: user, order, payToken, totalAmount
-        try {
-            const response = await paymentReq(amount, callback, description, mobile, email);
-            if (response.status === 100) {
-                const payment = new Payment({
-                    user: user_id,
-                    order: order._id,
-                    token: response.authority,
-                    amount: String(amount)
-                })
-                await payment.save();
+        const response = await paymentReq(amount, callback, description, mobile, email);
+        if (response.status === 100) {
+            const payment = new Payment({
+                user: user_id,
+                order: order._id,
+                token: response.authority,
+                amount: String(amount)
+            })
+            await payment.save();
 
-                return {
-                    url: response.url + '/ZarinGate',
-                    payment_id: payment._id
-                }
-                return response.url + '/ZarinGate';
+            return {
+                url: response.url + '/ZarinGate',
+                payment_id: payment._id
             }
-        } catch (error) {
-            throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: error } }
-
-        }
+            return response.url + '/ZarinGate';
+        } else throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: response } }
     } catch (error) {
-        console.log(error);
-
         throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: error } }
     }
+
 
 }
 
