@@ -3,6 +3,7 @@ const joi = require('joi')
 const tokenService = require('../services/token')
 
 const Token = require('../models/token')
+const SubProduct = require('../models/productSubType')
 
 // todo : add admin auth for all routes
 
@@ -16,7 +17,7 @@ router.post('/', async (req, res) => {
     return res.status(200).send(token);
 })
 
-router.get('/:subProductId', async (req, res) => {
+router.get('/token/:subProductId', async (req, res) => {
     const result = await Token.find({
         subProduct: req.params.subProductId,
     }).setOptions({
@@ -27,13 +28,21 @@ router.get('/:subProductId', async (req, res) => {
     return res.status(200).send(result);
 })
 
-router.get('/', async (req, res) => {
+router.get('/token', async (req, res) => {
     const result = await Token.find().setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip)
     })
 
     return res.status(200).send(result)
+})
+
+router.get('/available/:subProductId', async (req, res) => {
+    const subProduct = await SubProduct.findById(req.params.subProductId);
+    if (!subProduct) return res.status(404).send({ error: { message: 'زیر محصول مورد نظر یافت نشد' } });
+
+    const count = await tokenService.getFreeTokensCount(subProduct)
+    return res.status(200).send({ count, subProduct: subProduct._id })
 })
 
 function validateToken(item) {
