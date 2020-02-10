@@ -136,7 +136,7 @@ router.get('/all', userAuth, async (req, res) => {
     }).setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip)
-    }).select('title price localPrice count totalPrice finalGiftcards subProduct product')
+    }).select('title price localPrice count totalPrice finalGiftcards subProduct product time')
         .populate('finalGiftcards', '-isSelled -isPending')
     // .populate('subProduct', '-tokens -selledTokens')
 
