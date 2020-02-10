@@ -57,10 +57,11 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         default: false
     },
     time: {
-        type: mongoose.Schema.Types.Date,
+        type: mongoose.Schema.Types.String,
         default: Date.now
     }
 
 }));
+
 
 module.exports = Order;
