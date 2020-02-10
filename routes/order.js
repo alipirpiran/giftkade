@@ -79,6 +79,8 @@ router.post('/', userAuth, async (req, res) => {
         subProduct: subProduct._id,
         product: subProduct.product,
 
+        time: Date.now(),
+
         price: subProduct.price,
         localPrice: subProduct.localPrice,
         title: subProduct.title,

@@ -58,7 +58,8 @@ const Order = mongoose.model('Order', new mongoose.Schema({
     },
     time: {
         type: mongoose.Schema.Types.String,
-        default: Date.now
+        required: true
+        // default: Date.now,
     }
 
 }));
