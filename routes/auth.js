@@ -10,7 +10,7 @@ router.post('/login', async (req, res) => {
     const info = req.body;
 
     const { error } = validateLogin(info);
-    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' , dev: error} })
+    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.', dev: error } })
 
     const user = await User.findOne({ phoneNumber: info.phoneNumber })
     if (!user) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
