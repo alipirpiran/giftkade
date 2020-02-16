@@ -99,7 +99,7 @@ function validateReset(data) {
 function validateResetResponse(data) {
     return joi.validate(data, {
         phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
-        code: joi.string().min(8).required()
+        code: joi.string().length(5).required()
     })
 }
 
