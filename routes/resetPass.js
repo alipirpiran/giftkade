@@ -23,6 +23,7 @@ router.post('/', async (req, res) => {
     const user = await User.findOne({ phoneNumber })
     if (!user) return res.status(400).send({ error: { message: 'شما ثبت نام نکرده اید' } })
 
+    // send once in one minute
     const result = await mobileService.sendResetPassCode(phoneNumber);
     if (result.error) return res.status(400).send({ error: { message: result.message } })
     return res.status(200).send({ status: 1 })
