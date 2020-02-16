@@ -3,12 +3,12 @@ const jwt = require('jsonwebtoken')
 const joi = require('joi')
 const crypto = require('crypto')
 const _ = require('lodash');
+
 const router = require('express').Router();
 
 const User = require('../models/user')
 const Reset = require('../models/resetPass')
 
-const router = require('express').Router();
 const mobileService = require('../services/mobileCode')
 
 const limitSecs = 10 * 60; // time reset password token is reliable
