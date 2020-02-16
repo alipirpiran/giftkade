@@ -117,3 +117,5 @@ function randomString(length) {
     }
     return result;
 }
+
+module.exports = router;

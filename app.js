@@ -45,6 +45,7 @@ const orderRoute = require('./routes/order').router
 const tokenRoute = require('./routes/giftCardToken')
 // const paymentRoute = require('./routes/payment').router
 const zarinRoute = require('./routes/zarinPayment').router
+const resetPassRoute = require('./routes/resetPass')
 
 var app = express();
 
@@ -78,6 +79,7 @@ app.use('/order', orderRoute)
 // app.use('/payment', paymentRoute)
 app.use('/payment', zarinRoute)
 app.use('/tokens', tokenRoute)
+app.use('/resetPass', resetPassRoute)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
