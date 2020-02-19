@@ -2,7 +2,7 @@ const Kavenegar = require('kavenegar');
 const message_api_key = process.env.MESSAGE_SERVICE_API_KEY;
 const messageApi = Kavenegar.KavenegarApi({ apikey: message_api_key });
 
-const mobileService = require('../services/mobileCode')
+const mobileService = require('../services/mobileService')
 
 const User = require('../models/user');
 

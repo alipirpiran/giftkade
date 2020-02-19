@@ -9,7 +9,7 @@ const router = require('express').Router();
 const User = require('../models/user')
 const Reset = require('../models/resetPass')
 
-const mobileService = require('../services/mobileCode')
+const mobileService = require('../services/mobileService')
 
 const limitSecs = 10 * 60; // time reset password token is reliable
 
@@ -35,7 +35,7 @@ router.post('/validate', async (req, res) => {
 
     const { phoneNumber, code } = req.body;
     const result = await mobileService.validateResetCode(phoneNumber, code)
-    if (result.error) return res.status(400).send({ error: { message: error } })
+    if (result.error) return res.status(400).send({ error: { message: result.message } })
 
     if (!result.validated) return res.status(400).send({ error: { message: 'کد ارسالی اشتباه است' } })
 
@@ -105,7 +105,7 @@ function validateResetResponse(data) {
 
 function validateChange(data) {
     return joi.validate(data, {
-        newPassword: joi.string().min(8).required()
+        newPassword: joi.string().min(8).max(128).required()
     })
 }
 

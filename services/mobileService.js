@@ -6,6 +6,7 @@ const { redisClient } = require('../app')
 
 const CODE_TYPES = Object.freeze({
     SIGNUP: 'signup',
+    AUTH: 'auth',
     RESET_PASSWORD: 'resetpassword'
 
 })
@@ -69,6 +70,65 @@ exports.validateSignupCode = async (phoneNumber, code) => {
         return result;
     } else return result;
 
+}
+
+exports.sendAuthCode = async (phoneNumber) => {
+    var result = {
+        error: false,
+        message: ''
+    }
+
+    return new Promise(async (resolve, reject) => {
+        const obj = await getObject(phoneNumber, CODE_TYPES.AUTH);
+        if (obj != null) {
+            let difSecs = Math.floor(((Date.now() - obj.time) / 1000));
+            if (difSecs < 50) {
+                result.error = true;
+                result.message = `پس از ${60 - difSecs} ثانیه دوباره درخواست دهید.`
+                return resolve(result);
+            }
+        }
+
+        // rand num : 5 digit
+        const randNum = Math.floor(Math.random() * 90000) + 10000;
+
+        redisClient.hmset(`${phoneNumber}:${CODE_TYPES.AUTH}`, 'time', Date.now(), 'code', randNum, (err, ok) => {
+            if (err) {
+                result.error = true;
+                result.message = 'خطایی پیش آمد. لطفا دوباره تلاش کنید'
+                return resolve(result);
+            }
+            messageApi.VerifyLookup({
+                template: 'auth',
+                receptor: phoneNumber,
+                token: randNum,
+                type: 'sms',
+            }, () => {
+                return resolve(result)
+            })
+
+        })
+    })
+}
+
+exports.validateAuthCode = async (phoneNumber, code) => {
+    var result = {
+        error: false,
+        message: '',
+        validated: false,
+    }
+    const obj = await getObject(phoneNumber, CODE_TYPES.AUTH);
+    if (obj == null) {
+        result.error = true;
+        result.message = 'شماره شما ثبت نشده است. لطفا ابتدا درخواست ورود ارسال کنید.';
+        return result;
+    }
+
+    if (obj.code == code) {
+        result.validated = true;
+        redisClient.del(`${phoneNumber}:${CODE_TYPES.AUTH}`);
+        return result;
+    } else return result;
 }
 
 exports.sendResetPassCode = async (phoneNumber) => {

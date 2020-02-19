@@ -27,35 +27,35 @@ router.get('/user/', userAuth, async (req, res) => {
     return res.status(200).send(user);
 })
 
-router.post('/', async (req, res) => {
-    const _user = req.body;
+// router.post('/', async (req, res) => {
+//     const _user = req.body;
 
-    // validate user data
-    const { error } = validateUser(req.body);
-    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' } })
+//     // validate user data
+//     const { error } = validateUser(req.body);
+//     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' } })
 
-    // check if user exists and phone number is validated
-    const found = await User.findOne({ phoneNumber: _user.phoneNumber })
-    if (found && found.isPhoneNumberValidated) {
-        return res.status(422).send({ status: 0, error: { message: 'کاربری با مشخصات مشابه وجود دارد.' } });
-    }
-    if (found && !found.isPhoneNumberValidated) {
-        await found.remove();
-    }
+//     // check if user exists and phone number is validated
+//     const found = await User.findOne({ phoneNumber: _user.phoneNumber })
+//     if (found && found.isPhoneNumberValidated) {
+//         return res.status(422).send({ status: 0, error: { message: 'کاربری با مشخصات مشابه وجود دارد.' } });
+//     }
+//     if (found && !found.isPhoneNumberValidated) {
+//         await found.remove();
+//     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(_user.password, salt);
+//     // Hash password
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(_user.password, salt);
 
-    let user = new User({
-        email: _user.email,
-        phoneNumber: _user.phoneNumber,
-        password: hashedPassword,
-    });
+//     let user = new User({
+//         email: _user.email,
+//         phoneNumber: _user.phoneNumber,
+//         password: hashedPassword,
+//     });
 
-    user = await user.save();
-    return res.status(200).send({ user: user._id });
-})
+//     user = await user.save();
+//     return res.status(200).send({ user: user._id });
+// })
 
 router.get('/all', async (req, res) => {
     const users = await User.find().select('-password');
