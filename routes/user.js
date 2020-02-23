@@ -20,7 +20,7 @@ router.get('/user/:id', userAuth, async (req, res) => {
     return res.status(200).send(user);
 })
 router.get('/user/', userAuth, async (req, res) => {
-    const user = await User.findById(req.user).select('-password -orders -payments');
+    const user = await User.findById(req.user).select('-password -payments');
 
     if (!user) return res.status(404).send({ error: { message: 'کاربر یافت نشد!' } });
 
@@ -62,10 +62,28 @@ router.get('/all', async (req, res) => {
     return res.status(200).send(users);
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', userAuth, async (req, res) => {
     const deleted = await User.findByIdAndDelete(req.params.id);
     if (deleted) return res.status(200).send(deleted)
     return res.status(400).send({ error: { message: 'کاربر یافت نشد' } })
+})
+
+router.put('/user', userAuth, async (req, res) => {
+    const { error } = validateUpdateUser(req.body);
+    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید' } })
+
+    const user = await User.findById(req.user);
+    if (!user) return res.status(403).send({ error: { message: 'شما دسترسی ندارید' } })
+
+    const { email, password } = req.body;
+
+    if (email) {
+        user.email = email;
+    }
+    // todo: complete for password update
+
+    await user.save()
+    return res.status(200).send({ status: 1 })
 })
 
 function validateUser(user) {
@@ -73,6 +91,13 @@ function validateUser(user) {
         email: joi.string().email().required(),
         phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
         password: joi.string().min(8).required()
+    })
+}
+
+function validateUpdateUser(user) {
+    return joi.validate(user, {
+        email: joi.string().email(),
+        password: joi.string().min(8).max(120),
     })
 }
 

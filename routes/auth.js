@@ -24,6 +24,7 @@ router.post('/login', async (req, res) => {
     const result = await mobileService.sendAuthCode(info.phoneNumber)
 
     if (result.error) return res.status(401).send({ error: { message: result.message } })
+    else if (result.tryLater) return res.status(201).send({ error: { message: result.message } })
     return res.status(200).send({ status: 1 })
     // if (!user) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
     // if (!user.isPhoneNumberValidated) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
@@ -57,7 +58,7 @@ router.post('/validate', async (req, res) => {
             user.isPhoneNumberValidated = true;
             await user.save()
         }
-        
+
         const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
         res.header('auth-token', token).send(_.omit(user.toObject(), ['password', 'orders', 'payments']));
 

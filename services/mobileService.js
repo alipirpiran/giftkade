@@ -75,6 +75,7 @@ exports.validateSignupCode = async (phoneNumber, code) => {
 exports.sendAuthCode = async (phoneNumber) => {
     var result = {
         error: false,
+        tryLater : false,
         message: ''
     }
 
@@ -83,7 +84,7 @@ exports.sendAuthCode = async (phoneNumber) => {
         if (obj != null) {
             let difSecs = Math.floor(((Date.now() - obj.time) / 1000));
             if (difSecs < 50) {
-                result.error = true;
+                result.tryLater = true;
                 result.message = `پس از ${60 - difSecs} ثانیه دوباره درخواست دهید.`
                 return resolve(result);
             }

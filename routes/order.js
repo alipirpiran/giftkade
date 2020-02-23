@@ -124,8 +124,15 @@ router.post('/', userAuth, async (req, res) => {
 router.get('/one/:order_id', userAuth, async (req, res) => {
     const order_id = req.params.order_id;
 
-    const order = await Order.findById(order_id);
+    const order = await Order.findById(order_id)
+        .select('title price localPrice count totalPrice finalGiftcards subProduct product time')
+        .populate('finalGiftcards', '-isSelled -isPending')
     if (!order) return res.status(404).send({ error: { message: 'گزارش خرید مورد نظر یافت نشد!' } });
+    
+    for (const giftcard of order.finalGiftcards) {
+        giftcard.code = giftcardService.deCryptToken(giftcard.code)
+    }
+
 
     return res.status(200).send(order);
 })
