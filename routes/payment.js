@@ -38,3 +38,4 @@ router.get('ref/:id', adminAuth, async (req, res) => {
     return res.send({ payment })
 })
 
+module.exports = router;
