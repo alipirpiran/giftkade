@@ -3,22 +3,25 @@ const jwt = require('jsonwebtoken')
 const joi = require('joi')
 const _ = require('lodash');
 const router = require('express').Router();
-
 const User = require('../models/user')
-
 const mobileService = require('../services/mobileService')
+const rateLimit = require("express-rate-limit");
 
+const limiter = rateLimit({
+    max: 3,
+    windowMs: 2 * 60 * 1000, // 1 minute
+    message: {
+        error: {
+            message: 'تعداد درخواست ها بیش از حد مجاز است'
+        }
+    }
+})
 // TODO: add limit for users to call this api 3 time in our(by ip)
-// login with phonenumber and send verfication code
-router.post('/login', async (req, res) => {
+router.post('/login', limiter, async (req, res) => {
     const info = req.body;
 
     const { error } = validateLogin(info);
     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.', dev: error } })
-
-    // const user = await User.findOne({ phoneNumber: info.phoneNumber })
-
-    // *if dont have user-> create one
 
     //* send code to user
     const result = await mobileService.sendAuthCode(info.phoneNumber)
@@ -26,15 +29,6 @@ router.post('/login', async (req, res) => {
     if (result.error) return res.status(401).send({ error: { message: result.message } })
     else if (result.tryLater) return res.status(201).send({ error: { message: result.message } })
     return res.status(200).send({ status: 1 })
-    // if (!user) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
-    // if (!user.isPhoneNumberValidated) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } })
-
-    // const isValidPass = await bcrypt.compare(info.password, user.password);
-    // if (!isValidPass) return res.status(400).send({ error: { message: 'موبایل یا رمز عبور اشتباه است.' } });
-
-    // create and assign a token
-    // const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-    // res.header('auth-token', token).send(_.omit(user.toObject(), ['password', 'orders', 'payments']));
 });
 
 router.post('/validate', async (req, res) => {
@@ -69,7 +63,7 @@ router.post('/validate', async (req, res) => {
 
 function validateLogin(data) {
     return joi.validate(data, {
-        phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
+        phoneNumber: joi.string().regex(/^[0-9]+$/).required().length(11),
         // password: joi.string().min(8).required()
     })
 }

@@ -19,6 +19,7 @@ router.get('/user/:id', userAuth, async (req, res) => {
 
     return res.status(200).send(user);
 })
+
 router.get('/user/', userAuth, async (req, res) => {
     const user = await User.findById(req.user).select('-password -payments');
 
@@ -72,13 +73,54 @@ router.put('/user', userAuth, async (req, res) => {
     const { error } = validateUpdateUser(req.body);
     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید' } })
 
+    const { email, password } = req.body;
+    if (!email && !password) return res.status(400).send({ error: { message: 'لطفا مقادیر خود را کنترل کنید' } })
+
     const user = await User.findById(req.user);
     if (!user) return res.status(403).send({ error: { message: 'شما دسترسی ندارید' } })
 
+    if (email) {
+        user.email = email;
+    }
+
+    if(password){
+        // hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt)
+        
+        user.password = hashedPassword;
+    }
+    // todo: complete for password update
+
+    await user.save()
+    return res.status(200).send({ status: 1 })
+})
+
+
+// todo add admin auth 
+// todo add more details for updating for admins
+// email ,passwrod, isAdmin, isPhoneNumberVAliudated, phoneNumber
+
+router.put('/user', async (req, res) => {
+    const { error } = validateUpdateUser(req.body);
+    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید' } })
+
     const { email, password } = req.body;
+    if (!email && !password) return res.status(400).send({ error: { message: 'لطفا مقادیر خود را کنترل کنید' } })
+
+    const user = await User.findById(req.user);
+    if (!user) return res.status(403).send({ error: { message: 'شما دسترسی ندارید' } })
 
     if (email) {
         user.email = email;
+    }
+
+    if(password){
+        // hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt)
+        
+        user.password = hashedPassword;
     }
     // todo: complete for password update
 

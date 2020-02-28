@@ -28,6 +28,7 @@ router.get('/token/:subProductId', async (req, res) => {
     return res.status(200).send(result);
 })
 
+// get all
 router.get('/token', async (req, res) => {
     const result = await Token.find().setOptions({
         limit: parseInt(req.query.limit),
