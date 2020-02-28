@@ -129,7 +129,7 @@ router.get('/one/:order_id', userAuth, async (req, res) => {
     const order_id = req.params.order_id;
 
     const order = await Order.findById(order_id)
-        .select('title price localPrice count totalPrice finalGiftcards subProduct product time')
+        .select('user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected')
         .populate('finalGiftcards', '-isSelled -isPending')
     if (!order) return res.status(404).send({ error: { message: 'گزارش خرید مورد نظر یافت نشد!' } });
 
