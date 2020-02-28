@@ -12,7 +12,7 @@ router.get('/payment/:id', adminAuth, async (req, res) => {
 })
 
 // get user payments
-router.get('user/:id', adminAuth, async (req, res) => {
+router.get('/user/:id', adminAuth, async (req, res) => {
     const userId = req.params.id;
     const payments = await Payment.find({ user: userId })
     if (!payments) return res.status(400).send({ error: { message: 'چیزی یافت نشد' } })
@@ -21,7 +21,7 @@ router.get('user/:id', adminAuth, async (req, res) => {
 })
 
 // get order payments
-router.get('order/:id', adminAuth, async (req, res) => {
+router.get('/order/:id', adminAuth, async (req, res) => {
     const orderId = req.params.id;
     const payments = await Payment.find({ order: orderId })
     if (!payments) return res.status(400).send({ error: { message: 'چیزی یافت نشد' } })
@@ -30,7 +30,7 @@ router.get('order/:id', adminAuth, async (req, res) => {
 })
 
 //get payment by refId
-router.get('ref/:id', adminAuth, async (req, res) => {
+router.get('/ref/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
     const payment = await Payment.findOne({ refId: id })
     if (!payment) return res.status(400).send({ error: { message: 'چیزی یافت نشد' } })
