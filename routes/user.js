@@ -12,7 +12,7 @@ const User = require('../models/user')
 router.get('/user/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
 
-    if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
+    // if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
 
     const user = await User.findById(id).select('-password');
 
