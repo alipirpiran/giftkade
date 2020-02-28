@@ -75,7 +75,7 @@ router.post('/', userAuth, async (req, res) => {
 
 
     const _order = new Order({
-        user: user_id,
+        user: user._id,
         subProduct: subProduct._id,
         product: subProduct.product,
 
@@ -107,6 +107,10 @@ router.post('/', userAuth, async (req, res) => {
         user.payments.push(payment_id);
         await user.save();
 
+        // add payment id to order
+        order.payment = payment_id;
+        await order.save();
+
         // add pending giftcard tokens to order Pending tokens
         const tokens = await giftcardService.getGiftcardAndSetToPending(subProduct, count)
         for (const token of tokens)
@@ -128,7 +132,7 @@ router.get('/one/:order_id', userAuth, async (req, res) => {
         .select('title price localPrice count totalPrice finalGiftcards subProduct product time')
         .populate('finalGiftcards', '-isSelled -isPending')
     if (!order) return res.status(404).send({ error: { message: 'گزارش خرید مورد نظر یافت نشد!' } });
-    
+
     for (const giftcard of order.finalGiftcards) {
         giftcard.code = giftcardService.deCryptToken(giftcard.code)
     }
@@ -145,7 +149,7 @@ router.get('/all', userAuth, async (req, res) => {
     }).setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip)
-    }).select('title price localPrice count totalPrice finalGiftcards subProduct product time')
+    }).select('user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected')
         .populate('finalGiftcards', '-isSelled -isPending')
     // .populate('subProduct', '-tokens -selledTokens')
 
