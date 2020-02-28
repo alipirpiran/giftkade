@@ -6,6 +6,12 @@ const helmet = require('helmet');
 var bodyParser = require('body-parser');
 const redis = require('redis')
 const redisClient = redis.createClient();
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+  max: 10,
+  windowMs: 10 * 60 * 1000// 10 minute
+})
 
 // Sentry log errors
 const Sentry = require('@sentry/node');
@@ -31,8 +37,6 @@ var dd_options = {
 
 var connect_datadog = require('connect-datadog')(dd_options);
 // ----------------- DATADOG ----------------------------
-
-
 
 const indexRouter = require('./routes/index');
 const productsRouter = require('./routes/product')
@@ -69,7 +73,7 @@ app.use(connect_datadog);
 // --------- DATADOG-------------
 
 app.use('/', indexRouter);
-app.use('/products', productsRouter);
+app.use('/products', limiter, productsRouter);
 app.use('/subProducts', subProductTypeRoute)
 app.use('/uploads', uploadsRoute)
 app.use('/phoneValidate', phoneValidateRoute)
