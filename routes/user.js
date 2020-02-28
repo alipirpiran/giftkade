@@ -3,12 +3,13 @@ const joi = require('joi');
 const bcrypt = require('bcryptjs');
 
 const userAuth = require('../auth/user')
+const adminAuth = require('../auth/admin')
 
 const User = require('../models/user')
 
 // todo: add admin auth for delete, put, get all
 
-router.get('/user/:id', userAuth, async (req, res) => {
+router.get('/user/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
 
     if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
@@ -58,12 +59,12 @@ router.get('/user/', userAuth, async (req, res) => {
 //     return res.status(200).send({ user: user._id });
 // })
 
-router.get('/all', async (req, res) => {
+router.get('/all', adminAuth, async (req, res) => {
     const users = await User.find().select('-password');
     return res.status(200).send(users);
 })
 
-router.delete('/:id', userAuth, async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
     const deleted = await User.findByIdAndDelete(req.params.id);
     if (deleted) return res.status(200).send(deleted)
     return res.status(400).send({ error: { message: 'کاربر یافت نشد' } })
@@ -83,11 +84,11 @@ router.put('/user', userAuth, async (req, res) => {
         user.email = email;
     }
 
-    if(password){
+    if (password) {
         // hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt)
-        
+
         user.password = hashedPassword;
     }
     // todo: complete for password update
@@ -101,31 +102,31 @@ router.put('/user', userAuth, async (req, res) => {
 // todo add more details for updating for admins
 // email ,passwrod, isAdmin, isPhoneNumberVAliudated, phoneNumber
 
-router.put('/user', async (req, res) => {
+router.put('/user:id', adminAuth, async (req, res) => {
     const { error } = validateUpdateUser(req.body);
     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید' } })
 
     const { email, password } = req.body;
     if (!email && !password) return res.status(400).send({ error: { message: 'لطفا مقادیر خود را کنترل کنید' } })
 
-    const user = await User.findById(req.user);
-    if (!user) return res.status(403).send({ error: { message: 'شما دسترسی ندارید' } })
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(403).send({ error: { message: 'کاربر یاقت نشد' } })
 
     if (email) {
         user.email = email;
     }
 
-    if(password){
+    if (password) {
         // hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt)
-        
+
         user.password = hashedPassword;
     }
     // todo: complete for password update
 
     await user.save()
-    return res.status(200).send({ status: 1 })
+    return res.status(200).send({ status: 1, user: user })
 })
 
 function validateUser(user) {

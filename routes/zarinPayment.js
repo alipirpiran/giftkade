@@ -70,6 +70,7 @@ router.get('/', async (req, res) => {
                 return res.send('متاسفانه خطایی پیش آمد')
 
             } else {
+                // todo: add isPayed to payment model and set to true
                 payment.refId = response.RefID;
                 await payment.save()
                 res.status(200).send(payment);
