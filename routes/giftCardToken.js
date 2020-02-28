@@ -5,6 +5,8 @@ const tokenService = require('../services/token')
 const Token = require('../models/token')
 const SubProduct = require('../models/productSubType')
 
+const adminAuth = require('../auth/admin')
+
 // todo : add admin auth for all routes
 
 router.post('/', async (req, res) => {
@@ -17,15 +19,22 @@ router.post('/', async (req, res) => {
     return res.status(200).send(token);
 })
 
-router.get('/token/:subProductId', async (req, res) => {
+router.get('/subProduct/:id', async (req, res) => {
     const result = await Token.find({
-        subProduct: req.params.subProductId,
+        subProduct: req.params.id,
     }).setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip)
     })
 
     return res.status(200).send(result);
+})
+
+router.get('/token/:id', adminAuth, async (req, res) => {
+    const token = await Token.findById(req.params.id)
+    if (!token) return res.status(404).send({ error: { message: 'گیفت کارت یافت نشد' } })
+
+    return res.status(200).send(token)
 })
 
 // get all
