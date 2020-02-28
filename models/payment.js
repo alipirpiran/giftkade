@@ -14,7 +14,7 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         type: String,
         required: true,
     },
-    transId: {
+    refId: {
         type: String,
 
     },
