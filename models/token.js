@@ -19,5 +19,13 @@ module.exports = mongoose.model('Token', new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'ProductSubType',
         required: true
+    },
+    user: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
+    },
+    order: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
     }
 }))

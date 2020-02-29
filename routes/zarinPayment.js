@@ -16,15 +16,16 @@ exports.set = (_verifyOrder, _rejectOrder) => {
 
 module.exports.getDargahURLAfterCreatingOrder = async function (user_id, order, amount, callback, mobile, description, email) {
 
-    // creating payment: save: user, order, payToken, totalAmount
+    // creating payment: save: user, order, authority, totalAmount
     try {
         const response = await paymentReq(amount, callback, description, mobile, email);
         if (response.status === 100) {
             const payment = new Payment({
                 user: user_id,
                 order: order._id,
-                token: response.authority,
-                amount: String(amount)
+                authority: response.authority,
+                amount: String(amount),
+                timeCreated: Date.now()
             })
             await payment.save();
 
@@ -55,11 +56,11 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
 // handle callbacks
 router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
-    const payment = await Payment.findOne({ token: Authority });
+    const payment = await Payment.findOne({ authority: Authority });
+
+    if (!payment) return res.send('متاسفانه خطایی پیش آمد')
 
     if (Status == 'OK') {
-        if (!payment) return res.send('متاسفانه خطایی پیش آمد')
-
         zarinpal.PaymentVerification({
             Amount: payment.amount, // In Tomans
             Authority,
@@ -70,9 +71,11 @@ router.get('/', async (req, res) => {
                 return res.send('متاسفانه خطایی پیش آمد')
 
             } else {
-                // todo: add isPayed to payment model and set to true
+
                 payment.refId = response.RefID;
+                payment.isPayed = true;
                 await payment.save()
+
                 res.status(200).send(payment);
                 return await verifyOrder(payment.user, payment.order, payment);
             }
@@ -83,9 +86,15 @@ router.get('/', async (req, res) => {
     } else {
         rejectOrder(payment.order);
 
+        // reject payment
+        payment.isRejected = true;
+        await payment.save()
+
         return res.send('پرداخت با خطا مواجه شد')
     }
 })
+
+
 
 
 module.exports.router = router;

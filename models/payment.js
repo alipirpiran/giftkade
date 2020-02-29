@@ -10,7 +10,7 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId, ref: 'Orders'
 
     },
-    token: {
+    authority: {
         type: String,
         required: true,
     },
@@ -21,6 +21,19 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
     amount: {
         type: String,
         required: true,
+    },
+
+    isPayed: {
+        type: Boolean,
+        default: false
+    },
+    isRejected: {
+        type: Boolean,
+        default: false
+    },
+    timeCreated: {
+        type: String,
+        default: '0'
     }
 
 }))

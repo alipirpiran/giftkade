@@ -5,8 +5,12 @@ const SubProduct = require('../models/productSubType');
 
 const Order = require('../models/order')
 const User = require('../models/user')
+const Token = require('../models/token')
+
+const ObjectId = require('mongoose').Schema.Types.ObjectId;
 
 const userAuth = require('../auth/user')
+const adminAuth = require('../auth/admin')
 
 const giftcardService = require('../services/token')
 
@@ -15,16 +19,23 @@ const { getDargahURLAfterCreatingOrder } = require('./zarinPayment')
 
 const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 
-// TODO: add function after verifing order, add codes to order
 module.exports.verifyOrder = async (userId, orderId, payment) => {
     const order = await Order.findById(orderId);
 
     // complete order details, ispayed: true, add giftcards to final, add paymentid
     order.isPayed = true;
     order.payment = payment._id;
+
     // add pending gift card token to order final giftcards
-    for (const item of order.pendingGiftcards)
+    for (const item of order.pendingGiftcards) {
         order.finalGiftcards.push(item);
+
+        // set user of giftcard
+        var token = await Token.findById(item)
+        token.user = userId;
+        token.order = orderId;
+        token.save().then((item) => { })
+    }
     await order.save();
 
     // add order to user orders
@@ -37,7 +48,6 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
     await giftcardService.setPendingGiftcardsToSelled(order.subProduct, order.finalGiftcards)
 }
 
-// TODO add function for rejected orders, delete order, delete order from user
 module.exports.rejectOrder = async (orderId) => {
     console.log("Order rejected: " + orderId);
 
@@ -158,6 +168,25 @@ router.get('/all', userAuth, async (req, res) => {
             giftcard.code = giftcardService.deCryptToken(giftcard.code)
         }
     }
+    res.send(result)
+})
+
+router.get('/user/:id', adminAuth, async (req, res) => {
+    const result = await Order.find({
+        user: req.params.id,
+        isPayed: true
+    }).setOptions({
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip)
+    }).select('user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected')
+        .populate('finalGiftcards', '-isSelled -isPending')
+    // .populate('subProduct', '-tokens -selledTokens')
+
+    // for (const order of result) {
+    //     for (const giftcard of order.finalGiftcards) {
+    //         giftcard.code = giftcardService.deCryptToken(giftcard.code)
+    //     }
+    // }
     res.send(result)
 })
 

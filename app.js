@@ -74,7 +74,7 @@ app.use(connect_datadog);
 // --------- DATADOG-------------
 
 app.use('/', indexRouter);
-app.use('/products', limiter, productsRouter);
+app.use('/products', productsRouter);
 app.use('/subProducts', subProductTypeRoute)
 app.use('/uploads', uploadsRoute)
 app.use('/phoneValidate', phoneValidateRoute)

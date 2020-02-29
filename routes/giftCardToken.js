@@ -7,7 +7,7 @@ const SubProduct = require('../models/productSubType')
 
 const adminAuth = require('../auth/admin')
 
-// todo : add admin auth for all routes
+// TODO : add admin auth for all routes
 
 router.post('/', async (req, res) => {
     const { error } = validateToken(req.body)

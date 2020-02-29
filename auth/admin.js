@@ -6,7 +6,7 @@ module.exports = async (req, res, next) => {
     const authToken = req.header('auth-token');
     if (!authToken) return res.status(403).send({ error: { message: 'شما دسترسی ندارید' } });
 
-    // this is for test , todo : delete it later
+    // this is for test , TODO : delete it later
     if(authToken == 'test') return next();
     try {
         const payload = jwt.verify(authToken, process.env.TOKEN_SECRET);
