@@ -8,6 +8,7 @@ const User = require('../models/user')
 const Token = require('../models/token')
 
 const ObjectId = require('mongoose').Schema.Types.ObjectId;
+const validateId = require('../middlewares/isObjectid')
 
 const userAuth = require('../auth/user')
 const adminAuth = require('../auth/admin')
@@ -171,7 +172,7 @@ router.get('/all', userAuth, async (req, res) => {
     res.send(result)
 })
 
-router.get('/user/:id', adminAuth, async (req, res) => {
+router.get('/user/:id', adminAuth, validateId, async (req, res) => {
     const result = await Order.find({
         user: req.params.id,
         isPayed: true
