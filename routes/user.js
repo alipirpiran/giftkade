@@ -14,7 +14,7 @@ router.get('/user/:id', adminAuth, async (req, res) => {
 
     // if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
 
-    const user = await User.findById(id).select('-password');
+    const user = await User.findById(id).select('-password -orders -payments');
 
     if (!user) return res.status(404).send({ error: { message: 'کاربر یافت نشد!' } });
 
@@ -22,7 +22,7 @@ router.get('/user/:id', adminAuth, async (req, res) => {
 })
 
 router.get('/user/', userAuth, async (req, res) => {
-    const user = await User.findById(req.user).select('-password -payments');
+    const user = await User.findById(req.user).select('-password -payments -isAdmin');
 
     if (!user) return res.status(404).send({ error: { message: 'کاربر یافت نشد!' } });
 
@@ -60,7 +60,7 @@ router.get('/user/', userAuth, async (req, res) => {
 // })
 
 router.get('/all', adminAuth, async (req, res) => {
-    const users = await User.find().select('-password');
+    const users = await User.find().select('-password -orders -payments');
     return res.status(200).send(users);
 })
 
