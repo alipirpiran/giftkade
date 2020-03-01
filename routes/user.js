@@ -38,7 +38,7 @@ router.post('/', adminAuth, async (req, res) => {
     const _user = req.body;
 
     // validate user data
-    const { error } = validateUser(req.body);
+    const { error } = validateAdminAddUser(req.body);
     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' } })
 
     // check if user exists and phone number is validated
@@ -156,6 +156,17 @@ function validateUser(user) {
         password: joi.string().min(8).required()
     })
 }
+
+function validateAdminAddUser(user) {
+    return joi.validate(user, {
+        email: joi.string().email(),
+        phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
+        password: joi.string().min(8).required(),
+        isAdmin: joi.bool(),
+    })
+}
+
+
 
 function validateUpdateUser(user) {
     return joi.validate(user, {
