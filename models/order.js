@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 
-const Order = mongoose.model('Order', new mongoose.Schema({
+const statistic = require('../services/statistics')
+
+const orderSchema = new mongoose.Schema({
     user: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User',
@@ -62,7 +64,19 @@ const Order = mongoose.model('Order', new mongoose.Schema({
         // default: Date.now,
     }
 
-}));
+});
+
+orderSchema.pre('save', async function (next) {
+    if (this.isNew)
+        await statistic.addOrder()
+    next()
+})
+orderSchema.pre('remove', async function (next) {
+    await statistic.delOrder()
+    next()
+})
+
+const Order = mongoose.model('Order', orderSchema);
 
 
 module.exports = Order;

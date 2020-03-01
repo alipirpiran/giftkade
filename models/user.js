@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const statistics = require('../services/statistics')
 
-const User = mongoose.model('User', new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: false
@@ -34,7 +35,19 @@ const User = mongoose.model('User', new mongoose.Schema({
     payments: {
         type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payment' }],
         default: []
-    }
-}));
+    },
+});
+
+userSchema.pre('save', async function (next) {
+    if (this.isNew)
+        await statistics.addUser()
+    next()
+})
+userSchema.pre('remove', async function (next) {
+    await statistics.delUser()
+    next()
+})
+
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
