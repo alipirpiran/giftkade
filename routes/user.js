@@ -32,6 +32,7 @@ router.get('/user/', userAuth, async (req, res) => {
     return res.status(200).send(user);
 })
 
+// * create user
 router.post('/', adminAuth, async (req, res) => {
     const _user = req.body;
 
@@ -55,6 +56,7 @@ router.post('/', adminAuth, async (req, res) => {
     let user = new User({
         email: _user.email,
         phoneNumber: _user.phoneNumber,
+        isAdmin: _user.isAdmin,
         password: hashedPassword,
     });
 
