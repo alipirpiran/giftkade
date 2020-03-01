@@ -16,9 +16,12 @@ router.get('/user/:id', adminAuth, async (req, res) => {
 
     // if (req.user != id) return res.status(403).send({ error: { message: 'Access denied' } })
 
-    const user = await User.findById(id).select('-password -orders -payments');
-
+    let user = await User.findById(id).select('-password -payments');
     if (!user) return res.status(404).send({ error: { message: 'کاربر یافت نشد!' } });
+
+    user.ordersCount = user.orders.length;
+    user = user.toObject();
+    delete user.orders
 
     return res.status(200).send(user);
 })
@@ -72,9 +75,9 @@ router.get('/all', adminAuth, async (req, res) => {
         user = user.toObject();
         delete user.orders
         users.push(user)
-        
+
     }
-    
+
     return res.status(200).send(users);
 })
 
