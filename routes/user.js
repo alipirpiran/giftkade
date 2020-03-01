@@ -52,8 +52,9 @@ router.post('/', adminAuth, async (req, res) => {
     _user.password = hashedPassword;
 
     let user = new User(_user);
-
-    user = await user.save();
+    user.toObject()
+    delete user.password;
+    
     return res.status(200).send({ user });
 })
 
