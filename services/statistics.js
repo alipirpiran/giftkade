@@ -7,8 +7,18 @@ const Statistic = require('../models/statistic')
 let statistic;
 
 // set all counts by getting documents
-module.exports.refresh = () => {
+module.exports.refresh = async () => {
+    await setStatistic()
+    const users = await User.find()
+    statistic.userCount = users.length;
 
+    const products = await Product.find()
+    statistic.productCount = products.length;
+
+    const orders = await Order.find()
+    statistic.orderCount = orders.length
+
+    await statistic.save()
 }
 
 module.exports.getStatistic = async () => {
