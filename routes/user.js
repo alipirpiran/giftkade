@@ -42,22 +42,17 @@ router.post('/', adminAuth, async (req, res) => {
 
     // check if user exists and phone number is validated
     const found = await User.findOne({ phoneNumber: _user.phoneNumber })
-    if (found && found.isPhoneNumberValidated) {
+    if (found) {
         return res.status(422).send({ status: 0, error: { message: 'کاربری با مشخصات مشابه وجود دارد.' } });
-    }
-    if (found && !found.isPhoneNumberValidated) {
-        await found.remove();
     }
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(_user.password, salt);
+    _user.password = hashedPassword;
 
     let user = new User({
-        email: _user.email,
-        phoneNumber: _user.phoneNumber,
-        isAdmin: _user.isAdmin,
-        password: hashedPassword,
+        _user
     });
 
     user = await user.save();
@@ -156,6 +151,7 @@ function validateAdminAddUser(user) {
         phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
         password: joi.string().min(8).required(),
         isAdmin: joi.bool(),
+        isPhoneNumberValidated: joi.bool(),
     })
 }
 
