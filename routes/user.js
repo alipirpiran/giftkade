@@ -65,7 +65,12 @@ router.get('/user/', userAuth, async (req, res) => {
 // })
 
 router.get('/all', adminAuth, async (req, res) => {
-    let _users = await User.find().select('-password -payments');
+    let _users = await User.find()
+        .setOptions({
+            limit: parseInt(req.query.limit),
+            skip: parseInt(req.query.skip)
+        })
+        .select('-password -payments');
 
     const users = []
 
