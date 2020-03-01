@@ -26,6 +26,10 @@ const User = mongoose.model('User', new mongoose.Schema({
         type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Order' }],
         default: []
     },
+    ordersCount: {
+        type: Number,
+        default: 0
+    },
 
     payments: {
         type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payment' }],

@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const joi = require('joi');
 const bcrypt = require('bcryptjs');
+const _ = require('lodash')
 
 const userAuth = require('../auth/user')
 const adminAuth = require('../auth/admin')
+
 
 const User = require('../models/user')
 
@@ -60,7 +62,19 @@ router.get('/user/', userAuth, async (req, res) => {
 // })
 
 router.get('/all', adminAuth, async (req, res) => {
-    const users = await User.find().select('-password -orders -payments');
+    let _users = await User.find().select('-password -payments');
+
+    const users = []
+
+    // set orders count and delete orders
+    for (let user of _users) {
+        user.ordersCount = user.orders.length;
+        user = user.toObject();
+        delete user.orders
+        users.push(user)
+        
+    }
+    
     return res.status(200).send(users);
 })
 
