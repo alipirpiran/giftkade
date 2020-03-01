@@ -125,30 +125,28 @@ router.put('/user', userAuth, async (req, res) => {
 // email ,passwrod, isAdmin, isPhoneNumberVAliudated, phoneNumber
 
 router.put('/user:id', adminAuth, async (req, res) => {
-    const { error } = validateUpdateUser(req.body);
+    const { error } = validateAdminUpdateUser(req.body);
     if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید' } })
-
-    const { email, password } = req.body;
-    if (!email && !password) return res.status(400).send({ error: { message: 'لطفا مقادیر خود را کنترل کنید' } })
 
     const user = await User.findById(req.params.id);
     if (!user) return res.status(403).send({ error: { message: 'کاربر یاقت نشد' } })
 
-    if (email) {
-        user.email = email;
-    }
-
-    if (password) {
+    if (req.body.password) {
         // hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt)
-
-        user.password = hashedPassword;
+        req.body.password = hashedPassword;
     }
-    // TODO: complete for password update
 
-    await user.save()
+    await user.update(req.body)
+
+    // await user.save()
     return res.status(200).send({ status: 1, user: user })
+})
+
+router.get('/count', adminAuth, async (req, res) => {
+    const users = await User.find()
+    return res.send({ count: users.length })
 })
 
 function validateUser(user) {
@@ -163,6 +161,16 @@ function validateUpdateUser(user) {
     return joi.validate(user, {
         email: joi.string().email(),
         password: joi.string().min(8).max(120),
+    })
+}
+
+function validateAdminUpdateUser(user) {
+    return joi.validate(user, {
+        email: joi.string().email(),
+        phoneNumber: joi.string().regex(/^[0-9]+$/),
+        password: joi.string().min(8),
+        isPhoneNumberValidated: joi.bool(),
+        isAdmin: joi.bool(),
     })
 }
 
