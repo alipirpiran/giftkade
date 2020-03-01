@@ -51,9 +51,7 @@ router.post('/', adminAuth, async (req, res) => {
     const hashedPassword = await bcrypt.hash(_user.password, salt);
     _user.password = hashedPassword;
 
-    let user = new User({
-        _user
-    });
+    let user = new User(_user);
 
     user = await user.save();
     return res.status(200).send({ user });
@@ -140,7 +138,7 @@ router.get('/count', adminAuth, async (req, res) => {
 function validateUser(user) {
     return joi.validate(user, {
         email: joi.string().email(),
-        phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
+        phoneNumber: joi.string().regex(/^[0-9]+$/).length(11).required(),
         password: joi.string().min(8).required()
     })
 }
@@ -148,7 +146,7 @@ function validateUser(user) {
 function validateAdminAddUser(user) {
     return joi.validate(user, {
         email: joi.string().email(),
-        phoneNumber: joi.string().regex(/^[0-9]+$/).required(),
+        phoneNumber: joi.string().regex(/^[0-9]+$/).length(11).required(),
         password: joi.string().min(8).required(),
         isAdmin: joi.bool(),
         isPhoneNumberValidated: joi.bool(),
