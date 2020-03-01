@@ -7,6 +7,9 @@ var bodyParser = require('body-parser');
 const redis = require('redis')
 const redisClient = redis.createClient();
 
+// statistics setup
+require('./services/statistics').refresh()
+
 // Sentry log errors
 const Sentry = require('@sentry/node');
 Sentry.init({ dsn: 'https://d8ac305ae9ac4da9b9d4a48e8b55e4bb@sentry.io/2381170' });
