@@ -7,9 +7,7 @@ const SubProduct = require('../models/productSubType')
 
 const adminAuth = require('../auth/admin')
 
-// TODO : add admin auth for all routes
-
-router.post('/', async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
     const { error } = validateToken(req.body)
     if (error) return res.status(400).send({ error })
 
@@ -19,7 +17,7 @@ router.post('/', async (req, res) => {
     return res.status(200).send(token);
 })
 
-router.get('/subProduct/:id', async (req, res) => {
+router.get('/subProduct/:id', adminAuth, async (req, res) => {
     const result = await Token.find({
         subProduct: req.params.id,
     }).setOptions({
@@ -38,7 +36,7 @@ router.get('/token/:id', adminAuth, async (req, res) => {
 })
 
 // get all
-router.get('/token', async (req, res) => {
+router.get('/token', adminAuth, async (req, res) => {
     const result = await Token.find().setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip)
@@ -47,7 +45,7 @@ router.get('/token', async (req, res) => {
     return res.status(200).send(result)
 })
 
-router.get('/available/:subProductId', async (req, res) => {
+router.get('/available/:subProductId', adminAuth, async (req, res) => {
     const subProduct = await SubProduct.findById(req.params.subProductId);
     if (!subProduct) return res.status(404).send({ error: { message: 'زیر محصول مورد نظر یافت نشد' } });
 
