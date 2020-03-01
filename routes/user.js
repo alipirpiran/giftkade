@@ -9,8 +9,6 @@ const adminAuth = require('../auth/admin')
 
 const User = require('../models/user')
 
-// TODO: add admin auth for delete, put, get all
-
 router.get('/user/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
 
@@ -113,16 +111,9 @@ router.put('/user', userAuth, async (req, res) => {
 
         user.password = hashedPassword;
     }
-    // TODO: complete for password update
-
     await user.save()
     return res.status(200).send({ status: 1 })
 })
-
-
-// TODO add admin auth 
-// TODO add more details for updating for admins
-// email ,passwrod, isAdmin, isPhoneNumberVAliudated, phoneNumber
 
 router.put('/user:id', adminAuth, async (req, res) => {
     const { error } = validateAdminUpdateUser(req.body);
@@ -165,8 +156,6 @@ function validateAdminAddUser(user) {
         isAdmin: joi.bool(),
     })
 }
-
-
 
 function validateUpdateUser(user) {
     return joi.validate(user, {

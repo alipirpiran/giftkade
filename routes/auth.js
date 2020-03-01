@@ -16,7 +16,7 @@ const limiter = rateLimit({
         }
     }
 })
-// TODO: add limit for users to call this api 3 time in our(by ip)
+
 router.post('/login', limiter, async (req, res) => {
     const info = req.body;
 
