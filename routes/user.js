@@ -38,7 +38,7 @@ router.post('/', adminAuth, async (req, res) => {
 
     // validate user data
     const { error } = validateAdminAddUser(req.body);
-    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.' } })
+    if (error) return res.status(400).send({ error: { message: 'ورودی هارا کنترل کنید.', dev: error.message } })
 
     // check if user exists and phone number is validated
     const found = await User.findOne({ phoneNumber: _user.phoneNumber })
