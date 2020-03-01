@@ -6,17 +6,10 @@ const helmet = require('helmet');
 var bodyParser = require('body-parser');
 const redis = require('redis')
 const redisClient = redis.createClient();
-const rateLimit = require("express-rate-limit");
-
-const limiter = rateLimit({
-  max: 10,
-  windowMs: 10 * 60 * 1000// 10 minute
-})
 
 // Sentry log errors
 const Sentry = require('@sentry/node');
 Sentry.init({ dsn: 'https://d8ac305ae9ac4da9b9d4a48e8b55e4bb@sentry.io/2381170' });
-
 
 module.exports.redisClient = redisClient;
 
@@ -51,6 +44,7 @@ const tokenRoute = require('./routes/giftCardToken')
 const zarinRoute = require('./routes/zarinPayment').router
 const resetPassRoute = require('./routes/resetPass')
 const paymentRoute = require('./routes/payment')
+const statisticsRoute = require('./routes/statistics')
 
 var app = express();
 
@@ -86,6 +80,8 @@ app.use('/payment', zarinRoute)
 app.use('/tokens', tokenRoute)
 app.use('/resetPass', resetPassRoute)
 app.use('/payments', paymentRoute)
+app.use('/statistics', statisticsRoute)
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
