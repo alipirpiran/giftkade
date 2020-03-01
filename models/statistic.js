@@ -13,4 +13,8 @@ module.exports = mongoose.model('Statistic', new mongoose.Schema({
         type: Number,
         default: 0
     },
+    payedOrderCount: {
+        type: Number,
+        default: 0
+    }
 }))

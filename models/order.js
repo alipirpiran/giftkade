@@ -69,7 +69,10 @@ const orderSchema = new mongoose.Schema({
 orderSchema.pre('save', async function (next) {
     if (this.isNew)
         await statistic.addOrder()
-    next()
+    if (this.isModified(isPayed) && this.isPayed){
+        await statistic.addPayedOrder()
+    }
+        next()
 })
 orderSchema.pre('remove', async function (next) {
     await statistic.delOrder()
