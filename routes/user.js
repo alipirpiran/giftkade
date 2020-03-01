@@ -61,7 +61,7 @@ router.post('/', adminAuth, async (req, res) => {
     });
 
     user = await user.save();
-    return res.status(200).send({ user: user._id });
+    return res.status(200).send({ user });
 })
 
 router.get('/all', adminAuth, async (req, res) => {
