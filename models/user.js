@@ -36,11 +36,17 @@ const userSchema = new mongoose.Schema({
         type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payment' }],
         default: []
     },
+    dateJoined: {
+        type: String,
+    }
 });
 
 userSchema.pre('save', async function (next) {
-    if (this.isNew)
+    if (this.isNew) {
         await statistics.addUser()
+        this.dateJoined = Date.now()
+    }
+
     next()
 })
 userSchema.pre('remove', async function (next) {
