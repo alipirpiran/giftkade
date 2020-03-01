@@ -6,6 +6,8 @@ const Statistic = require('../models/statistic')
 
 let statistic;
 
+//TODO add statistic for selling ,per date
+
 // set all counts by getting documents
 module.exports.refresh = async () => {
     await setStatistic()
@@ -17,6 +19,8 @@ module.exports.refresh = async () => {
 
     const orders = await Order.find()
     statistic.orderCount = orders.length
+
+    orders.forEach(e => e.isPayed ? statistic.payedOrderCount++ : null)
 
     await statistic.save()
 }
@@ -77,6 +81,13 @@ module.exports.delOrder = async () => {
     await setStatistic()
 
     statistic.orderCount--;
+    await statistic.save()
+}
+
+module.exports.addPayedOrder = async () => {
+    await setStatistic()
+
+    statistic.payedOrderCount++;
     await statistic.save()
 }
 
