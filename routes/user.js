@@ -54,6 +54,8 @@ router.post('/', adminAuth, async (req, res) => {
     let user = new User(_user);
     user.toObject()
     delete user.password;
+
+    await user.save()
     
     return res.status(200).send({ user });
 })

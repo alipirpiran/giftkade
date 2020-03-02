@@ -46,8 +46,9 @@ userSchema.pre('save', async function (next) {
         await statistics.addUser()
         this.dateJoined = Date.now()
     }
+    return;
 
-    next()
+    // next()
 })
 userSchema.pre('remove', async function (next) {
     await statistics.delUser()
