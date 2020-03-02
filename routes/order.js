@@ -191,6 +191,32 @@ router.get('/user/:id', adminAuth, validateId, async (req, res) => {
     res.send(result)
 })
 
+
+router.get('/date/:year/:month/:day', async (req, res) => {
+    let { year, month, day } = req.params;
+    year = parseInt(year)
+    month = parseInt(month)
+    day = parseInt(day)
+
+    if (year <= 0 || month <= 0 || day <= 0)
+        return res.status(400).send({ error: { message: 'تاریخ ها باید بزرگتر از صفر باشد' } })
+
+
+    var startDate = new Date(`${year}-${month}-${day}`);
+    var endDate = new Date(`${year}-${month}-${day}`).setDate(day + 1);
+
+    if (startDate == 'Invalid Date' || endDate == 'Invalid Date')
+        return res.status(400).send({ error: { message: 'تاریخ اشتباه است' } })
+
+    var orders = await Order.find({ isPayed: true })
+    orders = orders.filter(order => {
+        return order.isPayed && order.time >= startDate && order.time < endDate;
+    })
+
+    return res.send(orders)
+
+})
+
 function validateOder(order) {
     return joi.validate(order, {
         subProduct: joi.string().length(24).required(),
