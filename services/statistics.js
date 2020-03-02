@@ -20,6 +20,7 @@ module.exports.refresh = async () => {
     const orders = await Order.find()
     statistic.orderCount = orders.length
 
+    statistic.payedOrderCount = 0;
     orders.forEach(e => e.isPayed ? statistic.payedOrderCount++ : null)
 
     await statistic.save()
