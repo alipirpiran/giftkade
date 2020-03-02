@@ -70,7 +70,7 @@ orderSchema.pre('save', async function (next) {
     if (this.isNew)
         await statistic.addOrder()
     if (this.isModified(this.isPayed) && this.isPayed){
-        await statistic.addPayedOrder()
+        await statistic.addPayedOrder(this)
     }
         next()
 })

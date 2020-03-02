@@ -85,7 +85,7 @@ module.exports.delOrder = async () => {
     await statistic.save()
 }
 
-module.exports.addPayedOrder = async () => {
+module.exports.addPayedOrder = async (order) => {
     await setStatistic()
 
     statistic.payedOrderCount++;
