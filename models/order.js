@@ -1,29 +1,29 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const statistic = require('../services/statistics')
+const statistic = require('../services/statistics');
 
 const orderSchema = new mongoose.Schema({
     user: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
     },
     payment: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'Payment'
+        ref: 'Payment',
     },
     subProduct: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'ProductSubType'
+        ref: 'ProductSubType',
     },
     product: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'Product'
+        ref: 'Product',
     },
 
     title: {
         type: String,
-        required: true
+        required: true,
     },
     price: {
         type: String,
@@ -31,55 +31,52 @@ const orderSchema = new mongoose.Schema({
     },
     localPrice: {
         type: Number,
-        required: true
+        required: true,
     },
     count: {
         type: Number,
-        required: true
+        required: true,
     },
     totalPrice: {
         type: Number,
-        required: true
+        required: true,
     },
     finalGiftcards: {
         type: [{ type: mongoose.Types.ObjectId, ref: 'Token' }],
-        default: []
+        default: [],
     },
     // never send to client
     pendingGiftcards: {
         type: [{ type: mongoose.Types.ObjectId, ref: 'Token' }],
-        default: []
+        default: [],
     },
     isPayed: {
         type: Boolean,
-        default: false
+        default: false,
     },
     isRejected: {
         type: Boolean,
-        default: false
+        default: false,
     },
     time: {
         type: mongoose.Schema.Types.String,
-        required: true
+        required: true,
         // default: Date.now,
-    }
-
+    },
 });
 
-orderSchema.pre('save', async function (next) {
-    if (this.isNew)
-        await statistic.addOrder()
-    if (this.isModified(this.isPayed) && this.isPayed){
-        await statistic.addPayedOrder(this)
+orderSchema.pre('save', async function(next) {
+    if (this.isNew) await statistic.addOrder();
+    if (this.isModified(this.isPayed) && this.isPayed) {
+        await statistic.addPayedOrder(this);
     }
-        next()
-})
-orderSchema.pre('remove', async function (next) {
-    await statistic.delOrder()
-    next()
-})
+    next();
+});
+orderSchema.pre('remove', async function(next) {
+    await statistic.delOrder();
+    next();
+});
 
 const Order = mongoose.model('Order', orderSchema);
-
 
 module.exports = Order;

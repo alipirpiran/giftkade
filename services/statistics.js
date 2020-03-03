@@ -1,8 +1,8 @@
-const User = require('../models/user')
-const Product = require('../models/product')
-const Order = require('../models/order')
+const User = require('../models/user');
+const Product = require('../models/product');
+const Order = require('../models/order');
 
-const Statistic = require('../models/statistic')
+const Statistic = require('../models/statistic');
 
 let statistic;
 
@@ -10,97 +10,93 @@ let statistic;
 
 // set all counts by getting documents
 module.exports.refresh = async () => {
-    await setStatistic()
-    const users = await User.find()
+    await setStatistic();
+    const users = await User.find();
     statistic.userCount = users.length;
 
-    const products = await Product.find()
+    const products = await Product.find();
     statistic.productCount = products.length;
 
-    const orders = await Order.find()
-    statistic.orderCount = orders.length
+    const orders = await Order.find();
+    statistic.orderCount = orders.length;
 
     statistic.payedOrderCount = 0;
-    orders.forEach(e => e.isPayed ? statistic.payedOrderCount++ : null)
+    orders.forEach(e => (e.isPayed ? statistic.payedOrderCount++ : null));
 
-    await statistic.save()
-}
+    await statistic.save();
+};
 
 module.exports.getStatistic = async () => {
-    return await setStatistic()
-}
+    return await setStatistic();
+};
 
 module.exports.addUser = async () => {
     await setStatistic();
 
     statistic.userCount++;
-    await statistic.save()
-}
+    await statistic.save();
+};
 module.exports.delUser = async () => {
     await setStatistic();
 
     statistic.userCount--;
-    await statistic.save()
-}
-
+    await statistic.save();
+};
 
 module.exports.addProduct = async () => {
-    await setStatistic()
+    await setStatistic();
 
     statistic.productCount++;
-    await statistic.save()
-}
+    await statistic.save();
+};
 module.exports.delProduct = async () => {
-    await setStatistic()
+    await setStatistic();
 
     statistic.productCount--;
-    await statistic.save()
-}
-
+    await statistic.save();
+};
 
 module.exports.addGiftcard = async () => {
-    await setStatistic()
+    await setStatistic();
 
     statistic.giftcardCount++;
-    await statistic.save()
-}
+    await statistic.save();
+};
 module.exports.delGiftcard = async () => {
-    await setStatistic()
+    await setStatistic();
 
     statistic.giftcardCount--;
-    await statistic.save()
-}
-
+    await statistic.save();
+};
 
 module.exports.addOrder = async () => {
-    await setStatistic()
+    await setStatistic();
 
     statistic.orderCount++;
-    await statistic.save()
-}
+    await statistic.save();
+};
 module.exports.delOrder = async () => {
-    await setStatistic()
+    await setStatistic();
 
     statistic.orderCount--;
-    await statistic.save()
-}
+    await statistic.save();
+};
 
-module.exports.addPayedOrder = async (order) => {
-    await setStatistic()
+module.exports.addPayedOrder = async order => {
+    await setStatistic();
 
     statistic.payedOrderCount++;
-    await statistic.save()
-}
-
+    await statistic.save();
+};
 
 async function setStatistic() {
     if (!statistic) {
         const statistics = await Statistic.find();
         if (statistics.length == 0) {
-            statistic = new Statistic()
-            await statistic.save()
+            statistic = new Statistic();
+            await statistic.save();
         } else {
-            statistic = statistics[0]
+            statistic = statistics[0];
         }
     }
     return statistic;

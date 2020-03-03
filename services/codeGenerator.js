@@ -1,3 +1,1 @@
-module.exports.genrate = (length) => {
-
-}
+module.exports.genrate = length => {};

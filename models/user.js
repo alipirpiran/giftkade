@@ -1,59 +1,59 @@
 const mongoose = require('mongoose');
-const statistics = require('../services/statistics')
+const statistics = require('../services/statistics');
 
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: false
+        required: false,
     },
     password: {
         type: String,
-        required: false
+        required: false,
     },
     phoneNumber: {
         type: String,
-        required: true
+        required: true,
     },
     isAdmin: {
         type: Boolean,
-        default: false
+        default: false,
     },
     isPhoneNumberValidated: {
         type: Boolean,
-        default: false
+        default: false,
     },
 
     orders: {
         type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Order' }],
-        default: []
+        default: [],
     },
     ordersCount: {
         type: Number,
-        default: 0
+        default: 0,
     },
 
     payments: {
         type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Payment' }],
-        default: []
+        default: [],
     },
     dateJoined: {
         type: String,
-    }
+    },
 });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function(next) {
     if (this.isNew) {
-        await statistics.addUser()
-        this.dateJoined = Date.now()
+        await statistics.addUser();
+        this.dateJoined = Date.now();
     }
     return;
 
     // next()
-})
-userSchema.pre('remove', async function (next) {
-    await statistics.delUser()
-    next()
-})
+});
+userSchema.pre('remove', async function(next) {
+    await statistics.delUser();
+    next();
+});
 
 const User = mongoose.model('User', userSchema);
 

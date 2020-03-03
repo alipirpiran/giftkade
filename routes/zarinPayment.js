@@ -5,42 +5,60 @@ const zarinPalApiKey = process.env.ZARIN_KEY;
 const ZarinpalCheckout = require('zarinpal-checkout');
 const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, true);
 
-const Payment = require('../models/payment')
+const Payment = require('../models/payment');
 
 var rejectOrder, verifyOrder;
 exports.set = (_verifyOrder, _rejectOrder) => {
     rejectOrder = _rejectOrder;
     verifyOrder = _verifyOrder;
-}
+};
 
-
-module.exports.getDargahURLAfterCreatingOrder = async function (user_id, order, amount, callback, mobile, description, email) {
-
+module.exports.getDargahURLAfterCreatingOrder = async function(
+    user_id,
+    order,
+    amount,
+    callback,
+    mobile,
+    description,
+    email
+) {
     // creating payment: save: user, order, authority, totalAmount
     try {
-        const response = await paymentReq(amount, callback, description, mobile, email);
+        const response = await paymentReq(
+            amount,
+            callback,
+            description,
+            mobile,
+            email
+        );
         if (response.status === 100) {
             const payment = new Payment({
                 user: user_id,
                 order: order._id,
                 authority: response.authority,
                 amount: String(amount),
-                timeCreated: Date.now()
-            })
+                timeCreated: Date.now(),
+            });
             await payment.save();
 
             return {
                 url: response.url + '/ZarinGate',
-                payment_id: payment._id
-            }
+                payment_id: payment._id,
+            };
             return response.url + '/ZarinGate';
-        } else throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: response } }
+        } else
+            throw {
+                error: {
+                    message: 'خطا در هنگام ایجاد درگاه پرداخت',
+                    dev: response,
+                },
+            };
     } catch (error) {
-        throw { error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: error } }
+        throw {
+            error: { message: 'خطا در هنگام ایجاد درگاه پرداخت', dev: error },
+        };
     }
-
-
-}
+};
 
 // cal this function after creating order
 function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
@@ -49,8 +67,8 @@ function paymentReq(Amount, CallbackURL, Description, Mobile, Email) {
         CallbackURL,
         Description,
         Email,
-        Mobile
-    })
+        Mobile,
+    });
 }
 
 // handle callbacks
@@ -58,43 +76,45 @@ router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
     const payment = await Payment.findOne({ authority: Authority });
 
-    if (!payment) return res.send('متاسفانه خطایی پیش آمد')
+    if (!payment) return res.send('متاسفانه خطایی پیش آمد');
 
     if (Status == 'OK') {
-        zarinpal.PaymentVerification({
-            Amount: payment.amount, // In Tomans
-            Authority,
-        }).then(async response => {
-            if (response.status !== 100) {
-                // console.log(response);
-                rejectOrder(payment.order);
-                return res.send('متاسفانه خطایی پیش آمد')
+        zarinpal
+            .PaymentVerification({
+                Amount: payment.amount, // In Tomans
+                Authority,
+            })
+            .then(async response => {
+                if (response.status !== 100) {
+                    // console.log(response);
+                    rejectOrder(payment.order);
+                    return res.send('متاسفانه خطایی پیش آمد');
+                } else {
+                    payment.refId = response.RefID;
+                    payment.isPayed = true;
+                    await payment.save();
 
-            } else {
-
-                payment.refId = response.RefID;
-                payment.isPayed = true;
-                await payment.save()
-
-                res.status(200).send(payment);
-                return await verifyOrder(payment.user, payment.order, payment);
-            }
-        }).catch(err => {
-            console.error(err);
-            res.send(err)
-        });
+                    res.status(200).send(payment);
+                    return await verifyOrder(
+                        payment.user,
+                        payment.order,
+                        payment
+                    );
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                res.send(err);
+            });
     } else {
         rejectOrder(payment.order);
 
         // reject payment
         payment.isRejected = true;
-        await payment.save()
+        await payment.save();
 
-        return res.send('پرداخت با خطا مواجه شد')
+        return res.send('پرداخت با خطا مواجه شد');
     }
-})
-
-
-
+});
 
 module.exports.router = router;
