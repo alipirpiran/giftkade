@@ -93,7 +93,7 @@ router.get('/', async (req, res) => {
                     payment.refId = response.RefID;
                     payment.isPayed = true;
                     await payment.save();
-
+                    
                     await verifyOrder(payment.user, payment.order, payment);
                     res.status(200).send(payment);
                 }
