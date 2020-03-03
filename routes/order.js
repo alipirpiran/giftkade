@@ -13,7 +13,7 @@ const validateId = require('../middlewares/isObjectid');
 const userAuth = require('../auth/user');
 const adminAuth = require('../auth/admin');
 
-const giftcardService = require('../services/token');
+const giftcardService = require('../services/giftcardService');
 
 // const { getDargahURLAfterCreatingOrder } = require('./payment')
 const { getDargahURLAfterCreatingOrder } = require('./zarinPayment');
@@ -35,7 +35,7 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
         var token = await Token.findById(item);
         token.user = userId;
         token.order = orderId;
-        token.save().then(item => {});
+        await token.save();
     }
     await order.save();
 

@@ -94,12 +94,8 @@ router.get('/', async (req, res) => {
                     payment.isPayed = true;
                     await payment.save();
 
+                    await verifyOrder(payment.user, payment.order, payment);
                     res.status(200).send(payment);
-                    return await verifyOrder(
-                        payment.user,
-                        payment.order,
-                        payment
-                    );
                 }
             })
             .catch(err => {

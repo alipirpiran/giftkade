@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const joi = require('joi');
-const tokenService = require('../services/token');
+const tokenService = require('../services/giftcardService');
 
 const Token = require('../models/token');
 const SubProduct = require('../models/productSubType');
