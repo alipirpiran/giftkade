@@ -81,7 +81,11 @@ exports.getGiftcardAndSetToPending = async (subProduct, count, orderId) => {
     return tokens;
 };
 
-exports.setPendingGiftcardsToSelled = async (subProduct_id, giftcards) => {
+exports.setPendingGiftcardsToSelled = async (
+    subProduct_id,
+    giftcards,
+    orderId
+) => {
     const subProduct = await SubProduct.findById(subProduct_id);
     if (!subProduct) return null;
 
@@ -93,7 +97,8 @@ exports.setPendingGiftcardsToSelled = async (subProduct_id, giftcards) => {
         subProduct.selledTokens.push(token);
 
         token.isSelled = true;
-        token.selledDate = Date.now()
+        token.selledDate = Date.now();
+        token.order = orderId;
         await token.save();
     }
 
