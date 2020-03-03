@@ -54,7 +54,7 @@ router.get('/token', adminAuth, async (req, res) => {
     return res.status(200).send(result);
 });
 
-router.get('/available/:subProductId', adminAuth, async (req, res) => {
+router.get('/available/:subProductId', async (req, res) => {
     const subProduct = await SubProduct.findById(req.params.subProductId);
     if (!subProduct)
         return res
