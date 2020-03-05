@@ -151,7 +151,8 @@ router.put('/user/:id', adminAuth, async (req, res) => {
         req.body.password = hashedPassword;
     }
 
-    user = await user.update(req.body);
+    await user.update(req.body);
+    
 
     // await user.save()
     return res.status(200).send(user);
