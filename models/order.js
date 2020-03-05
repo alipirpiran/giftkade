@@ -63,6 +63,11 @@ const orderSchema = new mongoose.Schema({
         required: true,
         // default: Date.now,
     },
+    target: {
+        type: String,
+        default: 'email',
+        enum: ['email', sms],
+    },
 });
 
 orderSchema.pre('save', async function(next) {

@@ -20,6 +20,7 @@ const { getDargahURLAfterCreatingOrder } = require('./zarinPayment');
 
 const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 
+//TODO send giftcard via email or sms
 module.exports.verifyOrder = async (userId, orderId, payment) => {
     const order = await Order.findById(orderId);
 
@@ -271,6 +272,7 @@ function validateOder(order) {
             .number()
             .max(100)
             .required(),
+        target: joi.string().max(12),
     });
 }
 

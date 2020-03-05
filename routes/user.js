@@ -133,7 +133,7 @@ router.put('/user', userAuth, async (req, res) => {
     return res.status(200).send({ status: 1 });
 });
 
-router.put('/user:id', adminAuth, async (req, res) => {
+router.put('/user/:id', adminAuth, async (req, res) => {
     const { error } = validateAdminUpdateUser(req.body);
     if (error)
         return res
