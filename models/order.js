@@ -66,7 +66,7 @@ const orderSchema = new mongoose.Schema({
     target: {
         type: String,
         default: 'email',
-        enum: ['email', sms],
+        enum: ['email', 'sms'],
     },
 });
 
