@@ -140,7 +140,7 @@ router.put('/user/:id', adminAuth, async (req, res) => {
             .status(400)
             .send({ error: { message: 'ورودی هارا کنترل کنید' } });
 
-    const user = await User.findById(req.params.id);
+    let user = await User.findById(req.params.id);
     if (!user)
         return res.status(403).send({ error: { message: 'کاربر یاقت نشد' } });
 
