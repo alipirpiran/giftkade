@@ -47,11 +47,6 @@ userSchema.pre('save', async function(next) {
     if (this.isNew) {
         await statistics.addUser();
         this.dateJoined = Date.now();
-        notification.newUserNotification(
-            this._id,
-            this.mobile,
-            this.dateJoined
-        );
     }
     // return;
 
@@ -59,6 +54,12 @@ userSchema.pre('save', async function(next) {
 });
 userSchema.pre('remove', async function(next) {
     await statistics.delUser();
+    next();
+});
+
+userSchema.post('save', function(doc, next) {
+    notification.newUserNotification(doc._id, doc.mobile, doc.dateJoined);
+
     next();
 });
 
