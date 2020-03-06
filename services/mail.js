@@ -12,7 +12,9 @@ const BASE_URL = 'https://giftkade.com/api/';
 
 // TODO: complete send mail: sourceMail: info@giftkade.com
 const transporter = nodemailder.createTransport({
-    service,
+	host: service,
+    port: 587,
+    secure: false,
     auth: {
         user: username,
         pass: password,
