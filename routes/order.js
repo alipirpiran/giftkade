@@ -58,7 +58,7 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
         const giftcard = await Token.findById(item);
         giftcards.push(giftcard);
     }
-    var html = mailService.giftCardHTML(giftcards);
+    var html = await mailService.giftCardHTML(giftcards);
     mailService.sendMail(user.email, 'گیفت کارت های خریداری شده', html);
 };
 

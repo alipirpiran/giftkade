@@ -1,6 +1,6 @@
 const nodemailder = require('nodemailer');
 const debug = require('debug')('giftkade:mailService');
-const fetch = require('node-fetch').default
+const fetch = require('node-fetch').default;
 
 const port = process.env.PORT;
 
@@ -12,7 +12,7 @@ const BASE_URL = 'https://giftkade.com/api/';
 
 // TODO: complete send mail: sourceMail: info@giftkade.com
 const transporter = nodemailder.createTransport({
-	host: service,
+    host: service,
     port: 587,
     secure: false,
     auth: {
@@ -61,7 +61,7 @@ module.exports.giftCardHTML = async giftcards => {
 };
 
 function giftcardHTML(title, description, code, product_id) {
-	return `
+    return `
 	<div style="background-color:transparent;">
 	<div class="block-grid four-up no-stack"
 		style="Margin: 0 auto; min-width: 320px; max-width: 650px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #FFFFFF;">
