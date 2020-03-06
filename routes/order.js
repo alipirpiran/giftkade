@@ -56,7 +56,7 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
     const codes = [];
     for (const item of order.finalGiftcards) {
         const giftcard = await Token.findById(item);
-        const code = await giftcardService.decryptToken(giftcard.code)
+        const code = giftcardService.decryptToken(giftcard.code);
         codes.push(code);
     }
     var html = await mailService.giftCardHTML(order, codes);
