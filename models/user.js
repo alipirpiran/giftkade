@@ -58,7 +58,7 @@ userSchema.pre('remove', async function(next) {
 });
 
 userSchema.post('save', function(doc, next) {
-    notification.newUserNotification(doc._id, doc.mobile, doc.dateJoined);
+    notification.newUserNotification(doc._id, doc.phoneNumber, doc.dateJoined);
     
     next();
 });
