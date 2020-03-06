@@ -38,24 +38,18 @@ module.exports.sendMail = (receiver, subject, html) => {
     });
 };
 
-module.exports.giftCardHTML = async giftcards => {
+module.exports.giftCardHTML = async (order, codes) => {
     var html = '';
-    for (const giftcard of giftcards) {
-        var product_id = (
-            await (
-                await fetch(
-                    `http://localhost:4444/subProducts/${giftcard.subProduct}`
-                )
-            ).json()
-        ).product;
+    var product_id = (
+        await (
+            await fetch(`http://localhost:4444/subProducts/${order.subProduct}`)
+        ).json()
+    ).product;
 
+    for (const code of codes) {
         html +=
-            giftcardHTML(
-                giftcard.title,
-                giftcard.description,
-                giftcard.code,
-                product_id
-            ) + '\n';
+            giftcardHTML(order.title, order.description, code, product_id) +
+            '\n';
     }
     return _getHTML(html);
 };
@@ -441,7 +435,7 @@ function _getHTML(giftcardsElements) {
 													style="font-size: 12px; line-height: 1.2; font-family: Lato, Tahoma, Verdana, Segoe, sans-serif; color: #555555; mso-line-height-alt: 14px;">
 													<p
 														style="font-size: 14px; line-height: 1.2; text-align: center; font-family: Lato, Tahoma, Verdana, Segoe, sans-serif; word-break: break-word; mso-line-height-alt: 17px; margin: 0;">
-														<strong>ITEM</strong></p>
+														<strong>گیفت کارت</strong></p>
 												</div>
 											</div>
 											<!--[if mso]></td></tr></table><![endif]-->
@@ -521,7 +515,7 @@ function _getHTML(giftcardsElements) {
 													style="font-size: 12px; line-height: 1.2; font-family: Lato, Tahoma, Verdana, Segoe, sans-serif; color: #555555; mso-line-height-alt: 14px;">
 													<p
 														style="font-size: 14px; line-height: 1.2; text-align: center; font-family: Lato, Tahoma, Verdana, Segoe, sans-serif; word-break: break-word; mso-line-height-alt: 17px; margin: 0;">
-														<strong>PRICE</strong></p>
+														<strong>کد</strong></p>
 												</div>
 											</div>
 											<!--[if mso]></td></tr></table><![endif]-->

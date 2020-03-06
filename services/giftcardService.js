@@ -22,7 +22,7 @@ exports.add_token = async (token_string, subProduct_id) => {
     return token;
 };
 
-exports.deCryptToken = token_string => {
+exports.decryptToken = token_string => {
     return cryptr.decrypt(token_string);
 };
 

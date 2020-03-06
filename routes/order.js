@@ -53,12 +53,13 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
         order._id
     );
 
-    const giftcards = [];
+    const codes = [];
     for (const item of order.finalGiftcards) {
         const giftcard = await Token.findById(item);
-        giftcards.push(giftcard);
+        const code = await giftcardService.decryptToken(giftcard.code)
+        codes.push(code);
     }
-    var html = await mailService.giftCardHTML(giftcards);
+    var html = await mailService.giftCardHTML(order, codes);
     mailService.sendMail(user.email, 'گیفت کارت های خریداری شده', html);
 };
 
@@ -190,7 +191,7 @@ router.get('/one/:order_id', userAuth, async (req, res) => {
             .send({ error: { message: 'گزارش خرید مورد نظر یافت نشد!' } });
 
     for (const giftcard of order.finalGiftcards) {
-        giftcard.code = giftcardService.deCryptToken(giftcard.code);
+        giftcard.code = giftcardService.decryptToken(giftcard.code);
     }
 
     return res.status(200).send(order);
@@ -214,7 +215,7 @@ router.get('/all', userAuth, async (req, res) => {
 
     for (const order of result) {
         for (const giftcard of order.finalGiftcards) {
-            giftcard.code = giftcardService.deCryptToken(giftcard.code);
+            giftcard.code = giftcardService.decryptToken(giftcard.code);
         }
     }
     res.send(result);
