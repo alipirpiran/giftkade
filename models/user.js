@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+
 const statistics = require('../services/statistics');
+const notification = require('../services/notification');
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -45,10 +47,15 @@ userSchema.pre('save', async function(next) {
     if (this.isNew) {
         await statistics.addUser();
         this.dateJoined = Date.now();
+        notification.newUserNotification(
+            this._id,
+            this.mobile,
+            this.dateJoined
+        );
     }
-    return;
+    // return;
 
-    // next()
+    next();
 });
 userSchema.pre('remove', async function(next) {
     await statistics.delUser();

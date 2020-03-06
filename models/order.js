@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const statistic = require('../services/statistics');
+const notification = require('../services/notification');
 
 const orderSchema = new mongoose.Schema({
     user: {
@@ -71,7 +72,16 @@ const orderSchema = new mongoose.Schema({
 });
 
 orderSchema.pre('save', async function(next) {
-    if (this.isNew) await statistic.addOrder();
+    if (this.isNew) {
+        await statistic.addOrder();
+
+        notification.newOrder(
+            this._id,
+            this.title,
+            this.totalPrice,
+            this.count
+        );
+    }
     if (this.isModified('isPayed') && this.isPayed) {
         await statistic.addPayedOrder(this);
     }
