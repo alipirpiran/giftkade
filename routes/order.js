@@ -2,7 +2,6 @@ const router = require('express').Router();
 const joi = require('joi');
 
 const SubProduct = require('../models/productSubType');
-
 const Order = require('../models/order');
 const User = require('../models/user');
 const Token = require('../models/token');
@@ -14,6 +13,7 @@ const userAuth = require('../auth/user');
 const adminAuth = require('../auth/admin');
 
 const giftcardService = require('../services/giftcardService');
+const mailService = require('../services/mail');
 
 // const { getDargahURLAfterCreatingOrder } = require('./payment')
 const { getDargahURLAfterCreatingOrder } = require('./zarinPayment');
@@ -52,6 +52,14 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
         order.finalGiftcards,
         order._id
     );
+
+    const giftcards = [];
+    for (const item of order.finalGiftcards) {
+        const giftcard = await Token.findById(item);
+        giftcards.push(giftcard);
+    }
+    var html = mailService.giftCardHTML(giftcards);
+    mailService.sendMail(user.email, 'گیفت کارت های خریداری شده', html);
 };
 
 module.exports.rejectOrder = async orderId => {
