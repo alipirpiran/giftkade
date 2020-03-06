@@ -40,12 +40,7 @@ module.exports.sendMail = (receiver, subject, html) => {
 
 module.exports.giftCardHTML = async (order, codes) => {
     var html = '';
-    var product_id = (
-        await (
-            await fetch(`http://localhost:4444/subProducts/${order.subProduct}`)
-        ).json()
-    ).product;
-
+    var product_id = order.product;
     for (const code of codes) {
         html +=
             giftcardHTML(order.title, order.description, code, product_id) +
