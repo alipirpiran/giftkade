@@ -1,5 +1,6 @@
 const nodemailder = require('nodemailer');
 const debug = require('debug')('giftkade:mailService');
+const fetch = require('node-fetch').default
 
 const port = process.env.PORT;
 
@@ -76,7 +77,7 @@ function giftcardHTML(title, description, code, product_id) {
 							style="padding-right: 0px;padding-left: 0px;">
 							<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><img
 								align="center" alt="Image" border="0" class="center fixedwidth"
-								src="https://giftkade.com/api/uploads/${product_id}"
+								src="${BASE_URL}/uploads/${product_id}"
 								style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 100%; max-width: 130px; display: block;"
 								title="Image" width="130" />
 							<!--[if mso]></td></tr></table><![endif]-->
