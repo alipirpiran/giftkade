@@ -43,24 +43,21 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-userSchema.pre('save', async function(next) {
-    if (this.isNew) {
-        await statistics.addUser();
-        this.dateJoined = Date.now();
-    }
-    // return;
-
-    next();
-});
 userSchema.pre('remove', async function(next) {
     await statistics.delUser();
     next();
 });
 
-userSchema.post('save', function(doc, next) {
-    notification.newUserNotification(doc._id, doc.phoneNumber, doc.dateJoined);
-    
-    next();
+userSchema.pre('save', async function(next) {
+    if (this.isNew) {
+        statistics.addUser();
+        notification.newUserNotification(
+            this._id,
+            this.phoneNumber,
+            this.dateJoined
+        );
+        this.dateJoined = Date.now();
+    }
 });
 
 const User = mongoose.model('User', userSchema);

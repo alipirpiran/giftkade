@@ -64,11 +64,19 @@ const orderSchema = new mongoose.Schema({
         required: true,
         // default: Date.now,
     },
-    target: {
+    targetType: {
         type: String,
         default: 'email',
         enum: ['email', 'sms'],
     },
+    target: {
+        type: String,
+    },
+});
+
+orderSchema.pre('remove', async function(next) {
+    await statistic.delOrder();
+    next();
 });
 
 orderSchema.pre('save', async function(next) {
@@ -85,10 +93,6 @@ orderSchema.pre('save', async function(next) {
     if (this.isModified('isPayed') && this.isPayed) {
         await statistic.addPayedOrder(this);
     }
-    next();
-});
-orderSchema.pre('remove', async function(next) {
-    await statistic.delOrder();
     next();
 });
 
