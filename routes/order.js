@@ -59,8 +59,19 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
         const code = giftcardService.decryptToken(giftcard.code);
         codes.push(code);
     }
-    var html = await mailService.giftCardHTML(order, codes);
-    mailService.sendMail(user.email, 'گیفت کارت های خریداری شده', html);
+
+    console.log('target type: ' + order.targetType);
+    console.log('target: ' + order.target);
+
+    if (order.targetType == 'email') {
+        var email = order.target ? order.target : user.email;
+        var html = await mailService.giftCardHTML(order, codes);
+        mailService.sendMail(email, 'گیفت کارت های خریداری شده', html);
+    } else if (order.targetType == 'sms') {
+        var mobile = order.target ? order.target : user.phoneNumber;
+
+        // TODO send to sms
+    }
 };
 
 module.exports.rejectOrder = async orderId => {
@@ -121,6 +132,25 @@ router.post('/', userAuth, async (req, res) => {
             },
         });
 
+    //check target
+    var targetType = null;
+    var target = null;
+    console.log(req.query);
+
+    const { error: queryError } = validateOrderTarget(req.query);
+    if (!queryError) {
+        var { targetType: _targetType, target: _target } = req.query;
+        if (_targetType == 'sms') {
+            targetType = 'sms';
+        } else {
+            targetType = 'email';
+        }
+
+        if (_target) {
+            target = _target;
+        }
+    }
+
     const _order = new Order({
         user: user._id,
         subProduct: subProduct._id,
@@ -135,6 +165,9 @@ router.post('/', userAuth, async (req, res) => {
 
         totalPrice,
         count,
+
+        targetType,
+        target,
     });
     const order = await _order.save();
 
@@ -283,6 +316,21 @@ function validateOder(order) {
             .required(),
         target: joi.string().max(12),
     });
+}
+
+function validateOrderTarget(query) {
+    if (query.targetType == 'sms') {
+        return joi.validate(query, {
+            target: joi.string().regex(/^[0-9]+$/),
+        });
+    } else if (query.targetType == 'email') {
+        return joi.validate(query, {
+            target: joi.string().email(),
+        });
+    } else {
+        return { error: true };
+    }
+    return {};
 }
 
 module.exports.router = router;
