@@ -218,7 +218,7 @@ router.get('/one/:order_id', userAuth, async (req, res) => {
 
     const order = await Order.findById(order_id)
         .select(
-            'user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected'
+            'user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected target targetType'
         )
         .populate('finalGiftcards', '-isSelled -isPending');
     if (!order)
@@ -244,7 +244,7 @@ router.get('/all', userAuth, async (req, res) => {
             skip: parseInt(req.query.skip),
         })
         .select(
-            'user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected'
+            'user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected target targetType'
         )
         .populate('finalGiftcards', '-isSelled -isPending');
     // .populate('subProduct', '-tokens -selledTokens')
@@ -325,12 +325,12 @@ function validateOrderTarget(query) {
     if (query.targetType == 'sms') {
         return joi.validate(query, {
             target: joi.string().regex(/^[0-9]+$/),
-            targetType: joi.string()
+            targetType: joi.string(),
         });
     } else if (query.targetType == 'email') {
         return joi.validate(query, {
             target: joi.string().email(),
-            targetType:joi.string()
+            targetType: joi.string(),
         });
     } else {
         return { error: true };
