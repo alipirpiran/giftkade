@@ -151,6 +151,8 @@ router.post('/', userAuth, async (req, res) => {
         }
     }
 
+    console.log(queryError);
+
     var orderSchema = {
         user: user._id,
         subProduct: subProduct._id,
