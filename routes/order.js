@@ -325,10 +325,12 @@ function validateOrderTarget(query) {
     if (query.targetType == 'sms') {
         return joi.validate(query, {
             target: joi.string().regex(/^[0-9]+$/),
+            targetType: joi.string()
         });
     } else if (query.targetType == 'email') {
         return joi.validate(query, {
             target: joi.string().email(),
+            targetType:joi.string()
         });
     } else {
         return { error: true };
