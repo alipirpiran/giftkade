@@ -166,8 +166,8 @@ router.post('/', userAuth, async (req, res) => {
         totalPrice,
         count,
 
-        targetType,
-        target,
+        targetType: targetType ? targetType : '',
+        target: target ? target : '',
     });
     const order = await _order.save();
 
