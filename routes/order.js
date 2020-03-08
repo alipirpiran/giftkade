@@ -324,7 +324,7 @@ function validateOder(order) {
 function validateOrderTarget(query) {
     if (query.targetType == 'sms') {
         return joi.validate(query, {
-            target: joi.string().regex(/^[0-9]+$/),
+            target: joi.string().regex(/^[0-9]+$/).length(11),
             targetType: joi.string(),
         });
     } else if (query.targetType == 'email') {
