@@ -151,7 +151,7 @@ router.post('/', userAuth, async (req, res) => {
         }
     }
 
-    const _order = new Order({
+    var orderSchema = {
         user: user._id,
         subProduct: subProduct._id,
         product: subProduct.product,
@@ -165,10 +165,11 @@ router.post('/', userAuth, async (req, res) => {
 
         totalPrice,
         count,
+    };
+    targetType ? (orderSchema.targetType = targetType) : null;
+    target ? (orderSchema.target = target) : null;
 
-        targetType: targetType ? targetType : '',
-        target: target ? target : '',
-    });
+    const _order = new Order(orderSchema);
     const order = await _order.save();
 
     // send user to Dargah Pardakht
