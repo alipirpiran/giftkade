@@ -48,6 +48,11 @@ userSchema.pre('remove', async function(next) {
     next();
 });
 
+userSchema.pre('init', function(next) {
+    this.ordersCount = this.orders.length;
+    next();
+});
+
 userSchema.pre('save', async function(next) {
     if (this.isNew) {
         this.dateJoined = Date.now();
