@@ -1,7 +1,9 @@
+const Token = require('../models/token');
+
 const mailService = require('./mail');
 const giftcardService = require('./giftcardService');
 
-async function sendGiftcards({order, user}) {
+async function sendGiftcards({ order, user }) {
     const codes = [];
     for (const item of order.finalGiftcards) {
         const giftcard = await Token.findById(item);
@@ -21,5 +23,5 @@ async function sendGiftcards({order, user}) {
 }
 
 module.exports = {
-    sendGiftcards
-}
+    sendGiftcards,
+};
