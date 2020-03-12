@@ -265,10 +265,10 @@ router.get('/admin/one/:order_id', adminAuth, async (req, res) => {
 
     const order = await Order.findById(order_id)
         // .populate('finalGiftcards', '-isSelled -isPending');
-        .populate('user.id')
+        .populate('user.id', '-orders -payments -password')
         .populate('payment')
-        .populate('subProduct')
-        .populate('product')
+        .populate('subProduct', '-tokens -selledTokens')
+        .populate('product', '-types')
         
     if (!order)
         return res
