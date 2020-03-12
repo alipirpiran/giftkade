@@ -94,9 +94,12 @@ router.get('/all', adminAuth, async (req, res) => {
 });
 
 router.delete('/:id', adminAuth, async (req, res) => {
-    const deleted = await User.findByIdAndDelete(req.params.id);
-    if (deleted) return res.status(200).send(deleted);
-    return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
+    const user = await User.findById(req.params.id);
+    if(!user) return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
+    
+    await user.remove()
+
+    return res.status(200).send(user);
 });
 
 router.put('/user', userAuth, async (req, res) => {
