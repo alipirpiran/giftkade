@@ -117,6 +117,8 @@ router.post('/', userAuth, async (req, res) => {
     const { error: queryError } = validateOrderTarget(req.query);
     if (!queryError) {
         var { targetType: _targetType, target: _target } = req.query;
+        console.log(_targetType);
+        
         if (_targetType == 'sms') {
             targetType = 'sms';
         } else {
