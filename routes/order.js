@@ -13,7 +13,10 @@ const userAuth = require('../auth/user');
 const adminAuth = require('../auth/admin');
 
 const giftcardService = require('../services/giftcardService');
-const mailService = require('../services/mail');
+const sendService = require('../services/sendService');
+
+const userMethods = require('../functions/user');
+const orderMethods = require('../functions/order');
 
 // const { getDargahURLAfterCreatingOrder } = require('./payment')
 const { getDargahURLAfterCreatingOrder } = require('./zarinPayment');
@@ -23,55 +26,30 @@ const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 //TODO send giftcard via email or sms
 module.exports.verifyOrder = async (userId, orderId, payment) => {
     const order = await Order.findById(orderId);
+    const user = await User.findById(userId);
 
     // complete order details, ispayed: true, add giftcards to final, add paymentid
     order.isPayed = true;
     order.payment = payment._id;
 
     // add pending gift card token to order final giftcards
-    for (const item of order.pendingGiftcards) {
-        order.finalGiftcards.push(item);
-
-        // set user of giftcard
-        var token = await Token.findById(item);
-        token.user = userId;
-        token.order = orderId;
-        await token.save();
-    }
+    orderMethods.addFinalGiftcards(order);
     await order.save();
 
     // add order to user orders
-    const user = await User.findById(userId);
-    if (!user.orders) user.orders = [];
-    user.orders.push(order._id);
+    userMethods.addOrder(user, order._id);
     await user.save();
 
     // call giftcard service selled func: set tokens to selled, remove tokens from availible token for subproducts
-    await giftcardService.setPendingGiftcardsToSelled(
-        order.subProduct,
-        order.finalGiftcards,
-        order._id
-    );
+    const { finalGiftcards: giftcards, subProduct: subProduct_id } = order;
+    await giftcardService.setPendingGiftcardsToSelled({
+        orderId,
+        giftcards,
+        subProduct_id,
+        userId,
+    });
 
-    const codes = [];
-    for (const item of order.finalGiftcards) {
-        const giftcard = await Token.findById(item);
-        const code = giftcardService.decryptToken(giftcard.code);
-        codes.push(code);
-    }
-
-    console.log('target type: ' + order.targetType);
-    console.log('target: ' + order.target);
-
-    if (order.targetType == 'email') {
-        var email = order.target ? order.target : user.email;
-        var html = await mailService.giftCardHTML(order, codes);
-        mailService.sendMail(email, 'گیفت کارت های خریداری شده', html);
-    } else if (order.targetType == 'sms') {
-        var mobile = order.target ? order.target : user.phoneNumber;
-
-        // TODO send to sms
-    }
+    sendService.sendGiftcards({ order, user });
 };
 
 module.exports.rejectOrder = async orderId => {
@@ -257,6 +235,30 @@ router.get('/all', userAuth, async (req, res) => {
     res.send(result);
 });
 
+router.get('/admin/all', adminAuth, async (req, res) => {
+    var isPayed = true;
+    if (req.query.isPayed != null) {
+        if (String(req.query.isPayed).toLowerCase() == 'false') isPayed = false;
+        if (String(req.query.isPayed).toLowerCase() == 'true') isPayed = true;
+    }
+
+    const result = await Order.find({
+        isPayed,
+    }).setOptions({
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip),
+    });
+    // .populate('finalGiftcards', '-isSelled -isPending');
+    // .populate('subProduct', '-tokens -selledTokens')
+
+    // for (const order of result) {
+    //     for (const giftcard of order.finalGiftcards) {
+    //         giftcard.code = giftcardService.decryptToken(giftcard.code);
+    //     }
+    // }
+    res.send(result);
+});
+
 router.get('/user/:id', adminAuth, validateId, async (req, res) => {
     const result = await Order.find({
         user: req.params.id,
@@ -324,7 +326,10 @@ function validateOder(order) {
 function validateOrderTarget(query) {
     if (query.targetType == 'sms') {
         return joi.validate(query, {
-            target: joi.string().regex(/^[0-9]+$/).length(11),
+            target: joi
+                .string()
+                .regex(/^[0-9]+$/)
+                .length(11),
             targetType: joi.string(),
         });
     } else if (query.targetType == 'email') {
