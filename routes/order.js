@@ -115,10 +115,12 @@ router.post('/', userAuth, async (req, res) => {
     var target = null;
 
     const { error: queryError } = validateOrderTarget(req.query);
+    console.log(req.query);
+
     if (!queryError) {
         var { targetType: _targetType, target: _target } = req.query;
         console.log(_targetType);
-        
+
         if (_targetType == 'sms') {
             targetType = 'sms';
         } else {
@@ -128,6 +130,8 @@ router.post('/', userAuth, async (req, res) => {
         if (_target) {
             target = _target;
         }
+    } else {
+        console.log(queryError);
     }
 
     var orderSchema = {
@@ -270,8 +274,8 @@ router.get('/admin/one/:order_id', adminAuth, async (req, res) => {
         .populate('user.id', '-orders -payments -password')
         .populate('payment')
         .populate('subProduct', '-tokens -selledTokens')
-        .populate('product', '-types')
-        
+        .populate('product', '-types');
+
     if (!order)
         return res
             .status(404)
