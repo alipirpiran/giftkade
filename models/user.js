@@ -50,13 +50,13 @@ userSchema.pre('remove', async function(next) {
 
 userSchema.pre('save', async function(next) {
     if (this.isNew) {
+        this.dateJoined = Date.now();
         statistics.addUser();
         notification.newUserNotification(
             this._id,
             this.phoneNumber,
             this.dateJoined
         );
-        this.dateJoined = Date.now();
     }
 });
 
