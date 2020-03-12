@@ -236,15 +236,16 @@ router.get('/all', userAuth, async (req, res) => {
 });
 
 router.get('/admin/all', adminAuth, async (req, res) => {
-    var isPayed = true;
+    var conditions = {};
+    // var isPayed = true;
     if (req.query.isPayed != null) {
-        if (String(req.query.isPayed).toLowerCase() == 'false') isPayed = false;
-        if (String(req.query.isPayed).toLowerCase() == 'true') isPayed = true;
+        if (String(req.query.isPayed).toLowerCase() == 'false')
+            conditions.isPayed = false;
+        if (String(req.query.isPayed).toLowerCase() == 'true')
+            conditions.isPayed = true;
     }
 
-    const result = await Order.find({
-        isPayed,
-    }).setOptions({
+    const result = await Order.find(conditions).setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip),
     });
