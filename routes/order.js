@@ -113,7 +113,6 @@ router.post('/', userAuth, async (req, res) => {
     //check target
     var targetType = null;
     var target = null;
-    console.log(req.query);
 
     const { error: queryError } = validateOrderTarget(req.query);
     if (!queryError) {
@@ -129,10 +128,11 @@ router.post('/', userAuth, async (req, res) => {
         }
     }
 
-    console.log(queryError);
-
     var orderSchema = {
-        user: user._id,
+        user: {
+            phoneNumber: user.phoneNumber,
+            id: user._id,
+        },
         subProduct: subProduct._id,
         product: subProduct.product,
 
@@ -258,6 +258,24 @@ router.get('/admin/all', adminAuth, async (req, res) => {
     //     }
     // }
     res.send(result);
+});
+
+router.get('/admin/one/:order_id', adminAuth, async (req, res) => {
+    const order_id = req.params.order_id;
+
+    const order = await Order.findById(order_id)
+        // .populate('finalGiftcards', '-isSelled -isPending');
+        .populate('user.id')
+        .populate('payment')
+        .populate('subProduct')
+        .populate('product')
+        
+    if (!order)
+        return res
+            .status(404)
+            .send({ error: { message: 'گزارش خرید مورد نظر یافت نشد!' } });
+
+    return res.status(200).send(order);
 });
 
 router.get('/user/:id', adminAuth, validateId, async (req, res) => {
