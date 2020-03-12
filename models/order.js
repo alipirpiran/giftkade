@@ -5,9 +5,12 @@ const notification = require('../services/notification');
 
 const orderSchema = new mongoose.Schema({
     user: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'User',
-        required: true,
+        phoneNumber: String,
+        id: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: 'User',
+            required: true,
+        },
     },
     payment: {
         type: mongoose.SchemaTypes.ObjectId,
