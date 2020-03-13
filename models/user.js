@@ -58,12 +58,9 @@ userSchema.pre('save', async function(next) {
             this.dateJoined
         );
     }
+    this.ordersCount = this.orders.length;
 });
 
-userSchema.post('init', function(doc) {
-    doc.ordersCount = doc.orders ? doc.orders.length : 0;
-    // next();
-});
 
 const User = mongoose.model('User', userSchema);
 
