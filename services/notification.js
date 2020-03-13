@@ -11,7 +11,7 @@ module.exports.newUserNotification = (id, mobile, date) => {
         method: 'POST',
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
-    });
+    }).catch(err => {});
 };
 
 module.exports.newOrder = (id, title, totalAmount, count) => {
@@ -26,5 +26,5 @@ module.exports.newOrder = (id, title, totalAmount, count) => {
         method: 'POST',
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
-    });
+    }).catch(err =>{});
 };
