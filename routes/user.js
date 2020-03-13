@@ -73,22 +73,22 @@ router.post('/', adminAuth, async (req, res) => {
 });
 
 router.get('/all', adminAuth, async (req, res) => {
-    let _users = await User.find()
+    let users = await User.find()
         .setOptions({
             limit: parseInt(req.query.limit),
             skip: parseInt(req.query.skip),
         })
-        .select('-password -payments');
+        .select('-password -payments -orders');
 
-    const users = [];
+    // const users = [];
 
-    // set orders count and delete orders
-    for (let user of _users) {
-        user.ordersCount = user.orders.length;
-        user = user.toObject();
-        delete user.orders;
-        users.push(user);
-    }
+    // // set orders count and delete orders
+    // for (let user of _users) {
+    //     user.ordersCount = user.orders.length;
+    //     user = user.toObject();
+    //     delete user.orders;
+    //     users.push(user);
+    // }
 
     return res.status(200).send(users);
 });
