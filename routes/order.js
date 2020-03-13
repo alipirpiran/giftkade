@@ -286,17 +286,13 @@ router.get('/admin/one/:order_id', adminAuth, async (req, res) => {
 
 router.get('/user/:id', adminAuth, validateId, async (req, res) => {
     const result = await Order.find({
-        user: req.params.id,
-        isPayed: true,
-    })
-        .setOptions({
-            limit: parseInt(req.query.limit),
-            skip: parseInt(req.query.skip),
-        })
-        .select(
-            'user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected'
-        )
-        .populate('finalGiftcards', '-isSelled -isPending');
+        'user.id': req.params.id,
+        // isPayed: true,
+    }).setOptions({
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip),
+    });
+    // .populate('finalGiftcards', '-isSelled -isPending');
     // .populate('subProduct', '-tokens -selledTokens')
 
     // for (const order of result) {
