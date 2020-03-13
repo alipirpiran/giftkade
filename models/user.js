@@ -48,11 +48,6 @@ userSchema.pre('remove', async function(next) {
     next();
 });
 
-userSchema.pre('init', async function(next) {
-    this.ordersCount = this.orders.length;
-    // next();
-});
-
 userSchema.pre('save', async function(next) {
     if (this.isNew) {
         this.dateJoined = Date.now();
@@ -63,6 +58,11 @@ userSchema.pre('save', async function(next) {
             this.dateJoined
         );
     }
+});
+
+userSchema.post('init', function(doc) {
+    doc.ordersCount = doc.orders.length;
+    // next();
 });
 
 const User = mongoose.model('User', userSchema);
