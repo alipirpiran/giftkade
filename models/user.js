@@ -58,7 +58,6 @@ userSchema.pre('save', async function(next) {
             this.dateJoined
         );
     }
-    this.ordersCount = this.orders.length;
 });
 
 
