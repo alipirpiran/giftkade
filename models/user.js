@@ -61,7 +61,7 @@ userSchema.pre('save', async function(next) {
 });
 
 userSchema.post('init', function(doc) {
-    doc.ordersCount = doc.orders.length;
+    doc.ordersCount = doc.orders ? doc.orders.length : 0;
     // next();
 });
 
