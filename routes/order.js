@@ -283,6 +283,77 @@ router.get('/admin/one/:order_id', adminAuth, async (req, res) => {
     return res.status(200).send(order);
 });
 
+router.get('/admin', adminAuth, async (req, res) => {
+    let {
+        userId,
+        orderId,
+        productId,
+        subProductId,
+        payment,
+        limit,
+        skip,
+        startDate,
+        endDate,
+        isPayed,
+    } = req.query;
+
+    let conditions = {};
+    orderId ? (conditions['_id'] = orderId) : null;
+    userId ? (conditions['user.id'] = userId) : null;
+    productId ? (conditions['product'] = productId) : null;
+    subProductId ? (conditions['subProduct'] = subProductId) : null;
+    payment ? (conditions['payment'] = payment) : null;
+
+    isPayed = String(isPayed).toLowerCase();
+    if (isPayed == 'false') isPayed = false;
+    else if (isPayed == 'true') isPayed = true;
+
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+
+    const options = {
+        limit: parseInt(limit),
+        skip: parseInt(skip),
+    };
+
+    try {
+        let orders = Order.find(conditions).setOptions(options);
+
+        orders.populate('payment');
+
+        orderId
+            ? orders
+                  .populate('user.id', '-orders -payments -password')
+                  .populate('subProduct', '-tokens -selledTokens')
+                  .populate('product', '-types')
+            : null;
+
+        orders = await orders;
+
+        let filter = order => {
+            let valid = true;
+
+            startDate != 'Invalid Date'
+                ? (valid = order.time >= startDate)
+                : null;
+            endDate != 'Invalid Date'
+                ? (valid = order.time < endDate && valid)
+                : null;
+
+            if (order.payment && isPayed != '') {
+                valid = valid && order.payment.isPayed == isPayed;
+            }
+
+            return valid;
+        };
+
+        orders = orders.filter(filter);
+        return res.send(orders);
+    } catch (error) {
+        return res.send({});
+    }
+});
+
 router.get('/user/:id', adminAuth, validateId, async (req, res) => {
     const result = await Order.find({
         'user.id': req.params.id,
