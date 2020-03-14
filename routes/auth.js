@@ -73,6 +73,36 @@ router.post('/validate', async (req, res) => {
     }
 });
 
+router.post('/loginWithPass', async (req, res) => {
+    const { error } = validateLoginWithPass(req.body);
+    if (error)
+        return res
+            .status(400)
+            .send({ error: { message: 'ورودی هارا کنترل کنید' } });
+
+    const { phoneNumber, password } = req.body;
+
+    const user = await User.findOne({ phoneNumber });
+    if (!user)
+        return res
+            .status(400)
+            .send({ error: { message: 'موبایل یا رمزعبور اشتباه است' } });
+
+    const result = await bcrypt.compare(password, user.password);
+
+    if (result) {
+        const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+        res.header('auth-token', token).send(
+            _.omit(user.toObject(), ['password', 'orders', 'payments'])
+        );
+        return;
+    } else {
+        return res
+            .status(400)
+            .send({ error: { message: 'موبایل یا رمزعبور اشتباه است' } });
+    }
+});
+
 function validateLogin(data) {
     return joi.validate(data, {
         phoneNumber: joi
@@ -94,6 +124,17 @@ function validateLoginResponse(data) {
             .string()
             .length(5)
             .required(),
+    });
+}
+
+function validateLoginWithPass(data) {
+    return joi.validate(data, {
+        phoneNumber: joi
+            .string()
+            .length(11)
+            .regex(/^[0-9]+$/)
+            .required(),
+        password: joi.string().required(),
     });
 }
 
