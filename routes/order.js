@@ -115,7 +115,6 @@ router.post('/', userAuth, async (req, res) => {
     var target = null;
 
     const { error: queryError } = validateOrderTarget(req.query);
-    console.log(req.query);
 
     if (!queryError) {
         var { targetType: _targetType, target: _target } = req.query;
@@ -328,6 +327,14 @@ router.get('/date/:year/:month/:day', adminAuth, async (req, res) => {
     });
 
     return res.send(orders);
+});
+
+router.delete('/:id', adminAuth, async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (!order)
+        return res.status(400).send({ error: { message: 'سفارش پیدا نشد' } });
+    await order.remove();
+    res.send(order);
 });
 
 function validateOder(order) {
