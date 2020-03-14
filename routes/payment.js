@@ -2,6 +2,32 @@ const router = require('express').Router();
 const Payment = require('../models/payment');
 const adminAuth = require('../auth/admin');
 
+router.get('/', adminAuth, async (req, res) => {
+    let { id, user, order, ref, limit, skip } = req.query;
+    let conditions = {};
+
+    id ? (conditions._id = id) : null;
+    user ? (conditions.user = user) : null;
+    order ? (conditions.order = order) : null;
+    ref ? (conditions.ref = ref) : null;
+
+    const options = {
+        limit: parseInt(limit),
+        skip: parseInt(skip),
+    };
+
+    try {
+        let payments = Payment.find(conditions).setOptions(options);
+        if (id) {
+            payments = payments.populate('order').populate('user', '-orders');
+        }
+        payments = await payments;
+        return res.send(payments);
+    } catch (error) {
+        return res.send({});
+    }
+});
+
 // get payment by id
 router.get('/payment/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
