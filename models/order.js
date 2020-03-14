@@ -79,6 +79,19 @@ const orderSchema = new mongoose.Schema({
 
 orderSchema.pre('remove', async function(next) {
     await statistic.delOrder();
+
+    try {
+        const user = await this.model('User').findById(this.user.id);
+
+        const index = user.orders.indexOf(this._id);
+    
+        user.orders.splice(index, 1);
+        await user.save();
+    
+    } catch (error) {
+        
+    }
+
     next();
 });
 
