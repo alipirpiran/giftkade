@@ -340,7 +340,7 @@ router.get('/admin', adminAuth, async (req, res) => {
                 ? (valid = order.time < endDate && valid)
                 : null;
 
-            if (order.payment && isPayed != '') {
+            if (order.payment && isPayed != '' && isPayed != undefined) {
                 valid = valid && order.payment.isPayed == isPayed;
             }
 
