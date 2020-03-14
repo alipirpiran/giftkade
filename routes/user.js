@@ -78,7 +78,7 @@ router.get('/all', adminAuth, async (req, res) => {
             limit: parseInt(req.query.limit),
             skip: parseInt(req.query.skip),
         })
-        .select('-password -payments -orders');
+        .select('-password -payments');
 
     const users = [];
 
