@@ -3,13 +3,16 @@ const Payment = require('../models/payment');
 const adminAuth = require('../auth/admin');
 
 router.get('/', adminAuth, async (req, res) => {
-    let { id, user, order, ref, limit, skip } = req.query;
+    let { id, user, order, ref, startDate, endDate, limit, skip } = req.query;
     let conditions = {};
 
     id ? (conditions._id = id) : null;
     user ? (conditions.user = user) : null;
     order ? (conditions.order = order) : null;
     ref ? (conditions.ref = ref) : null;
+
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
 
     const options = {
         limit: parseInt(limit),
@@ -21,7 +24,24 @@ router.get('/', adminAuth, async (req, res) => {
         if (id) {
             payments = payments.populate('order').populate('user', '-orders');
         }
+
         payments = await payments;
+
+        let filter = payment => {
+            let valid = true;
+
+            startDate != 'Invalid Date'
+                ? (valid = payment.time >= startDate)
+                : null;
+            endDate != 'Invalid Date'
+                ? (valid = payment.time < endDate && valid)
+                : null;
+
+            return valid;
+        };
+
+        payments = payments.filter(filter);
+
         return res.send(payments);
     } catch (error) {
         return res.send({});
