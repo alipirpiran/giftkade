@@ -31,10 +31,10 @@ router.get('/', adminAuth, async (req, res) => {
             let valid = true;
 
             startDate != 'Invalid Date'
-                ? (valid = payment.time >= startDate)
+                ? (valid = payment.timeCreated >= startDate)
                 : null;
             endDate != 'Invalid Date'
-                ? (valid = payment.time < endDate && valid)
+                ? (valid = payment.timeCreated < endDate && valid)
                 : null;
 
             return valid;
