@@ -54,14 +54,14 @@ const orderSchema = new mongoose.Schema({
         type: [{ type: mongoose.Types.ObjectId, ref: 'Token' }],
         default: [],
     },
-    isPayed: {
-        type: Boolean,
-        default: false,
-    },
-    isRejected: {
-        type: Boolean,
-        default: false,
-    },
+    // isPayed: {
+    //     type: Boolean,
+    //     default: false,
+    // },
+    // isRejected: {
+    //     type: Boolean,
+    //     default: false,
+    // },
     time: {
         type: mongoose.Schema.Types.String,
         required: true,
