@@ -5,12 +5,12 @@ const Payment = mongoose.model(
     new mongoose.Schema({
         user: {
             type: mongoose.SchemaTypes.ObjectId,
-            ref: 'Users',
+            ref: 'User',
             required: true,
         },
         order: {
             type: mongoose.SchemaTypes.ObjectId,
-            ref: 'Orders',
+            ref: 'Order',
         },
         authority: {
             type: String,
