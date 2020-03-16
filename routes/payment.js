@@ -21,8 +21,10 @@ router.get('/', adminAuth, async (req, res) => {
 
     try {
         let payments = Payment.find(conditions).setOptions(options);
+        payments.populate('user', 'phoneNumber email');
         if (id) {
-            payments = payments.populate('order').populate('user', '-orders');
+            payments = payments.populate('order');
+            // .populate('user', '-orders');
         }
 
         payments = await payments;
@@ -44,6 +46,8 @@ router.get('/', adminAuth, async (req, res) => {
 
         return res.send(payments);
     } catch (error) {
+        console.log(error);
+        
         return res.send({});
     }
 });
