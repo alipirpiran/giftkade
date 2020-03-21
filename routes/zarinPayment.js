@@ -1,11 +1,10 @@
 const router = require('express').Router();
-
-const zarinPalApiKey = process.env.ZARIN_KEY;
-
 const ZarinpalCheckout = require('zarinpal-checkout');
-const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, true);
-
 const Payment = require('../models/payment');
+
+const CALLBACK_URL = process.env.PAYMENT_CALLBACK_URL;
+const zarinPalApiKey = process.env.ZARIN_KEY;
+const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, true);
 
 var rejectOrder, verifyOrder;
 exports.set = (_verifyOrder, _rejectOrder) => {
@@ -13,20 +12,19 @@ exports.set = (_verifyOrder, _rejectOrder) => {
     verifyOrder = _verifyOrder;
 };
 
-module.exports.getDargahURLAfterCreatingOrder = async function(
+module.exports.getDargahURLAfterCreatingOrder = async function({
     user_id,
     order,
     amount,
-    callback,
     mobile,
     description,
-    email
-) {
+    email,
+}) {
     // creating payment: save: user, order, authority, totalAmount
     try {
         const response = await paymentReq(
             amount,
-            callback,
+            CALLBACK_URL,
             description,
             mobile,
             email
@@ -93,7 +91,7 @@ router.get('/', async (req, res) => {
                     payment.refId = response.RefID;
                     payment.isPayed = true;
                     await payment.save();
-                    
+
                     await verifyOrder(payment.user, payment.order, payment);
                     res.status(200).send(payment);
                 }
