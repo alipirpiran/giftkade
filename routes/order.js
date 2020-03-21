@@ -1,12 +1,11 @@
 const router = require('express').Router();
 const joi = require('joi');
+const debug = require('debug')('giftkade:order');
 
 const SubProduct = require('../models/productSubType');
 const Order = require('../models/order');
 const User = require('../models/user');
-const Token = require('../models/token');
 
-const ObjectId = require('mongoose').Schema.Types.ObjectId;
 const validateId = require('../middlewares/isObjectid');
 
 const userAuth = require('../auth/user');
@@ -20,8 +19,6 @@ const orderMethods = require('../functions/order');
 
 // const { getDargahURLAfterCreatingOrder } = require('./payment')
 const { getDargahURLAfterCreatingOrder } = require('./zarinPayment');
-
-const BASE_URL = process.env.PAYMENT_CALLBACK_URL;
 
 //TODO send giftcard via email or sms
 module.exports.verifyOrder = async (userId, orderId, payment) => {
@@ -111,26 +108,24 @@ router.post('/', userAuth, async (req, res) => {
         });
 
     //check target
-    var targetType = null;
-    var target = null;
+    var targetType = 'email';
+    var target = user.email;
 
     const { error: queryError } = validateOrderTarget(req.query);
 
     if (!queryError) {
         var { targetType: _targetType, target: _target } = req.query;
-        console.log(_targetType);
-
-        if (_targetType == 'sms') {
-            targetType = 'sms';
-        } else {
-            targetType = 'email';
-        }
+        targetType = _targetType;
 
         if (_target) {
             target = _target;
+        } else {
+            targetType == 'email'
+                ? (target = user.email)
+                : (target = user.phoneNumber);
         }
     } else {
-        console.log(queryError);
+        debug(queryError);
     }
 
     var orderSchema = {
@@ -150,23 +145,24 @@ router.post('/', userAuth, async (req, res) => {
 
         totalPrice,
         count,
+
+        targetType,
+        target,
     };
-    targetType ? (orderSchema.targetType = targetType) : null;
-    target ? (orderSchema.target = target) : null;
 
     const _order = new Order(orderSchema);
     const order = await _order.save();
 
     // send user to Dargah Pardakht
     try {
-        const { url, payment_id } = await getDargahURLAfterCreatingOrder(
+        const { url, payment_id } = await getDargahURLAfterCreatingOrder({
             user_id,
             order,
-            totalPrice,
-            `${BASE_URL}/payment`,
-            user.phoneNumber,
-            'خرید گیفت کارت'
-        );
+            amount: totalPrice,
+            email: user.email,
+            mobile: user.phoneNumber,
+            description: 'خرید گیفت کارت',
+        });
 
         // add payment to user payments
         if (!user.payments) user.payments = [];
@@ -191,7 +187,7 @@ router.post('/', userAuth, async (req, res) => {
         console.log(error);
 
         return res.status(400).send({
-            error: { message: 'خطا هنگام ایجاد درگاه بانکی', dev: error },
+            error: { message: 'خطا هنگام ایجاد درگاه بانکی' },
         });
     }
 });
@@ -318,9 +314,7 @@ router.get('/admin', adminAuth, async (req, res) => {
 
     try {
         let orders = Order.find(conditions).setOptions(options);
-
         orders.populate('payment');
-
         orderId
             ? orders
                   .populate('user.id', '-orders -payments -password')
@@ -328,6 +322,7 @@ router.get('/admin', adminAuth, async (req, res) => {
                   .populate('product', '-types')
             : null;
 
+        orders.select('-pendingGiftcards');
         orders = await orders;
 
         let filter = order => {
