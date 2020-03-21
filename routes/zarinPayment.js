@@ -3,8 +3,10 @@ const ZarinpalCheckout = require('zarinpal-checkout');
 const Payment = require('../models/payment');
 
 const CALLBACK_URL = process.env.PAYMENT_CALLBACK_URL;
+const SANDBOX = process.env.SANDBOX != 'false' ;
 const zarinPalApiKey = process.env.ZARIN_KEY;
-const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, true);
+
+const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, SANDBOX);
 
 var rejectOrder, verifyOrder;
 exports.set = (_verifyOrder, _rejectOrder) => {
