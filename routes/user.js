@@ -93,11 +93,34 @@ router.get('/all', adminAuth, async (req, res) => {
     return res.status(200).send(users);
 });
 
+router.get('/admin/', adminAuth, async (req, res) => {
+    const { phoneNumber, isAdmin } = req.query;
+    let conditions = {};
+
+    phoneNumber ? (conditions.phoneNumber = phoneNumber) : null;
+    isAdmin
+        ? (conditions.isAdmin = String(isAdmin).toLocaleLowerCase() == 'true')
+        : null;
+
+    const _users = await User.find(conditions).select('-payments -password');
+
+    const users = [];
+    for (let user of _users) {
+        user.ordersCount = user.orders.length;
+        user = user.toObject();
+        delete user.orders;
+        users.push(user);
+    }
+
+    return res.send(users);
+});
+
 router.delete('/:id', adminAuth, async (req, res) => {
     const user = await User.findById(req.params.id);
-    if(!user) return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
-    
-    await user.remove()
+    if (!user)
+        return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
+
+    await user.remove();
 
     return res.status(200).send(user);
 });
@@ -155,7 +178,6 @@ router.put('/user/:id', adminAuth, async (req, res) => {
     }
 
     await user.updateOne(req.body);
-    
 
     // await user.save()
     return res.status(200).send(user);
