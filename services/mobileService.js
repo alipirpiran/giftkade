@@ -230,3 +230,12 @@ function getObject(phoneNumber, type) {
         });
     });
 }
+
+exports.sendMessage = async (phoneNumber, text) => {
+    messageApi.VerifyLookup({
+        template: 'shop',
+        receptor: phoneNumber,
+        token: text,
+        type: 'sms',
+    });
+};
