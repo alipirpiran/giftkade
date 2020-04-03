@@ -20,7 +20,6 @@ const orderMethods = require('../functions/order');
 // const { getDargahURLAfterCreatingOrder } = require('./payment')
 const { getDargahURLAfterCreatingOrder } = require('./zarinPayment');
 
-//TODO send giftcard via email or sms
 module.exports.verifyOrder = async (userId, orderId, payment) => {
     const order = await Order.findById(orderId);
     const user = await User.findById(userId);

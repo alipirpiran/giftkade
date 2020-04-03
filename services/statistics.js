@@ -6,7 +6,6 @@ const Statistic = require('../models/statistic');
 
 let statistic;
 
-//TODO add statistic for selling ,per date
 
 // set all counts by getting documents
 module.exports.refresh = async () => {
