@@ -76,7 +76,9 @@ router.post('/', userAuth, async (req, res) => {
             .status(400)
             .send({ error: { message: 'حداقل تعداد خرید یک عدد میباشد.' } });
 
-    const subProduct = await SubProduct.findById(req.body.subProduct);
+    const subProduct = await SubProduct.findById(req.body.subProduct).populate(
+        'product'
+    );
     if (!subProduct)
         return res
             .status(400)
@@ -133,13 +135,14 @@ router.post('/', userAuth, async (req, res) => {
             id: user._id,
         },
         subProduct: subProduct._id,
-        product: subProduct.product,
+        product: subProduct.product._id,
 
         time: Date.now(),
 
+        productTitle: subProduct.product.title,
+        title: subProduct.title,
         price: subProduct.price,
         localPrice: subProduct.localPrice,
-        title: subProduct.title,
         description: subProduct.description,
 
         totalPrice,
