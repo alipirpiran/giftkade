@@ -19,7 +19,7 @@ async function sendGiftcards({ order, user }) {
     } else if (order.targetType == 'sms') {
         let mobile = order.target ? order.target : user.phoneNumber;
         let text = `* گیفت کده *\nخرید شما با موفقیت انجام شد\n\n`;
-        text += `محصول: ${order.producTtitle} ${order.title}\n`;
+        text += `محصول: ${order.productTitle} ${order.title}\n`;
         let index = 1;
         for (const code of codes) {
             text += `${index} - کد گیفت کارت: \n${code}\n`;

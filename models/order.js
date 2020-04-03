@@ -31,7 +31,6 @@ const orderSchema = new mongoose.Schema({
     },
     productTitle: {
         type: String,
-        required: true,
     },
     price: {
         type: String,
@@ -88,13 +87,10 @@ orderSchema.pre('remove', async function(next) {
         const user = await this.model('User').findById(this.user.id);
 
         const index = user.orders.indexOf(this._id);
-    
+
         user.orders.splice(index, 1);
         await user.save();
-    
-    } catch (error) {
-        
-    }
+    } catch (error) {}
 
     next();
 });
