@@ -107,13 +107,13 @@ router.post('/', userAuth, async (req, res) => {
         });
 
     //check target
-    var targetType = 'email';
-    var target = user.email;
+    let targetType = 'email';
+    let target = user.email;
 
     const { error: queryError } = validateOrderTarget(req.query);
 
     if (!queryError) {
-        var { targetType: _targetType, target: _target } = req.query;
+        let { targetType: _targetType, target: _target } = req.query;
         targetType = _targetType;
 
         if (_target) {
