@@ -1,4 +1,4 @@
-TODO compelete send giftcards via sms: kavenegar name: shop, create string and set it for %token;
+/TODO compelete send giftcards via sms: kavenegar name: shop, create string and set it for %token;
 
 TODO replace express rate limit with another version that works with cluster mode;
 TODO add statistics for routes to watch each route request rate, and each ip request rate;
