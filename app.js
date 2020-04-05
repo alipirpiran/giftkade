@@ -6,12 +6,12 @@ const helmet = require('helmet');
 var bodyParser = require('body-parser');
 const redis = require('redis');
 const redisClient = redis.createClient();
+const adminAuth = require('./auth/admin');
+
+const production = process.env.NODE_ENV == 'production';
 
 // statistics setup
 require('./services/statistics').refresh();
-
-
-const adminAuth = require('./auth/admin');
 
 // Sentry log errors
 const Sentry = require('@sentry/node');
@@ -20,7 +20,6 @@ Sentry.init({
 });
 
 module.exports.redisClient = redisClient;
-
 redisClient.flushall();
 
 // db setup
@@ -58,7 +57,11 @@ var app = express();
 
 // Status monitor
 // TODO add admin auth
-const statusMonitor = require('express-status-monitor')({path: 'status/', title:'Giftkade Status'});
+const statusMonitor = require('express-status-monitor')({
+    path: 'status/',
+    title: 'Giftkade Status',
+    socketPath: production ? module.env.BASE_PATH + '/socket.io' : '/socket.io',
+});
 app.use(statusMonitor);
 app.get('/status', statusMonitor.pageRoute);
 
