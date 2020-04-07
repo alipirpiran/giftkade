@@ -62,6 +62,7 @@ router.post('/', adminAuth, async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(_user.password, salt);
     _user.password = hashedPassword;
+    _user.isActive = true;
 
     let user = new User(_user);
     user.toObject();
@@ -120,7 +121,9 @@ router.delete('/:id', adminAuth, async (req, res) => {
     if (!user)
         return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
 
-    await user.remove();
+    // await user.remove();
+    user.isActive = false;
+    await user.save();
 
     return res.status(200).send(user);
 });
@@ -196,10 +199,7 @@ function validateUser(user) {
             .regex(/^[0-9]+$/)
             .length(11)
             .required(),
-        password: joi
-            .string()
-            .min(8)
-            .required(),
+        password: joi.string().min(8).required(),
     });
 }
 
@@ -211,10 +211,7 @@ function validateAdminAddUser(user) {
             .regex(/^[0-9]+$/)
             .length(11)
             .required(),
-        password: joi
-            .string()
-            .min(8)
-            .required(),
+        password: joi.string().min(8).required(),
         isAdmin: joi.bool(),
         isPhoneNumberValidated: joi.bool(),
     });
@@ -223,10 +220,7 @@ function validateAdminAddUser(user) {
 function validateUpdateUser(user) {
     return joi.validate(user, {
         email: joi.string().email(),
-        password: joi
-            .string()
-            .min(8)
-            .max(120),
+        password: joi.string().min(8).max(120),
     });
 }
 
