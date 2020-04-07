@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
 
     orders: {
         type: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Order' }],
@@ -43,12 +47,12 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-userSchema.pre('remove', async function(next) {
+userSchema.pre('remove', async function (next) {
     await statistics.delUser();
     next();
 });
 
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
     if (this.isNew) {
         this.dateJoined = Date.now();
         statistics.addUser();
@@ -59,7 +63,6 @@ userSchema.pre('save', async function(next) {
         );
     }
 });
-
 
 const User = mongoose.model('User', userSchema);
 
