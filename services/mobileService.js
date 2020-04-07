@@ -1,8 +1,9 @@
 const Kavenegar = require('kavenegar');
 const message_api_key = process.env.MESSAGE_SERVICE_API_KEY;
 const messageApi = Kavenegar.KavenegarApi({ apikey: message_api_key });
-
 const { redisClient } = require('../app');
+
+const SENDER_NUMBER = process.env.MESSAGE_SENDER
 
 const CODE_TYPES = Object.freeze({
     SIGNUP: 'signup',
@@ -233,6 +234,6 @@ function getObject(phoneNumber, type) {
 
 exports.sendMessage = async (phoneNumber, text) => {
     messageApi.Send(
-        { message: text, sender: '100065995', receptor: phoneNumber },
+        { message: text, sender: SENDER_NUMBER, receptor: phoneNumber },
     );
 };
