@@ -7,10 +7,10 @@ const _ = require('lodash');
 const { redisClient } = require('../app');
 
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
+    destination: function (req, file, cb) {
         cb(null, 'uploads');
     },
-    filename: function(req, file, cb) {
+    filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now());
     },
 });
@@ -20,19 +20,21 @@ const adminAuth = require('../auth/admin');
 
 const Product = require('../models/product');
 // router.use(upload.array())
-router.get('/', cacheProducts, async (req, res) => {
-    try {
-        const products = await Product.find();
+router.get(
+    '/',
+    // cacheProducts,
+    async (req, res) => {
+        try {
+            const products = await Product.find();
 
-        setProductsInRedis(products);
+            // setProductsInRedis(products);
 
-        res.status(200).send(products);
-    } catch (error) {
-        console.log(error);
-
-        res.status(500).send({ error: 'server error' });
+            res.status(200).send(products);
+        } catch (error) {
+            res.status(500).send({ error: 'server error' });
+        }
     }
-});
+);
 
 router.post('/', adminAuth, upload.single('image'), (req, res) => {
     const _product = {
@@ -41,12 +43,12 @@ router.post('/', adminAuth, upload.single('image'), (req, res) => {
         image_path: req.file.path,
     };
     validateProduct(_product)
-        .then(async item => {
+        .then(async (item) => {
             const product = new Product(_product);
             await product.save();
             res.status(200).send(product);
         })
-        .catch(err => {
+        .catch((err) => {
             res.status(500).send({ error: 'error in adding new product' });
             debug(err);
         });
@@ -70,7 +72,7 @@ router.delete('/:id', adminAuth, async (req, res) => {
         const product = await Product.findByIdAndDelete(id);
         if (!product) res.status(404).send({ error: 'not found' });
         else {
-            fs.unlink(product.image_path, err => {});
+            fs.unlink(product.image_path, (err) => {});
             res.status(200).send({ status: 'deleted' });
         }
     } catch (error) {
@@ -93,19 +95,19 @@ router.post(
         if (req.file && req.file.path) {
             _product.image_path = req.file.path;
 
-            Product.findById(id).then(product => {
-                fs.unlink(product.image_path, err => {
+            Product.findById(id).then((product) => {
+                fs.unlink(product.image_path, (err) => {
                     if (err) debug(err);
                 });
             });
         }
 
         validateUpdateProduct(_product)
-            .then(async item => {
+            .then(async (item) => {
                 const product = await Product.findByIdAndUpdate(id, _product);
                 res.status(200).send(product);
             })
-            .catch(err => {
+            .catch((err) => {
                 res.status(500).send({ error: 'error in adding new product' });
                 debug(err);
             });
@@ -114,10 +116,7 @@ router.post(
 
 function validateProduct(product) {
     return joi.validate(product, {
-        title: joi
-            .string()
-            .max(20)
-            .required(),
+        title: joi.string().max(20).required(),
         description: joi.string().max(200),
         image_path: joi.string(),
     });
@@ -170,7 +169,7 @@ function setProductsInRedis(products) {
             _.omit(JSON.parse(JSON.stringify(item)), 'types')
         );
     }
-    multi.exec(function(errors, results) {});
+    multi.exec(function (errors, results) {});
 }
 
 module.exports = router;
