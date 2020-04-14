@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const statistics = require('../services/statistics');
 const notification = require('../services/notification');
@@ -55,6 +56,7 @@ userSchema.pre('remove', async function (next) {
 userSchema.pre('save', async function (next) {
     if (this.isNew) {
         this.dateJoined = Date.now();
+        this.isActive = true;
         statistics.addUser();
         notification.newUserNotification(
             this._id,
@@ -62,6 +64,13 @@ userSchema.pre('save', async function (next) {
             this.dateJoined
         );
     }
+    if (this.password)
+        if (this.isModified('password') || this.isNew) {
+            // Hash password
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(this.password, salt);
+            this.password = hashedPassword;
+        }
 });
 
 const User = mongoose.model('User', userSchema);
