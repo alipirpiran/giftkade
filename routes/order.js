@@ -48,7 +48,7 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
     sendService.sendGiftcards({ order, user });
 };
 
-module.exports.rejectOrder = async orderId => {
+module.exports.rejectOrder = async (orderId) => {
     console.log('Order rejected: ' + orderId);
 
     const order = await Order.findById(orderId);
@@ -266,12 +266,17 @@ router.get('/admin/all', adminAuth, async (req, res) => {
 router.get('/admin/one/:order_id', adminAuth, async (req, res) => {
     const order_id = req.params.order_id;
 
-    const order = await Order.findById(order_id)
-        // .populate('finalGiftcards', '-isSelled -isPending');
-        .populate('user.id', '-orders -payments -password')
-        .populate('payment')
-        .populate('subProduct', '-tokens -selledTokens')
-        .populate('product', '-types');
+    let order;
+    try {
+        order = await Order.findById(order_id)
+            // .populate('finalGiftcards', '-isSelled -isPending');
+            .populate('user.id', '-orders -payments -password')
+            .populate('payment')
+            .populate('subProduct', '-tokens -selledTokens')
+            .populate('product', '-types');
+    } catch (error) {
+        return res.status(400).send({ error: { message: 'خطا پیش آمد.' } });
+    }
 
     if (!order)
         return res
@@ -327,7 +332,7 @@ router.get('/admin', adminAuth, async (req, res) => {
         orders.select('-pendingGiftcards');
         orders = await orders;
 
-        let filter = order => {
+        let filter = (order) => {
             let valid = true;
 
             startDate != 'Invalid Date'
@@ -390,7 +395,7 @@ router.get('/date/:year/:month/:day', adminAuth, async (req, res) => {
     var orders = await Order.find({
         $or: [{ isPayed: true }, { isRejected: true }],
     });
-    orders = orders.filter(order => {
+    orders = orders.filter((order) => {
         return order.isPayed && order.time >= startDate && order.time < endDate;
     });
 
@@ -407,14 +412,8 @@ router.delete('/:id', adminAuth, async (req, res) => {
 
 function validateOder(order) {
     return joi.validate(order, {
-        subProduct: joi
-            .string()
-            .length(24)
-            .required(),
-        count: joi
-            .number()
-            .max(100)
-            .required(),
+        subProduct: joi.string().length(24).required(),
+        count: joi.number().max(100).required(),
         target: joi.string().max(12),
     });
 }

@@ -61,6 +61,7 @@ router.delete('/:id', adminAuth, async (req, res) => {
 
         product.types.splice(product.types.indexOf(subProduct._id), 1);
         await product.save();
+        res.send(subProduct);
     } catch (error) {
         res.status(404).send({ error });
     }

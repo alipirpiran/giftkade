@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const joi = require('joi');
-const bcrypt = require('bcryptjs');
+// const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 
 const userAuth = require('../auth/user');
@@ -57,12 +57,6 @@ router.post('/', adminAuth, async (req, res) => {
             error: { message: 'کاربری با مشخصات مشابه وجود دارد.' },
         });
     }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(_user.password, salt);
-    _user.password = hashedPassword;
-    _user.isActive = true;
 
     let user = new User(_user);
     user.toObject();
@@ -172,13 +166,6 @@ router.put('/user/:id', adminAuth, async (req, res) => {
     let user = await User.findById(req.params.id);
     if (!user)
         return res.status(403).send({ error: { message: 'کاربر یاقت نشد' } });
-
-    if (req.body.password) {
-        // hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        req.body.password = hashedPassword;
-    }
 
     await user.updateOne(req.body);
 
