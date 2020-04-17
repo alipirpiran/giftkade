@@ -60,7 +60,9 @@ var app = express();
 const statusMonitor = require('express-status-monitor')({
     path: 'status/',
     title: 'Giftkade Status',
-    socketPath: production ? process.env.BASE_PATH + '/socket.io' : '/socket.io',
+    socketPath: production
+        ? process.env.BASE_PATH + '/socket.io'
+        : '/socket.io',
 });
 app.use(statusMonitor);
 app.get('/status', statusMonitor.pageRoute);
