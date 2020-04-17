@@ -248,10 +248,12 @@ router.get('/admin/all', adminAuth, async (req, res) => {
             conditions.isPayed = true;
     }
 
-    const result = await Order.find(conditions).setOptions({
-        limit: parseInt(req.query.limit),
-        skip: parseInt(req.query.skip),
-    });
+    const result = await Order.find(conditions)
+        .setOptions({
+            limit: parseInt(req.query.limit),
+            skip: parseInt(req.query.skip),
+        })
+        .populate('payment');
     // .populate('finalGiftcards', '-isSelled -isPending');
     // .populate('subProduct', '-tokens -selledTokens')
 
