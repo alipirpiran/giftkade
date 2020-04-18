@@ -7,12 +7,18 @@ const SubProduct = require('../models/productSubType');
 exports.add_token = async (token_string, subProduct_id) => {
     const encrypted_token = cryptr.encrypt(token_string);
 
-    const subProduct = await SubProduct.findById(subProduct_id);
+    const subProduct = await SubProduct.findById(subProduct_id).populate(
+        'product'
+    );
     if (!subProduct) return null;
 
     const token = new Token({
         code: encrypted_token,
         subProduct: subProduct_id,
+        info: {
+            subProduct,
+            product: subProduct.product,
+        },
     });
     await token.save();
 
@@ -22,12 +28,12 @@ exports.add_token = async (token_string, subProduct_id) => {
     return token;
 };
 
-exports.decryptToken = token_string => {
+exports.decryptToken = (token_string) => {
     return cryptr.decrypt(token_string);
 };
 
 // * get token and add token to selled tokens
-exports.get_token = async subProduct_id => {
+exports.get_token = async (subProduct_id) => {
     const subProduct = await SubProduct.findById(subProduct_id);
     if (!subProduct) return null;
 
@@ -127,7 +133,7 @@ exports.setGiftcardsFree = async (subProduct_id, giftcards) => {
 };
 
 // return tokens that are Not: selled, pending
-exports.getFreeTokensCount = async subProduct => {
+exports.getFreeTokensCount = async (subProduct) => {
     // const subProduct = await SubProduct.findById(subProduct_id)
     if (!subProduct) return null;
 

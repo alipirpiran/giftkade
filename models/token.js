@@ -22,6 +22,9 @@ module.exports = mongoose.model(
             ref: 'ProductSubType',
             required: true,
         },
+        info: {
+            type: {},
+        },
         user: {
             type: mongoose.Types.ObjectId,
             ref: 'User',
