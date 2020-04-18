@@ -8,8 +8,8 @@ exports.add_token = async (token_string, subProduct_id) => {
     const encrypted_token = cryptr.encrypt(token_string);
 
     const subProduct = await SubProduct.findById(subProduct_id).populate(
-        'product'
-    );
+        'product','-types'
+    ).select('-selledTokens -tokens');
     if (!subProduct) return null;
 
     const token = new Token({
