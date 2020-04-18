@@ -352,7 +352,7 @@ router.get('/admin', adminAuth, async (req, res) => {
         };
 
         orders = orders.filter(filter);
-        return res.send(orders);
+        return res.send(orders.reverse());
     } catch (error) {
         return res.send({});
     }
