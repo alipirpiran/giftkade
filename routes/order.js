@@ -262,7 +262,7 @@ router.get('/admin/all', adminAuth, async (req, res) => {
     //         giftcard.code = giftcardService.decryptToken(giftcard.code);
     //     }
     // }
-    res.send(result);
+    res.send(result.reverse());
 });
 
 router.get('/admin/one/:order_id', adminAuth, async (req, res) => {
