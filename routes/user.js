@@ -85,7 +85,7 @@ router.get('/all', adminAuth, async (req, res) => {
         users.push(user);
     }
 
-    return res.status(200).send(users);
+    return res.status(200).send(users.reverse());
 });
 
 router.get('/admin/', adminAuth, async (req, res) => {
