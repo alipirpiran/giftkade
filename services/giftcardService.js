@@ -1,5 +1,6 @@
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
+const _ = require('lodash');
 
 const Token = require('../models/token');
 const SubProduct = require('../models/productSubType');
@@ -8,15 +9,16 @@ exports.add_token = async (token_string, subProduct_id) => {
     const encrypted_token = cryptr.encrypt(token_string);
 
     const subProduct = await SubProduct.findById(subProduct_id).populate(
-        'product','-types'
-    ).select('-selledTokens -tokens');
+        'product',
+        '-types'
+    );
     if (!subProduct) return null;
 
     const token = new Token({
         code: encrypted_token,
         subProduct: subProduct_id,
         info: {
-            subProduct,
+            subProduct: _.omit(subProduct.toObject(), ['tokens selledTokens']),
             product: subProduct.product,
         },
     });
