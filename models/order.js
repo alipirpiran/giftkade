@@ -3,6 +3,13 @@ const mongoose = require('mongoose');
 const statistic = require('../services/statistics');
 const notification = require('../services/notification');
 
+const counterid = 'counter';
+let CounterSchema = mongoose.Schema({
+    _id: { type: String, required: true },
+    seq: { type: String, default: '0' },
+});
+let Counter = mongoose.model('counter', CounterSchema);
+
 const orderSchema = new mongoose.Schema({
     user: {
         phoneNumber: String,
@@ -57,14 +64,6 @@ const orderSchema = new mongoose.Schema({
         type: [{ type: mongoose.Types.ObjectId, ref: 'Token' }],
         default: [],
     },
-    // isPayed: {
-    //     type: Boolean,
-    //     default: false,
-    // },
-    // isRejected: {
-    //     type: Boolean,
-    //     default: false,
-    // },
     time: {
         type: mongoose.Schema.Types.String,
         required: true,
@@ -78,9 +77,13 @@ const orderSchema = new mongoose.Schema({
     target: {
         type: String,
     },
+    orderid: {
+        type: Number,
+        default: 0,
+    },
 });
 
-orderSchema.pre('remove', async function(next) {
+orderSchema.pre('remove', async function (next) {
     await statistic.delOrder();
 
     try {
@@ -95,9 +98,12 @@ orderSchema.pre('remove', async function(next) {
     next();
 });
 
-orderSchema.pre('save', async function(next) {
+orderSchema.pre('save', async function (next) {
     if (this.isNew) {
         await statistic.addOrder();
+        if (!this.orderid) {
+            this.orderid = await getNextOrderid();
+        }
 
         notification.newOrder(
             this._id,
@@ -111,6 +117,17 @@ orderSchema.pre('save', async function(next) {
     }
     next();
 });
+
+async function getNextOrderid() {
+    let counter = await Counter.findById(counterid);
+    if (!counter) {
+        counter = new Counter({ _id: counterid, seq: '11111' });
+        counter = await counter.save();
+    }
+    counter.seq++;
+    counter.save();
+    return counter.seq;
+}
 
 const Order = mongoose.model('Order', orderSchema);
 
