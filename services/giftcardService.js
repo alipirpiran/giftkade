@@ -18,7 +18,7 @@ exports.add_token = async (token_string, subProduct_id) => {
         code: encrypted_token,
         subProduct: subProduct_id,
         info: {
-            subProduct: _.omit(subProduct.toJSON(), ['tokens', 'selledTokens']),
+            subProduct: _.omit(subProduct.toJSON(), ['tokens', 'selledTokens', 'product']),
             product: subProduct.product,
         },
     });
