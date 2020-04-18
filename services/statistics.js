@@ -6,9 +6,12 @@ const Statistic = require('../models/statistic');
 
 let statistic;
 
-
 // set all counts by getting documents
 module.exports.refresh = async () => {
+    const User = require('../models/user');
+    const Product = require('../models/product');
+    const Order = require('../models/order');
+    
     await setStatistic();
     const users = await User.find();
     statistic.userCount = users.length;
@@ -20,7 +23,7 @@ module.exports.refresh = async () => {
     statistic.orderCount = orders.length;
 
     statistic.payedOrderCount = 0;
-    orders.forEach(e => (e.isPayed ? statistic.payedOrderCount++ : null));
+    orders.forEach((e) => (e.isPayed ? statistic.payedOrderCount++ : null));
 
     await statistic.save();
 };
@@ -81,7 +84,7 @@ module.exports.delOrder = async () => {
     await statistic.save();
 };
 
-module.exports.addPayedOrder = async order => {
+module.exports.addPayedOrder = async (order) => {
     await setStatistic();
 
     statistic.payedOrderCount++;
