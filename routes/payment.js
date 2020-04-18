@@ -44,7 +44,7 @@ router.get('/', adminAuth, async (req, res) => {
 
         payments = payments.filter(filter);
 
-        return res.send(payments);
+        return res.send(payments.reverse());
     } catch (error) {
         console.log(error);
         
