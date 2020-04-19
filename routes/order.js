@@ -197,7 +197,10 @@ router.post('/', userAuth, async (req, res) => {
 router.get('/one/:order_id', userAuth, async (req, res) => {
     const order_id = req.params.order_id;
 
-    const order = await Order.findById(order_id)
+    const order = await Order.findOne({
+        _id: order_id,
+        'user.id': req.user,
+    })
         .select('-pendingGiftcards')
         .populate('finalGiftcards', '-isSelled -isPending');
     if (!order)
