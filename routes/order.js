@@ -198,9 +198,7 @@ router.get('/one/:order_id', userAuth, async (req, res) => {
     const order_id = req.params.order_id;
 
     const order = await Order.findById(order_id)
-        .select(
-            'user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected target targetType'
-        )
+        .select('-pendingGiftcards')
         .populate('finalGiftcards', '-isSelled -isPending');
     if (!order)
         return res
@@ -224,9 +222,7 @@ router.get('/all', userAuth, async (req, res) => {
             limit: parseInt(req.query.limit),
             skip: parseInt(req.query.skip),
         })
-        .select(
-            '-pendingGiftcards'
-        )
+        .select('-pendingGiftcards')
         .populate('finalGiftcards', '-isSelled -isPending');
     // .populate('subProduct', '-tokens -selledTokens')
 
