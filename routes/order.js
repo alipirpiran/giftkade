@@ -225,7 +225,7 @@ router.get('/all', userAuth, async (req, res) => {
             skip: parseInt(req.query.skip),
         })
         .select(
-            'user payment subProduct product title price localPrice count totalPrice finalGiftcards time isPayed isRejected target targetType'
+            '-pendingGiftcards'
         )
         .populate('finalGiftcards', '-isSelled -isPending');
     // .populate('subProduct', '-tokens -selledTokens')
