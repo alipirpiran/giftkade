@@ -253,14 +253,6 @@ router.get('/admin/all', adminAuth, async (req, res) => {
             skip: parseInt(req.query.skip),
         })
         .populate('payment');
-    // .populate('finalGiftcards', '-isSelled -isPending');
-    // .populate('subProduct', '-tokens -selledTokens')
-
-    // for (const order of result) {
-    //     for (const giftcard of order.finalGiftcards) {
-    //         giftcard.code = giftcardService.decryptToken(giftcard.code);
-    //     }
-    // }
     res.send(result.reverse());
 });
 
@@ -365,14 +357,6 @@ router.get('/user/:id', adminAuth, validateId, async (req, res) => {
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip),
     });
-    // .populate('finalGiftcards', '-isSelled -isPending');
-    // .populate('subProduct', '-tokens -selledTokens')
-
-    // for (const order of result) {
-    //     for (const giftcard of order.finalGiftcards) {
-    //         giftcard.code = giftcardService.deCryptToken(giftcard.code)
-    //     }
-    // }
     res.send(result);
 });
 
