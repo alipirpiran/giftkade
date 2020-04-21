@@ -55,7 +55,6 @@ const statisticsRoute = require('./routes/statistics');
 var app = express();
 
 // Status monitor
-// TODO add admin auth
 const statusMonitor = require('express-status-monitor')({
     path: 'status/',
     title: 'Giftkade Status',
@@ -64,7 +63,7 @@ const statusMonitor = require('express-status-monitor')({
         : '/socket.io',
 });
 app.use(statusMonitor);
-app.get('/status', statusMonitor.pageRoute);
+app.get('/status',adminAuth, statusMonitor.pageRoute);
 
 // Sentry log errors
 app.use(Sentry.Handlers.requestHandler());
