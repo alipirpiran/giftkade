@@ -89,12 +89,12 @@ router.post('/loginWithPass', async (req, res) => {
             .send({ error: { message: 'موبایل یا رمزعبور اشتباه است' } });
 
     const result = await bcrypt.compare(password, user.password);
+    const userJson = _.omit(user.toJSON(), ['password', 'orders', 'payments']);
 
     if (result) {
         const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-        res.header('auth-token', token).send(
-            _.omit(user.toObject(), ['password', 'orders', 'payments'])
-        );
+        userJson.token = token;
+        res.send(userJson);
         return;
     } else {
         return res
