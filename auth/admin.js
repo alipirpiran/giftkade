@@ -17,7 +17,7 @@ module.exports = async (req, res, next) => {
             const user = await User.findById(payload._id);
             if (user && user.isAdmin) {
                 req.user = payload._id;
-                next();
+                return next();
             }
         }
 
