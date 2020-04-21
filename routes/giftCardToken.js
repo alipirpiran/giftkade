@@ -24,14 +24,14 @@ router.post('/', adminAuth, async (req, res) => {
 });
 
 router.get('/subProduct/:id', adminAuth, async (req, res) => {
-    const result = await Token.find({
+    const tokens = await Token.find({
         subProduct: req.params.id,
     }).setOptions({
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip),
     });
 
-    return res.status(200).send(result);
+    return res.status(200).send(tokens.reverse());
 });
 
 router.get('/token/:id', adminAuth, async (req, res) => {
