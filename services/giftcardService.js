@@ -34,38 +34,6 @@ exports.decryptToken = (token_string) => {
     return cryptr.decrypt(token_string);
 };
 
-// * get token and add token to selled tokens
-exports.get_token = async (subProduct_id) => {
-    const subProduct = await SubProduct.findById(subProduct_id);
-    if (!subProduct) return null;
-
-    var token = null;
-    var i = 0;
-    for (const item of subProduct.tokens) {
-        var temp_token = await Token.findById(item);
-
-        if (!temp_token.isSelled) {
-            token = temp_token;
-
-            // remove token from not selled tokens
-            subProduct.tokens.splice(i, 1);
-
-            // add token to selled tokens
-            subProduct.selledTokens.push(token);
-
-            // mark token as selled and save token
-            temp_token.isSelled = true;
-
-            await temp_token.save();
-            await subProduct.save();
-            break;
-        }
-        i++;
-    }
-
-    return token;
-};
-
 exports.getGiftcardAndSetToPending = async (subProduct, count, orderId) => {
     // const subProduct = await SubProduct.findById(subProduct_id)
     if (!subProduct) return null;
