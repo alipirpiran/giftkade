@@ -83,7 +83,7 @@ router.post('/loginWithPass', async (req, res) => {
     const { phoneNumber, password } = req.body;
 
     const user = await User.findOne({ phoneNumber });
-    if (!user)
+    if (!user || !user.password)
         return res
             .status(400)
             .send({ error: { message: 'موبایل یا رمزعبور اشتباه است' } });
@@ -120,10 +120,7 @@ function validateLoginResponse(data) {
             .string()
             .regex(/^[0-9]+$/)
             .required(),
-        code: joi
-            .string()
-            .length(5)
-            .required(),
+        code: joi.string().length(5).required(),
     });
 }
 
