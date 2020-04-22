@@ -87,6 +87,15 @@ router.post('/loginWithPass', async (req, res) => {
         return res
             .status(400)
             .send({ error: { message: 'موبایل یا رمزعبور اشتباه است' } });
+    if (!user.isActive)
+        return res
+            .status(400)
+            .send({ error: { message: 'حساب شما غیرفعال شده است' } });
+
+    if (user.isAdmin)
+        return res
+            .status(400)
+            .send({ error: { message: 'شما دسترسی ادمین ندارید' } });
 
     const result = await bcrypt.compare(password, user.password);
     const userJson = _.omit(user.toJSON(), ['password', 'orders', 'payments']);
