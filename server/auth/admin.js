@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
+const LOCAL_AUTH_TOKEN = process.env.LOCAL_AUTH_TOKEN;
 
 const User = require('../models/user');
 
 module.exports = async (req, res, next) => {
-    if(isReqFromLocalhost(req)) return next()
-    
+    if (isReqFromLocalhost(req)) return next();
+
     const authToken = req.header('auth-token');
     if (!authToken)
         return res
@@ -33,10 +34,8 @@ module.exports = async (req, res, next) => {
     }
 };
 
-let isReqFromLocalhost = function (req){
-    
-    var ip = req.connection.remoteAddress;
-    var host = req.get('host');
-    
-    return ip === "127.0.0.1" || ip === "::ffff:127.0.0.1" || ip === "::1" || host.indexOf("localhost") !== -1;
-}
+let isReqFromLocalhost = function (req) {
+    if (!LOCAL_AUTH_TOKEN) return false;
+    if (req.header['auth-tokn'] == LOCAL_AUTH_TOKEN) return true;
+    return false;
+};
