@@ -4,8 +4,8 @@ const User = require('../models/user');
 
 module.exports = async (req, res, next) => {
     if(isReqFromLocalhost(req)) return next()
-    const authToken = req.header('auth-token');
     
+    const authToken = req.header('auth-token');
     if (!authToken)
         return res
             .status(403)
