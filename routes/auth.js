@@ -92,7 +92,7 @@ router.post('/loginWithPass', async (req, res) => {
             .status(400)
             .send({ error: { message: 'حساب شما غیرفعال شده است' } });
 
-    if (user.isAdmin)
+    if (!user.isAdmin)
         return res
             .status(400)
             .send({ error: { message: 'شما دسترسی ادمین ندارید' } });
