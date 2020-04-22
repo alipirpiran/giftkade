@@ -69,12 +69,21 @@ router.delete('/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
 
     try {
-        const product = await Product.findByIdAndDelete(id);
-        if (!product) res.status(404).send({ error: 'not found' });
-        else {
-            fs.unlink(product.image_path, (err) => {});
-            res.status(200).send({ status: 'deleted' });
-        }
+        const product = await Product.findById(id);
+        if (!product)
+            return res
+                .status(404)
+                .send({ error: { message: 'محصول یافت نشد' } });
+
+        if (product.types && product.types.length > 0)
+            return res.status(400).send({
+                error: {
+                    message: 'محصول دارای زیرمحصول میباشد.',
+                },
+            });
+        await product.remove();
+        fs.unlink(product.image_path, (err) => {});
+        res.status(200).send({ status: 'deleted' });
     } catch (error) {
         res.status(500).send('server error');
     }
