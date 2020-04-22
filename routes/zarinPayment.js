@@ -3,7 +3,7 @@ const ZarinpalCheckout = require('zarinpal-checkout');
 const Payment = require('../models/payment');
 
 const CALLBACK_URL = process.env.PAYMENT_CALLBACK_URL;
-const SANDBOX = process.env.SANDBOX != 'false' ;
+const SANDBOX = process.env.SANDBOX != 'false';
 const zarinPalApiKey = process.env.ZARIN_KEY;
 
 const zarinpal = ZarinpalCheckout.create(zarinPalApiKey, SANDBOX);
@@ -14,7 +14,7 @@ exports.set = (_verifyOrder, _rejectOrder) => {
     verifyOrder = _verifyOrder;
 };
 
-module.exports.getDargahURLAfterCreatingOrder = async function({
+module.exports.getDargahURLAfterCreatingOrder = async function ({
     user_id,
     order,
     amount,
@@ -84,10 +84,13 @@ router.get('/', async (req, res) => {
                 Amount: payment.amount, // In Tomans
                 Authority,
             })
-            .then(async response => {
+            .then(async (response) => {
                 if (response.status !== 100) {
                     // console.log(response);
                     rejectOrder(payment.order);
+                    payment.isRejected = true;
+                    await payment.save();
+                    
                     return res.send('متاسفانه خطایی پیش آمد');
                 } else {
                     payment.refId = response.RefID;
@@ -98,7 +101,7 @@ router.get('/', async (req, res) => {
                     res.status(200).send(payment);
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error(err);
                 res.send(err);
             });
