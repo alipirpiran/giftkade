@@ -1,3 +1,4 @@
+const joi = require('joi');
 const router = require('express').Router();
 const Payment = require('../models/payment');
 const adminAuth = require('../auth/admin');
@@ -107,5 +108,25 @@ router.get('/ref/:id', adminAuth, async (req, res) => {
 
     return res.send({ payment });
 });
+
+// router.post('/update/:id', adminAuth, async (req, res) => {
+//     const { error } = validatePayment(req.body);
+//     if (error)
+//         return res
+//             .status(400)
+//             .send({ error: { message: 'لطفا ورودی هارا کنترل کنید' } });
+
+//     const id = req.params.id;
+    
+//     const payment = await Payment.findByIdAndUpdate(id, req.body);
+    
+//     return res.send(payment);
+// });
+
+function validatePayment(payment) {
+    return joi.validate(payment, {
+        isRejected: joi.boolean(),
+    });
+}
 
 module.exports = router;
