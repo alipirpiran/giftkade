@@ -3,13 +3,31 @@ const Payment = require('../models/payment');
 const adminAuth = require('../auth/admin');
 
 router.get('/', adminAuth, async (req, res) => {
-    let { id, user, order, ref, startDate, endDate, limit, skip } = req.query;
+    let {
+        id,
+        user,
+        order,
+        ref,
+        startDate,
+        endDate,
+        limit,
+        skip,
+        isPayed,
+        isRejected,
+    } = req.query;
     let conditions = {};
 
     id ? (conditions._id = id) : null;
     user ? (conditions.user = user) : null;
     order ? (conditions.order = order) : null;
     ref ? (conditions.ref = ref) : null;
+
+    if (isPayed) {
+        conditions.isPayed = isPayed == 'true';
+    }
+    if (isRejected) {
+        conditions.isRejected = isRejected == 'true';
+    }
 
     startDate = new Date(startDate);
     endDate = new Date(endDate);
@@ -29,7 +47,7 @@ router.get('/', adminAuth, async (req, res) => {
 
         payments = await payments;
 
-        let filter = payment => {
+        let filter = (payment) => {
             let valid = true;
 
             startDate != 'Invalid Date'
@@ -47,7 +65,7 @@ router.get('/', adminAuth, async (req, res) => {
         return res.send(payments.reverse());
     } catch (error) {
         console.log(error);
-        
+
         return res.send({});
     }
 });
