@@ -54,7 +54,7 @@ module.exports.rejectOrder = async (orderId) => {
     const order = await Order.findById(orderId);
     giftcardService.setGiftcardsFree(order.subProduct, order.pendingGiftcards);
 
-    order.isRejected = true;
+    // order.isRejected = true;
     await order.save();
 };
 
