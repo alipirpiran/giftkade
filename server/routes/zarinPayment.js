@@ -88,8 +88,6 @@ router.get('/', async (req, res) => {
                 if (response.status !== 100) {
                     // console.log(response);
                     rejectOrder(payment.order);
-                    payment.isRejected = true;
-                    await payment.save();
                     
                     return res.send('متاسفانه خطایی پیش آمد');
                 } else {
@@ -107,10 +105,6 @@ router.get('/', async (req, res) => {
             });
     } else {
         rejectOrder(payment.order);
-
-        // reject payment
-        payment.isRejected = true;
-        await payment.save();
 
         return res.send('پرداخت با خطا مواجه شد');
     }
