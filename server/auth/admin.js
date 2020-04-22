@@ -36,6 +36,6 @@ module.exports = async (req, res, next) => {
 
 let isReqFromLocalhost = function (req) {
     if (!LOCAL_AUTH_TOKEN) return false;
-    if (req.header['auth-tokn'] == LOCAL_AUTH_TOKEN) return true;
+    if (req.headers['auth-token'] == LOCAL_AUTH_TOKEN) return true;
     return false;
 };
