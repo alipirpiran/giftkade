@@ -56,7 +56,21 @@ router.post('/:id', adminAuth, async (req, res) => {
 router.delete('/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
     try {
-        const subProduct = await SubProducts.findByIdAndDelete(id);
+        const subProduct = await SubProducts.findById(id);
+
+        // Check for errors
+        if (!subProduct)
+            return res
+                .status(400)
+                .send({ error: { message: 'زیرمحصول یافت نشد.' } });
+
+        if (subProduct.tokens && subProduct.tokens.length > 0)
+            return res.status(400).send({
+                error: { message: 'زیرمحصول گیفت کارت فروخته نشده دارد.' },
+            });
+
+        // Delete subProduct
+        await subProduct.remove();
         const product = await Product.findById(subProduct.product);
 
         product.types.splice(product.types.indexOf(subProduct._id), 1);
@@ -66,6 +80,7 @@ router.delete('/:id', adminAuth, async (req, res) => {
         res.status(404).send({ error });
     }
 });
+// TODO add deactive for subProducts: not delete, dont display in application.
 
 router.put('/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
