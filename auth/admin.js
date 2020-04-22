@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
         const payload = jwt.verify(authToken, process.env.TOKEN_SECRET);
         if (payload._id) {
             const user = await User.findById(payload._id);
-            if (user && user.isAdmin) {
+            if (user && user.isAdmin && user.isActive) {
                 req.user = payload._id;
                 return next();
             }
