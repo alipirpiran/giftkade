@@ -7,6 +7,8 @@ const User = require('../models/user');
 const mobileService = require('../services/mobileService');
 const rateLimit = require('express-rate-limit');
 
+const ADMIN_JWT_EXPIRE = process.env.ADMIN_JWT_EXPIRE || '24h';
+
 const limiter = rateLimit({
     max: 3,
     windowMs: 2 * 60 * 1000, // 1 minute
@@ -101,7 +103,9 @@ router.post('/loginWithPass', async (req, res) => {
     const userJson = _.omit(user.toJSON(), ['password', 'orders', 'payments']);
 
     if (result) {
-        const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+        const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, {
+            expiresIn: ADMIN_JWT_EXPIRE,
+        });
         userJson.token = token;
         res.send(userJson);
         return;
