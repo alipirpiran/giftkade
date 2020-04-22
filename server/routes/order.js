@@ -1,10 +1,11 @@
 const router = require('express').Router();
 const joi = require('joi');
-const debug = require('debug')('giftkade:order');
+const debug = require('debug')('giftShop:order');
 
 const SubProduct = require('../models/productSubType');
 const Order = require('../models/order');
 const User = require('../models/user');
+const Payment = require('../models/payment');
 
 const validateId = require('../middlewares/isObjectid');
 
@@ -48,14 +49,20 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
     sendService.sendGiftcards({ order, user });
 };
 
-module.exports.rejectOrder = async (orderId) => {
-    console.log('Order rejected: ' + orderId);
-
+module.exports.rejectOrder = async function rejectOrder(orderId) {
     const order = await Order.findById(orderId);
+    if (!order) return debug('Rejecting: Order not found: ' + orderId);
+
+    const payment = await Payment.findById(order.payment);
+    if (!payment || payment.isPayed)
+        return debug('Rejecting: Payment not found or isPayed, order: ' + orderId);
+
+    payment.isRejected = true;
     giftcardService.setGiftcardsFree(order.subProduct, order.pendingGiftcards);
 
-    // order.isRejected = true;
     await order.save();
+    await payment.save();
+    debug('Order rejected: ' + orderId);
 };
 
 //* call when user want to buy product, return Dargah url
@@ -393,6 +400,13 @@ router.delete('/:id', adminAuth, async (req, res) => {
         return res.status(400).send({ error: { message: 'سفارش پیدا نشد' } });
     await order.remove();
     res.send(order);
+});
+
+// TODO complete: return error, or if success order
+router.post('/reject/:id', adminAuth, async (req, res) => {
+    const result = await this.rejectOrder(req.params.id);
+
+    return res.send({ status: 1 });
 });
 
 function validateOder(order) {
