@@ -76,7 +76,7 @@ router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
     const payment = await Payment.findOne({ authority: Authority });
 
-    if (!payment) return res.send('متاسفانه خطایی پیش آمد');
+    if (!payment) return res.status(400).render('templates/fail');
 
     if (Status == 'OK') {
         zarinpal
@@ -88,25 +88,34 @@ router.get('/', async (req, res) => {
                 if (response.status !== 100) {
                     // console.log(response);
                     rejectOrder(payment.order);
-                    
-                    return res.send('متاسفانه خطایی پیش آمد');
+
+                    return res.status(400).render('templates/fail');
                 } else {
                     payment.refId = response.RefID;
                     payment.isPayed = true;
                     await payment.save();
 
-                    await verifyOrder(payment.user, payment.order, payment);
-                    res.status(200).send(payment);
+                    const order = await verifyOrder(
+                        payment.user,
+                        payment.order,
+                        payment
+                    );
+                    //* send verify page with refid
+                    res.status(200).render('template/success', {
+                        refId: response.refId,
+                        orderId: order.orderId,
+                    });
                 }
             })
             .catch((err) => {
                 console.error(err);
-                res.send(err);
+                // res.send(err);
+                return res.status(400).render('templates/fail');
             });
     } else {
         rejectOrder(payment.order);
 
-        return res.send('پرداخت با خطا مواجه شد');
+        return res.status(400).render('templates/fail');
     }
 });
 

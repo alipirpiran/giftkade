@@ -63,6 +63,7 @@ module.exports.rejectOrder = async function rejectOrder(orderId) {
     await order.save();
     await payment.save();
     debug('Order rejected: ' + orderId);
+    return order;
 };
 
 //* call when user want to buy product, return Dargah url
