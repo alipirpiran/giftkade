@@ -102,8 +102,8 @@ router.get('/', async (req, res) => {
                     );
                     //* send verify page with refid
                     res.status(200).render('templates/success', {
-                        refId: response.RefId,
-                        orderId: order.orderId,
+                        refId: response.RefID,
+                        orderId: order.orderid,
                     });
                 }
             })
