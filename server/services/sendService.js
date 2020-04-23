@@ -14,7 +14,7 @@ async function sendGiftcards({ order, user }) {
 
     if (order.targetType == 'email') {
         let email = order.target ? order.target : user.email;
-        let html = await mailService.giftCardHTML(order, codes);
+        let html = await mailService.shopHTML(order, codes);
         mailService.sendMail(email, 'گیفت کارت های خریداری شده', html);
     } else if (order.targetType == 'sms') {
         let mobile = order.target ? order.target : user.phoneNumber;
