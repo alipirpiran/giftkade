@@ -8,7 +8,7 @@ const redis = require('redis');
 const redisClient = redis.createClient();
 const adminAuth = require('./auth/admin');
 const production = process.env.NODE_ENV == 'production';
-const ejs = require('ejs')
+const ejs = require('ejs');
 
 // statistics setup
 require('./services/statistics').refresh();
@@ -64,7 +64,7 @@ const statusMonitor = require('express-status-monitor')({
         : '/socket.io',
 });
 app.use(statusMonitor);
-app.get('/status',adminAuth, statusMonitor.pageRoute);
+app.get('/status', adminAuth, statusMonitor.pageRoute);
 
 // Sentry log errors
 app.use(Sentry.Handlers.requestHandler());
@@ -116,7 +116,7 @@ app.use(function (err, req, res, next) {
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     console.log(err);
-    
+
     // render the error page
     res.status(err.status || 500);
     res.send({});
