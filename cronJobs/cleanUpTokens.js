@@ -10,7 +10,7 @@ const expireTime = 20 * 60 * 1000;
 
 const func = async function () {
     const now = Date.now();
-    const payments = await getPayments();
+    const payments = await getRemainingPayments();
 
     for (const payment of payments) {
         if (now - payment.timeCreated < expireTime) continue;
@@ -19,7 +19,7 @@ const func = async function () {
     }
 };
 
-async function getPayments() {
+async function getRemainingPayments() {
     const payments = await (
         await fetch(
             `http://localhost:${BASE_PORT}/payments?isPayed=false&isRejected=false`,
