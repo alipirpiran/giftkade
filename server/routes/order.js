@@ -47,6 +47,8 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
     });
 
     sendService.sendGiftcards({ order, user });
+
+    return order;
 };
 
 module.exports.rejectOrder = async function rejectOrder(orderId) {
