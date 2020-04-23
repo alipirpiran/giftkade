@@ -102,7 +102,7 @@ router.get('/', async (req, res) => {
                     );
                     //* send verify page with refid
                     res.status(200).render('template/success', {
-                        refId: response.refId,
+                        refId: response.RefId,
                         orderId: order.orderId,
                     });
                 }
