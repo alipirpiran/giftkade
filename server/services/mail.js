@@ -54,7 +54,7 @@ module.exports.shopHTML = async (order, codes) => {
 async function giftcardHTML(title, description, code, product_id) {
     const imageUrl = `${BASE_URL}/uploads/${product_id}`;
 
-    return ejs.renderFile(__dirname + '../views/templates/giftcard.ejs', {
+    return ejs.renderFile(__dirname + '/../views/templates/giftcard.ejs', {
         imageUrl,
         code,
         title,
@@ -62,7 +62,7 @@ async function giftcardHTML(title, description, code, product_id) {
 }
 
 function _getHTML(giftcardsElements) {
-    return ejs.renderFile(__dirname + '../views/templates/shop.ejs', {
+    return ejs.renderFile(__dirname + '/../views/templates/shop.ejs', {
         giftcards: giftcardsElements,
     });
 }
