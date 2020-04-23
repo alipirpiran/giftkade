@@ -8,6 +8,7 @@ const redis = require('redis');
 const redisClient = redis.createClient();
 const adminAuth = require('./auth/admin');
 const production = process.env.NODE_ENV == 'production';
+const ejs = require('ejs')
 
 // statistics setup
 require('./services/statistics').refresh();
@@ -72,8 +73,9 @@ app.use(helmet());
 app.use(cors());
 
 // view engine setup
+// app.engine('html', ejs.Template());
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
@@ -113,7 +115,8 @@ app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+    console.log(err);
+    
     // render the error page
     res.status(err.status || 500);
     res.render('error');

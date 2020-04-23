@@ -17,6 +17,7 @@
         "cryptr": "^6.0.1",
         "debug": "~2.6.9",
         "dotenv": "^8.2.0",
+        "ejs": "^3.0.2",
         "express": "~4.16.1",
         "express-formidable": "^1.2.0",
         "express-rate-limit": "^5.1.1",
