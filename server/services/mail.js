@@ -40,8 +40,12 @@ module.exports.shopHTML = async (order, codes) => {
     var product_id = order.product;
     for (const code of codes) {
         html +=
-            await giftcardHTML(order.title, order.description, code, product_id) +
-            '\n';
+            (await giftcardHTML(
+                order.title,
+                order.description,
+                code,
+                product_id
+            )) + '\n';
     }
     return _getHTML(html);
 };
@@ -50,7 +54,7 @@ module.exports.shopHTML = async (order, codes) => {
 async function giftcardHTML(title, description, code, product_id) {
     const imageUrl = `${BASE_URL}/uploads/${product_id}`;
 
-    return ejs.renderFile('../views/templates/giftcard', {
+    return ejs.renderFile(__dirname + '/views/templates/giftcard.ejs', {
         imageUrl,
         code,
         title,
@@ -58,5 +62,7 @@ async function giftcardHTML(title, description, code, product_id) {
 }
 
 function _getHTML(giftcardsElements) {
-    return ejs.renderFile('../views/templates/shop.ejs', {giftcards: giftcardsElements});
+    return ejs.renderFile(__dirname + '/views/templates/shop.ejs', {
+        giftcards: giftcardsElements,
+    });
 }
