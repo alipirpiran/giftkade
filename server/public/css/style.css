@@ -1,6 +1,6 @@
 @font-face {
     font-family: font;
-    src: url(../fonts/irsans.ttf);
+    src: url(../api/fonts/irsans.ttf);
   }
 body {
     overflow: hidden;
@@ -14,7 +14,7 @@ body {
     left: 0;
     -webkit-filter: blur(1px);
     filter: blur(1px);
-    background-image: url("../images/bg.jpg");
+    background-image: url("../api/images/bg.jpg");
     background-repeat: repeat;
     /* background-size: contain; */
     /* background-color:white; */
