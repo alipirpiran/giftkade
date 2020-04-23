@@ -76,7 +76,7 @@ router.get('/', async (req, res) => {
     const { Status, Authority } = req.query;
     const payment = await Payment.findOne({ authority: Authority });
 
-    if (!payment) return res.status(400).render('templates/fail');
+    if (!payment) return res.render('templates/fail');
 
     if (Status == 'OK') {
         zarinpal
