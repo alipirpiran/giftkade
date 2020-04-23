@@ -100,9 +100,8 @@ router.get('/', async (req, res) => {
                         payment.order,
                         payment
                     );
-                    console.log(order)
                     //* send verify page with refid
-                    res.status(200).render('template/success', {
+                    res.status(200).render('templates/success', {
                         refId: response.RefId,
                         orderId: order.orderId,
                     });
