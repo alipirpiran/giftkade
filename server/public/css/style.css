@@ -49,6 +49,9 @@ body {
 h4 {
   font-family: 'font';
 }
+button{
+  font-family: 'font';
+}
 .modalbox.success h1,
 .modalbox.error h1 {
     font-family: 'font';
