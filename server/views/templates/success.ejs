@@ -5,11 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خرید موفقیت آمیز</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" -->
-    <!-- integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function home() {
+            window.location = "https://giftkade.com"
+        };
+    </script>
 </head>
 
 <body>
@@ -22,15 +26,15 @@
                 </div>
                 <!--/.icon-->
                 <h1>باتشکر از خرید شما</h1>
-                <h4 dir="rtl">شماره سفارش: "<%= orderId %>"
+                <h4 dir="rtl">شماره سفارش: <%= orderId %>
                     <br>
                     <br>
-                    کد پیگیری: "<%= refId %>"
+                    کد پیگیری: <%= refId %>
                 </h4>
                 <br>
-                <p> خرید شما برای شما ارسال خواهد شد</p>
-                <p>شما میتوانید خرید های خود را در حساب کاربری خود مشاهده کنید</p>
-                <button type="button" class="redo btn">Ok</button>
+                <p dir="rtl"> سفارش برای شما ارسال خواهد شد</p>
+                <p dir="rtl">شما میتوانید خرید های خود را در حساب کاربری خود مشاهده کنید</p>
+                <button type="button" class="redo btn" onclick="home()" >بازگشت به سایت</button>
 
             </div>
             <!--/.success-->
