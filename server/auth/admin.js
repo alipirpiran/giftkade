@@ -1,19 +1,16 @@
+const createError = require('http-errors');
 const jwt = require('jsonwebtoken');
+const Errors = require('../templates/error')
 const LOCAL_AUTH_TOKEN = process.env.LOCAL_AUTH_TOKEN;
 
 const User = require('../models/user');
 
 module.exports = async (req, res, next) => {
+    const authToken = req.header('auth-token');
+    if (!authToken) return next(Errors.forbidden());
+    
     if (isReqFromLocalhost(req)) return next();
 
-    const authToken = req.header('auth-token');
-    if (!authToken)
-        return res
-            .status(403)
-            .send({ error: { message: 'شما دسترسی ندارید' } });
-
-    // this is for test , TODO : delete it later
-    // if (authToken == 'test') return next();
     try {
         const payload = jwt.verify(authToken, process.env.TOKEN_SECRET);
         if (payload._id) {
@@ -24,13 +21,9 @@ module.exports = async (req, res, next) => {
             }
         }
 
-        return res
-            .status(400)
-            .send({ error: { message: 'شما دسترسی ندارید' } });
+        return next(Errors.forbidden());
     } catch (error) {
-        return res
-            .status(400)
-            .send({ error: { message: 'شما دسترسی ندارید' } });
+        return next(Errors.forbidden());
     }
 };
 
