@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const joi = require('joi');
+const Errors = require('../templates/error');
 // const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 
@@ -24,39 +25,27 @@ router.get('/user/:id', adminAuth, async (req, res) => {
     return res.status(200).send(user);
 });
 
-router.get('/user/', userAuth, async (req, res) => {
+router.get('/user/', userAuth, async (req, res, next) => {
     const user = await User.findById(req.user).select(
         '-password -payments -isAdmin'
     );
 
-    if (!user)
-        return res.status(404).send({ error: { message: 'کاربر یافت نشد!' } });
+    if (!user) return next(Errors.userNotFound());
 
     return res.status(200).send(user);
 });
 
 // * create user
-router.post('/', adminAuth, async (req, res) => {
+router.post('/', adminAuth, async (req, res, next) => {
     const _user = req.body;
 
     // validate user data
     const { error } = validateAdminAddUser(req.body);
-    if (error)
-        return res.status(400).send({
-            error: {
-                message: 'ورودی هارا کنترل کنید.',
-                dev: error.message,
-            },
-        });
+    if (error) return next(Errors.controllInputs());
 
     // check if user exists and phone number is validated
     const found = await User.findOne({ phoneNumber: _user.phoneNumber });
-    if (found) {
-        return res.status(422).send({
-            status: 0,
-            error: { message: 'کاربری با مشخصات مشابه وجود دارد.' },
-        });
-    }
+    if (found) return next(Errors.sameUserExists());
 
     let user = new User(_user);
     user.toObject();
@@ -110,10 +99,9 @@ router.get('/admin/', adminAuth, async (req, res) => {
     return res.send(users);
 });
 
-router.delete('/:id', adminAuth, async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res, next) => {
     const user = await User.findById(req.params.id);
-    if (!user)
-        return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
+    if (!user) return next(Errors.userNotFound());
 
     // await user.remove();
     user.isActive = false;
@@ -122,24 +110,15 @@ router.delete('/:id', adminAuth, async (req, res) => {
     return res.status(200).send(user);
 });
 
-router.put('/user', userAuth, async (req, res) => {
+router.put('/user', userAuth, async (req, res, next) => {
     const { error } = validateUpdateUser(req.body);
-    if (error)
-        return res
-            .status(400)
-            .send({ error: { message: 'ورودی هارا کنترل کنید' } });
+    if (error) return next(Errors.controllInputs());
 
     const { email, password } = req.body;
-    if (!email && !password)
-        return res
-            .status(400)
-            .send({ error: { message: 'لطفا مقادیر خود را کنترل کنید' } });
+    if (!email && !password) return next(Errors.controllInputs());
 
     const user = await User.findById(req.user);
-    if (!user)
-        return res
-            .status(403)
-            .send({ error: { message: 'شما دسترسی ندارید' } });
+    if (!user) return next(Errors.forbidden());
 
     if (email) {
         user.email = email;
@@ -156,16 +135,12 @@ router.put('/user', userAuth, async (req, res) => {
     return res.status(200).send({ status: 1 });
 });
 
-router.put('/user/:id', adminAuth, async (req, res) => {
+router.put('/user/:id', adminAuth, async (req, res, next) => {
     const { error } = validateAdminUpdateUser(req.body);
-    if (error)
-        return res
-            .status(400)
-            .send({ error: { message: 'ورودی هارا کنترل کنید' } });
+    if (error) return next(Errors.controllInputs());
 
     let user = await User.findById(req.params.id);
-    if (!user)
-        return res.status(403).send({ error: { message: 'کاربر یاقت نشد' } });
+    if (!user) return next(Errors.userNotFound());
 
     await user.updateOne(req.body);
 
