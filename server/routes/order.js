@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const joi = require('joi');
 const debug = require('debug')('giftShop:order');
+const Errors = require('../templates/error');
 
 const SubProduct = require('../models/productSubType');
 const Order = require('../models/order');
@@ -57,7 +58,9 @@ module.exports.rejectOrder = async function rejectOrder(orderId) {
 
     const payment = await Payment.findById(order.payment);
     if (!payment || payment.isPayed)
-        return debug('Rejecting: Payment not found or isPayed, order: ' + orderId);
+        return debug(
+            'Rejecting: Payment not found or isPayed, order: ' + orderId
+        );
 
     payment.isRejected = true;
     giftcardService.setGiftcardsFree(order.subProduct, order.pendingGiftcards);
@@ -69,7 +72,7 @@ module.exports.rejectOrder = async function rejectOrder(orderId) {
 };
 
 //* call when user want to buy product, return Dargah url
-router.post('/', userAuth, async (req, res) => {
+router.post('/', userAuth, async (req, res, next) => {
     const user_id = req.user;
     // router.post('/', async (req, res) => {
     // const user_id = req.body.user;
@@ -106,8 +109,7 @@ router.post('/', userAuth, async (req, res) => {
         });
 
     const user = await User.findById(user_id);
-    if (!user)
-        return res.status(400).send({ error: { message: 'کاربر یافت نشد' } });
+    if (!user) return next(Errors.userNotFound());
 
     const totalPrice = subProduct.localPrice * count;
 
