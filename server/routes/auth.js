@@ -6,6 +6,7 @@ const router = require('express').Router();
 const User = require('../models/user');
 const mobileService = require('../services/mobileService');
 const rateLimit = require('express-rate-limit');
+const Errors = require('../templates/error');
 
 const ADMIN_JWT_EXPIRE = process.env.ADMIN_JWT_EXPIRE || '24h';
 
@@ -19,14 +20,11 @@ const limiter = rateLimit({
     },
 });
 
-router.post('/login', limiter, async (req, res) => {
+router.post('/login', limiter, async (req, res, next) => {
     const info = req.body;
 
     const { error } = validateLogin(info);
-    if (error)
-        return res
-            .status(400)
-            .send({ error: { message: 'ورودی هارا کنترل کنید.', dev: error } });
+    if (error) return next(Errors.controllInputs());
 
     //* send code to user
     const result = await mobileService.sendAuthCode(info.phoneNumber);
@@ -38,18 +36,14 @@ router.post('/login', limiter, async (req, res) => {
     return res.status(200).send({ status: 1 });
 });
 
-router.post('/validate', async (req, res) => {
+router.post('/validate', async (req, res, next) => {
     const { error } = validateLoginResponse(req.body);
-    if (error)
-        return res
-            .status(400)
-            .send({ error: { message: 'ورودی هارا کنترل کنید.', dev: error } });
+    if (error) return next(Errors.controllInputs());
 
     const { phoneNumber, code } = req.body;
     const result = await mobileService.validateAuthCode(phoneNumber, code);
 
-    if (result.error)
-        return res.status(400).send({ error: { message: result.message } });
+    if (result.error) return next(Errors.customMessage(result.message));
 
     if (result.validated) {
         let user = await User.findOne({ phoneNumber });
@@ -69,35 +63,20 @@ router.post('/validate', async (req, res) => {
             _.omit(user.toObject(), ['password', 'orders', 'payments'])
         );
     } else {
-        return res
-            .status(400)
-            .send({ error: { message: 'کد ارسالی اشتباه است' } });
+        return next(Errors.wrongSMSCodeVerify);
     }
 });
 
-router.post('/loginWithPass', async (req, res) => {
+router.post('/loginWithPass', async (req, res, next) => {
     const { error } = validateLoginWithPass(req.body);
-    if (error)
-        return res
-            .status(400)
-            .send({ error: { message: 'ورودی هارا کنترل کنید' } });
+    if (error) return next(Errors.controllInputs());
 
     const { phoneNumber, password } = req.body;
 
     const user = await User.findOne({ phoneNumber });
-    if (!user || !user.password)
-        return res
-            .status(400)
-            .send({ error: { message: 'موبایل یا رمزعبور اشتباه است' } });
-    if (!user.isActive)
-        return res
-            .status(400)
-            .send({ error: { message: 'حساب شما غیرفعال شده است' } });
-
-    if (!user.isAdmin)
-        return res
-            .status(400)
-            .send({ error: { message: 'شما دسترسی ادمین ندارید' } });
+    if (!user || !user.password) return next(Errors.wrongLoginUserPass());
+    if (!user.isActive) return next(Errors.deactivatedAccount());
+    if (!user.isAdmin) return next(Errors.forbidden());
 
     const result = await bcrypt.compare(password, user.password);
     const userJson = _.omit(user.toJSON(), ['password', 'orders', 'payments']);
@@ -110,9 +89,7 @@ router.post('/loginWithPass', async (req, res) => {
         res.send(userJson);
         return;
     } else {
-        return res
-            .status(400)
-            .send({ error: { message: 'موبایل یا رمزعبور اشتباه است' } });
+        return next(Errors.wrongLoginUserPass());
     }
 });
 
