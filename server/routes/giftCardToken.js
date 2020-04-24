@@ -1,13 +1,14 @@
 const router = require('express').Router();
 const joi = require('joi');
 const tokenService = require('../services/giftcardService');
+const Erros = require('../templates/error');
 
 const Token = require('../models/token');
 const SubProduct = require('../models/productSubType');
 
 const adminAuth = require('../auth/admin');
 
-router.post('/', adminAuth, async (req, res) => {
+router.post('/', adminAuth, async (req, res, next) => {
     const { error } = validateToken(req.body);
     if (error) return res.status(400).send({ error });
 
@@ -16,9 +17,7 @@ router.post('/', adminAuth, async (req, res) => {
         req.body.subProductId
     );
     if (token == null)
-        return res
-            .status(400)
-            .send({ error: { message: 'خطا در سرور هنگام اضافه کردن توکن' } });
+        return next(Erros.customMessage('خطا در سرور هنگام اضافه کردن توکن'));
 
     return res.status(200).send(token);
 });
@@ -34,12 +33,9 @@ router.get('/subProduct/:id', adminAuth, async (req, res) => {
     return res.status(200).send(tokens.reverse());
 });
 
-router.get('/token/:id', adminAuth, async (req, res) => {
+router.get('/token/:id', adminAuth, async (req, res, next) => {
     const token = await Token.findById(req.params.id);
-    if (!token)
-        return res
-            .status(404)
-            .send({ error: { message: 'گیفت کارت یافت نشد' } });
+    if (!token) return next(Erros.customMessage('گیفت کارت یافت نشد'));
 
     return res.status(200).send(token);
 });
@@ -54,12 +50,10 @@ router.get('/token', adminAuth, async (req, res) => {
     return res.status(200).send(result);
 });
 
-router.get('/available/:subProductId', async (req, res) => {
+router.get('/available/:subProductId', async (req, res, next) => {
     const subProduct = await SubProduct.findById(req.params.subProductId);
     if (!subProduct)
-        return res
-            .status(404)
-            .send({ error: { message: 'زیر محصول مورد نظر یافت نشد' } });
+        return next(Erros.customMessage('زیر محصول مورد نظر یافت نشد'));
 
     const count = await tokenService.getFreeTokensCount(subProduct);
     return res.status(200).send({ count, subProduct: subProduct._id });
@@ -67,14 +61,8 @@ router.get('/available/:subProductId', async (req, res) => {
 
 function validateToken(item) {
     return joi.validate(item, {
-        subProductId: joi
-            .string()
-            .required()
-            .max(30),
-        code: joi
-            .string()
-            .required()
-            .max(100),
+        subProductId: joi.string().required().max(30),
+        code: joi.string().required().max(100),
     });
 }
 
