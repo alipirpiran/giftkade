@@ -47,7 +47,7 @@ router.get('/token', adminAuth, async (req, res) => {
         skip: parseInt(req.query.skip),
     });
 
-    return res.status(200).send(result);
+    return res.status(200).send(result.reverse());
 });
 
 router.get('/available/:subProductId', async (req, res, next) => {
