@@ -47,6 +47,7 @@ function validateUpdateInfo(info) {
             .string()
             .regex(/^[0-9]+$/)
             .length(11),
+        terms: joi.string(),
     });
 }
 

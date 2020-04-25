@@ -16,6 +16,9 @@ const Support = mongoose.model(
             type: String,
             maxlength: 11,
         },
+        terms: {
+            type: String,
+        },
     })
 );
 
