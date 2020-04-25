@@ -6,6 +6,7 @@ const LOCAL_AUTH_TOKEN = process.env.LOCAL_AUTH_TOKEN;
 const User = require('../models/user');
 
 module.exports = async (req, res, next) => {
+    // return next()
     const authToken = req.header('auth-token');
     if (!authToken) return next(Errors.forbidden());
 

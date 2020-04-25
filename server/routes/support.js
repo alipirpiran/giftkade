@@ -16,7 +16,8 @@ router.put('/info', adminAuth, async (req, res, next) => {
     if (error) return next(Errors.controllInputs());
 
     let support = await Support.getSupport();
-    support = await support.update(req.body);
+    support =  support.set(req.body);
+    await support.save()
     return res.send(support);
 });
 
