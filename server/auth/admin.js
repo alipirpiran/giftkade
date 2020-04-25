@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
 
     try {
         const payload = jwt.verify(authToken, process.env.TOKEN_SECRET);
-        if (!payload.exp || Date.now() / 1000 - payload.exp)
+        if (!payload.exp || Date.now() / 1000 - payload.exp < 0)
             return next(Errors.forbidden());
 
         if (payload._id) {
