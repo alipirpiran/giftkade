@@ -126,8 +126,9 @@ router.put('/user', userAuth, async (req, res, next) => {
 
     if (password) {
         // hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        //! moved to user model
+        // const salt = await bcrypt.genSalt(10);
+        // const hashedPassword = await bcrypt.hash(password, salt);
 
         user.password = hashedPassword;
     }
