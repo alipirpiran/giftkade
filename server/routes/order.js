@@ -47,7 +47,7 @@ module.exports.verifyOrder = async (userId, orderId, payment) => {
         userId,
     });
 
-    sendService.sendGiftcards({ order, user });
+    sendService.sendGiftcards({ order, user, payment });
 
     return order;
 };

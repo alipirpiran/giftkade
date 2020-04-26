@@ -21,6 +21,14 @@
             padding: 0;
         }
 
+        .tab2 {
+            margin-right: 40px;
+        }
+
+        .tab1 {
+            margin-right: 20px;
+        }
+
         table,
         td,
         tr {
@@ -184,7 +192,7 @@
                         <div class="block-grid"
                             style="Margin: 0 auto; min-width: 320px; max-width: 650px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #D6E7F0;">
                             <div
-                                style="border-collapse: collapse;display: table;width: 100%;background-color:#D6E7F0;background-image:url('https://giftkade.com/api/images/bg_cart_2.png');background-position:top center;background-repeat:no-repeat">
+                                style="border-collapse: collapse;display: table;width: 100%;background-image:url('https://giftkade.com/api/images/bgCart.png');background-position:top center;background-repeat:no-repeat">
                                 <div class="col num12"
                                     style="min-width: 320px; max-width: 650px; display: table-cell; vertical-align: top; width: 650px;">
                                     <div style="width:100% !important;">
@@ -315,11 +323,6 @@
                                         <!--<![endif]-->
                                     </div>
                                 </div>
-                                <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
-                                <!--[if (mso)|(IE)]></td><td align="center" width="162" style="background-color:#F8F8F8;width:162px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 1px dotted #E8E8E8;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 15px; padding-left: 15px; padding-top:15px; padding-bottom:5px;"><![endif]-->
-
-                                <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
-                                <!--[if (mso)|(IE)]></td><td align="center" width="162" style="background-color:#F8F8F8;width:162px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:15px; padding-bottom:5px;"><![endif]-->
                                 <div class="col num3"
                                     style="max-width: 320px; min-width: 162px; display: table-cell; vertical-align: top; width: 162px;">
                                     <div style="width:100% !important;">
@@ -351,108 +354,38 @@
 
                     <!-- giftcards -->
                     <%- giftcards %>
-                    
+
+                    <div class="block-grid" style="margin: 0 auto; min-width: 320px; max-width: 650px">
+                        <div style="background-color: #e6ebff;">
+                            <br>
+                            <h3 class="tab1" dir="rtl">مشخصات سفارش</h3>
+                            <div class="tab2">
+                                <p dir="rtl">شماره سفارش: <%= orderid %></p>
+                                <p dir="rtl">شناسه پرداخت: <%= refid %></p>
+                                <p dir="rtl">مبلغ پرداختی: <%= totalPrice %></p>
+
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    <div class="block-grid" style="margin: 0 auto; min-width: 320px; max-width: 650px">
+
+                        <hr>
+                    </div>
                     <div class="block-grid" style="margin: 0 auto; min-width: 320px; max-width: 650px">
                         <h3 dir="rtl">ارتباط با ما</h3>
                         <p dir="rtl">
                             پشتیبانی تلگرام: <a href="https://t.me/giftkadeSupport">Support</a>
+                            <br>
                             ایمیل پشتیبانی: <a href="mailto:info@giftkade.com">info@giftkade.com</a>
                         </p>
                     </div>
 
-                    <!-- icons -->
-                    <!--
-                    <div style="background-color:transparent;">
-                        <div class="block-grid"
-                            style="Margin: 0 auto; min-width: 320px; max-width: 650px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: transparent;">
-                            <div
-                                style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-                                [if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:650px"><tr class="layout-full-width" style="background-color:transparent"><![endif]
-                                [if (mso)|(IE)]><td align="center" width="650" style="background-color:transparent;width:650px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:20px; padding-bottom:60px;"><![endif]
-                                <div class="col num12"
-                                    style="min-width: 320px; max-width: 650px; display: table-cell; vertical-align: top; width: 650px;">
-                                    <div style="width:100% !important;">
-                                        <div
-                                            style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:20px; padding-bottom:60px; padding-right: 0px; padding-left: 0px;">
-                                           
-                                            <table cellpadding="0" cellspacing="0" class="social_icons"
-                                                role="presentation"
-                                                style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
-                                                valign="top" width="100%">
-                                                <tbody>
-                                                    <tr style="vertical-align: top;" valign="top">
-                                                        <td style="word-break: break-word; vertical-align: top; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;"
-                                                            valign="top">
-                                                            <table align="center" cellpadding="0" cellspacing="0"
-                                                                class="social_table" role="presentation"
-                                                                style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-tspace: 0; mso-table-rspace: 0; mso-table-bspace: 0; mso-table-lspace: 0;"
-                                                                valign="top">
-                                                                <tbody>
-                                                                    <tr align="center"
-                                                                        style="vertical-align: top; display: inline-block; text-align: center;"
-                                                                        valign="top">
-                                                                        <td style="word-break: break-word; vertical-align: top; padding-bottom: 5px; padding-right: 8px; padding-left: 8px;"
-                                                                            valign="top"><a
-                                                                                href="https://instagram.com/giftkade"
-                                                                                target="_blank"><img alt="Instagram"
-                                                                                    height="32"
-                                                                                    src="images/instagram2x.png"
-                                                                                    style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: none; display: block;"
-                                                                                    title="Instagram" width="32" /></a>
-                                                                        </td>
-                                                                        <td style="word-break: break-word; vertical-align: top; padding-bottom: 5px; padding-right: 8px; padding-left: 8px;"
-                                                                            valign="top"><a
-                                                                                href="https://telegram.org/giftkade"
-                                                                                target="_blank"><img alt="Telegram"
-                                                                                    height="32"
-                                                                                    src="images/telegram2x.png"
-                                                                                    style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: none; display: block;"
-                                                                                    title="Telegram" width="32" /></a>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <table border="0" cellpadding="0" cellspacing="0" class="divider"
-                                                role="presentation"
-                                                style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;"
-                                                valign="top" width="100%">
-                                                <tbody>
-                                                    <tr style="vertical-align: top;" valign="top">
-                                                        <td class="divider_inner"
-                                                            style="word-break: break-word; vertical-align: top; min-width: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;"
-                                                            valign="top">
-                                                            <table align="center" border="0" cellpadding="0"
-                                                                cellspacing="0" class="divider_content" height="0"
-                                                                role="presentation"
-                                                                style="table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-top: 1px dotted #C4C4C4; height: 0px; width: 60%;"
-                                                                valign="top" width="60%">
-                                                                <tbody>
-                                                                    <tr style="vertical-align: top;" valign="top">
-                                                                        <td height="0"
-                                                                            style="word-break: break-word; vertical-align: top; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;"
-                                                                            valign="top"><span></span></td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
+
                 </td>
             </tr>
         </tbody>
     </table>
-    <!--[if (IE)]></div><![endif]-->
 </body>
 
 </html>

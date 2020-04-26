@@ -35,7 +35,7 @@ module.exports.sendMail = (receiver, subject, html) => {
     });
 };
 
-module.exports.shopHTML = async (order, codes) => {
+module.exports.shopHTML = async (order, codes, payment) => {
     var html = '';
     var product_id = order.product;
     for (const code of codes) {
@@ -47,7 +47,7 @@ module.exports.shopHTML = async (order, codes) => {
                 product_id
             )) + '\n';
     }
-    return _getHTML(html);
+    return _getHTML(html, { orderid: order.orderid, refid: payment.refId, totalPrice: payment.amount });
 };
 
 // TODO: design giftcard html
@@ -61,8 +61,11 @@ async function giftcardHTML(title, description, code, product_id) {
     });
 }
 
-function _getHTML(giftcardsElements) {
+function _getHTML(giftcardsElements, { orderid, refid, totalPrice }) {
     return ejs.renderFile(__dirname + '/../views/templates/shop.ejs', {
         giftcards: giftcardsElements,
+        orderid,
+        refid,
+        totalPrice
     });
 }
