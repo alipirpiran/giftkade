@@ -7,7 +7,7 @@ const payment = require('../data/payment');
 async function main() {
     const result = await mailService.shopHTML(order, codes, payment);
     // console.log(result);
-    fs.writeFileSync('./output.html', result);
+    fs.writeFileSync('../build/output.html', result);
 }
 
 main()
