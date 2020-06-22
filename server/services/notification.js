@@ -28,3 +28,14 @@ module.exports.newOrder = (id, title, totalAmount, count) => {
         headers: { 'Content-Type': 'application/json' },
     }).catch(err =>{});
 };
+
+exports.newMessage = ({message, phoneNumber}) => {
+    const body = {
+        message, phoneNumber
+    }
+    fetch(`http://localhost:${BOT_PORT}/newMessage`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+    }).catch(err =>{});
+}
