@@ -3,6 +3,8 @@ const Errors = require('../templates/error');
 const adminAuth = require('../auth/admin');
 const joi = require('joi');
 
+const notification = require('../services/notification')
+
 const Support = require('../models/support');
 const Message = require('../models/message');
 
@@ -33,6 +35,9 @@ router.post('/message', async (req, res, next) => {
         senderPhoneNumber: req.body.phoneNumber,
     });
     await message.save();
+
+    notification.newMessage(req.body)
+
     return res.send(message);
 });
 
