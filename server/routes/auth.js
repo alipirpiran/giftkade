@@ -63,7 +63,7 @@ router.post('/validate', async (req, res, next) => {
             _.omit(user.toObject(), ['password', 'orders', 'payments'])
         );
     } else {
-        return next(Errors.wrongSMSCodeVerify);
+        return next(Errors.wrongSMSCodeVerify());
     }
 });
 
