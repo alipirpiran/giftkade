@@ -5,6 +5,8 @@ const _ = require('lodash');
 const Token = require('../models/token');
 const SubProduct = require('../models/productSubType');
 
+const  {Document: MONGO_DOC} = require('mongoose')
+
 exports.add_token = async (token_string, subProduct_id) => {
     const encrypted_token = cryptr.encrypt(token_string);
 
@@ -56,7 +58,13 @@ exports.getGiftcardAndSetToPending = async (subProduct, count, orderId) => {
 
     return tokens;
 };
-
+/**
+ * @param  {Object} obj
+ * @param  {String} obj.userId
+ * @param  {String} obj.orderId
+ * @param  {String} obj.subProduct_id
+ * @param  {[String]} obj.giftcards
+ */
 exports.setPendingGiftcardsToSelled = async ({
     subProduct_id,
     giftcards,
@@ -82,15 +90,18 @@ exports.setPendingGiftcardsToSelled = async ({
 
     await subProduct.save();
 };
-
-exports.setGiftcardsFree = async (subProduct_id, giftcards) => {
+/**
+ * @param  {String} subProduct_id
+ * @param  {[String]} giftcard_IDs
+ */
+exports.setGiftcardsFree = async (subProduct_id, giftcard_IDs) => {
     const subProduct = await SubProduct.findById(subProduct_id);
     if (!subProduct) return null;
 
     var setted = 0;
     for (var i = 0; i < subProduct.tokens.length; i++) {
         const item = subProduct.tokens[i];
-        if (giftcards.includes(item)) {
+        if (giftcard_IDs.includes(item)) {
             const token = await Token.findById(item);
             token.isSelled = false;
             token.isPending = false;
@@ -98,11 +109,15 @@ exports.setGiftcardsFree = async (subProduct_id, giftcards) => {
 
             setted++;
         }
-        if (setted == giftcards.length) break;
+        if (setted == giftcard_IDs.length) break;
     }
 };
 
 // return tokens that are Not: selled, pending
+/**
+ * @param  {MONGO_DOC} subProduct
+ * @returns {Number}
+ */
 exports.getFreeTokensCount = async (subProduct) => {
     // const subProduct = await SubProduct.findById(subProduct_id)
     if (!subProduct) return null;
