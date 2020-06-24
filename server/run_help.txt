@@ -1,0 +1,8 @@
+1 install mongo
+  create user auth, readWrite
+  set DB_USER, DB_PASS
+2 install redis
+3 mkdir uploads/
+4 npm install
+5 run /bin/www
+  with pm2
