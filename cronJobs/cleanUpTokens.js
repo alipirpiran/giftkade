@@ -9,29 +9,24 @@ const BASE_PORT = process.env.MAIN_SERVER_PORT;
 const expireTime = 20 * 60 * 1000;
 
 const func = async function () {
-    const now = Date.now();
-    const payments = await getRemainingPayments();
+  const now = Date.now();
+  const payments = await getRemainingPayments();
 
-    for (const payment of payments) {
-        if (now - payment.timeCreated < expireTime) continue;
+  for (const payment of payments) {
+    if (now - payment.timeCreated < expireTime) continue;
 
-        await rejectOrder(payment.order);
-    }
+    await rejectOrder(payment.order);
+  }
 };
 
 async function getRemainingPayments() {
-    const payments = await (
-        await fetch(
-            `http://localhost:${BASE_PORT}/payments?isPayed=false&isRejected=false`,
-            {
-                headers: {
-                    'auth-token': LOCAL_AUTH_TOKEN,
-                },
-            }
-        )
-    ).json();
+  const payments = await (
+    await fetch(
+      `http://localhost:${BASE_PORT}/payments?isPayed=false&isRejected=false`
+    )
+  ).json();
 
-    return payments;
+  return payments;
 }
 
 // async function updatePayment(id, update) {
@@ -49,16 +44,15 @@ async function getRemainingPayments() {
 //     return res.json();
 // }
 async function rejectOrder(orderId) {
-    const res = await fetch(
-        `http://localhost:${BASE_PORT}/order/reject/${orderId}`,
-        {
-            headers: {
-                'auth-token': LOCAL_AUTH_TOKEN,
-            },
-            method: 'POST',
-        }
-    );
-    return res.json();
+  const res = await fetch(
+    `http://localhost:${BASE_PORT}/order/reject/${orderId}`,
+    {
+      method: 'POST',
+    }
+  );
+  console.log('reject result: ', res.json());
+
+  return res.json();
 }
 
 module.exports = func;
