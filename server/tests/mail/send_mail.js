@@ -4,4 +4,13 @@ require('dotenv').config({
 });
 const mail_service = require('../../services/mail');
 
-mail_service.sendMail('alipirpiran@gmail.com', 'test', 'test body');
+const order = require('../data/order');
+const codes = ['asdfasdf'];
+const payment = require('../data/payment');
+
+async function send_shop_HTML_mail() {
+  const result = await mail_service.shopHTML(order, codes, payment);
+  mail_service.sendMail('alipirpiran@gmail.com', 'test', result);
+}
+
+send_shop_HTML_mail()
